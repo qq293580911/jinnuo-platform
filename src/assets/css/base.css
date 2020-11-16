@@ -1,0 +1,34 @@
+body,
+html {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0; 
+  overflow: hidden;
+}
+/* .jqx-widget-content{
+  overflow: hidden;
+} */
+.jqx-tabs-content-element{
+  overflow: hidden;
+}
+.base-tab-content-element{
+  height: calc(100vh - 135px);
+}
+
+.green {
+  color: black \9;
+  background-color: #93D150 \9;
+}
+
+.green:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected),
+.jqx-widget .green:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+  color: black;
+  background-color: #93D150;
+}
+
+.tool-item {
+  margin-right: 5px;
+  display: inline-block;
+  vertical-align: middle;
+}

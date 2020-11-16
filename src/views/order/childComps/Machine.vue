@@ -1,0 +1,1230 @@
+<template>
+  <div class="base-tab-content-element">
+    <JqxGrid
+      ref="myGrid"
+      :width="'100%'"
+      :height="'100%'"
+      :localization="localization"
+      :source="dataAdapter"
+      :columns="columns"
+      :showtoolbar="true"
+      :rendertoolbar="createButtonsContainers"
+      :pageable="true"
+      :pagesize="20"
+      :pagesizeoptions="[5, 10, 15, 20, 25, 30]"
+      :sortable="true"
+      :filterable="true"
+      :altrows="true"
+      :enabletooltip="true"
+      :editable="false"
+      :selectionmode="'multiplerowsextended'"
+      :virtualmode="true"
+      :rendergridrows="rendergridrows"
+      :showstatusbar="true"
+      :statusbarheight="30"
+      :showaggregates="true"
+      :rowdetails="true"
+      :initrowdetails="initrowdetails"
+      :rowdetailstemplate="rowdetailstemplate"
+    >
+    </JqxGrid>
+    <order-window ref="orderWindow"></order-window>
+    <order-import-window ref="orderImportWindow"></order-import-window>
+    <delivery-window ref="deliveryWindow"></delivery-window>
+  </div>
+</template>
+
+<script>
+import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
+import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
+
+import OrderImportWindow from "../childComps/OrderImportWindow";
+import OrderWindow from "../childComps/OrderWindow";
+import DeliveryWindow from "@/components/content/delivery/DeliveryWindow"
+
+import { getLocalization } from "@/common/localization.js";
+import { formatFilter, calc_ord_misc, calc_ord_rsv_p } from "@/common/util.js";
+import { Message,EDIT_DELIVERY,IMPORT_ORDER } from "@/common/const.js";
+import {
+  showMachineOrderList,
+  getDeliveryByOrderNumber,
+} from "@/network/order.js";
+import { deleteDelivery } from "@/network/delivery.js";
+export default {
+  name: "MachineOrder",
+  components: {
+    JqxGrid,
+    JqxTooltip,
+    OrderWindow,
+    OrderImportWindow,
+    DeliveryWindow
+  },
+  beforeCreate() {
+    this.source = {
+      filter: () => {
+        this.$refs.myGrid.updatebounddata("filter");
+      },
+      dataFields: [
+        { name: "id", type: "number" },
+        { name: "order_date", type: "string" },
+        { name: "salesman_company", type: "string" },
+        { name: "salesman_organization", type: "string" },
+        { name: "salesman_agency", type: "string" },
+        { name: "salesman_name", type: "string" },
+        { name: "salesman", type: "number" },
+        { name: "province", type: "string" },
+        { name: "city", type: "string" },
+        { name: "county", type: "string" },
+        { name: "contract_number", type: "string" },
+        { name: "contract_amount", type: "number" },
+        { name: "order_number", type: "string" },
+        { name: "project_name", type: "string" },
+        { name: "province", type: "string" },
+        { name: "city", type: "string" },
+        { name: "county", type: "string" },
+        { name: "original_price", type: "number" },
+        { name: "final_price", type: "number" },
+        { name: "reserve_price", type: "number" },
+        { name: "order_amount", type: "number" },
+        { name: "order_reserve_price", type: "number" },
+        {
+          name: "consideration_commission_order_amount",
+          type: "number",
+        },
+        {
+          name: "not_consideration_commission_order_amount",
+          type: "number",
+        },
+        { name: "logistics_management_fee", type: "string" },
+        { name: "freight", type: "string" },
+        { name: "tax", type: "string" },
+        { name: "warranty", type: "string" },
+        { name: "install_fee", type: "number" },
+        { name: "delivery_date", type: "string" },
+        { name: "delivery_amount", type: "number" },
+        { name: "actual_freight", type: "number" },
+        { name: "over_budget_bear", type: "string" },
+        {
+          name: "consideration_commission_status",
+          type: "string",
+        },
+        { name: "remark", type: "string" },
+        { name: "creator", type: "number" },
+      ],
+      type: "get",
+      url: "/ordDtl/showOrderDetailList.do",
+      id: "id",
+      root: "rows",
+      sortcolumn: "id",
+      sortdirection: "desc",
+      dataType: "json",
+    };
+  },
+  data() {
+    const that = this;
+    return {
+      localization: getLocalization("zh-CN"),
+      dataAdapter: new jqx.dataAdapter(this.source, {
+        formatData: function (data) {
+          return data;
+        },
+        loadServerData: function (serverdata, source, callback) {
+          serverdata = formatFilter(serverdata);
+          showMachineOrderList(source, serverdata).then((res) => {
+            callback({
+              records: res.rows,
+              totalrecords: res.total,
+            });
+          });
+        },
+        beforeLoadComplete(records) {
+          records.map((value) => {
+            let logMngFee = value["logistics_management_fee"];
+            let freight = value["freight"];
+            let tax = value["tax"];
+            let warranty = value["warranty"];
+            let ordAmt = value["order_amount"];
+            let dlvAmt = value["delivery_amount"];
+            let installFee = value["install_fee"];
+
+            //计算下单物流管理费
+            let ordLogManageFee = calc_ord_misc(ordAmt, logMngFee);
+            value["order_logistics_management_fee"] = ordLogManageFee;
+            //计算下单运费
+            let ordFreight = calc_ord_misc(ordAmt, freight);
+            value["order_freight"] = ordFreight;
+            //计算下单税金
+            let orderTax = calc_ord_misc(ordAmt, tax);
+            value["order_tax"] = orderTax;
+            //计算下单质保金
+            let ordWarranty = calc_ord_misc(ordAmt, warranty);
+            value["order_warranty"] = ordWarranty;
+
+            //计算下单底价
+            let ordRsvP = calc_ord_rsv_p(
+              ordAmt,
+              ordLogManageFee,
+              ordFreight,
+              orderTax,
+              ordWarranty,
+              installFee
+            );
+            value["order_reserve_price"] = ordRsvP;
+
+            //非3C风阀下单金额
+            let nCsdCmsOrdAmt =
+              value["not_consideration_commission_order_amount"];
+            //计算非3C风阀下单物流管理费
+            let nCsdCmsOrdLogMngFee = calc_ord_misc(nCsdCmsOrdAmt, logMngFee);
+            value[
+              "not_consideration_commission_order_logistics_management_fee"
+            ] = nCsdCmsOrdLogMngFee;
+
+            //计算非3C风阀下单运费
+            let nCndCmsOrdFreight = calc_ord_misc(nCsdCmsOrdAmt, freight);
+            value[
+              "not_consideration_commission_order_freight"
+            ] = nCndCmsOrdFreight;
+
+            //计算非3C风阀下单税金
+            let nCsdCmsOrdTax = calc_ord_misc(nCsdCmsOrdAmt, tax);
+            value["not_consideration_commission_order_tax"] = nCsdCmsOrdTax;
+
+            //计算非3C风阀下单质保金
+            let nCndCmsOrdWrt = calc_ord_misc(nCsdCmsOrdAmt, warranty);
+            value[
+              "not_consideration_commission_order_warranty"
+            ] = nCndCmsOrdWrt;
+
+            //计算非3C风阀下单底价
+            let nCndCmsOrdRsvP = calc_ord_rsv_p(
+              nCsdCmsOrdAmt,
+              nCsdCmsOrdLogMngFee,
+              nCndCmsOrdFreight,
+              nCsdCmsOrdTax,
+              nCndCmsOrdWrt
+            );
+            value[
+              "not_consideration_commission_order_reserve_price"
+            ] = nCndCmsOrdRsvP;
+
+            //计算送货物流管理费
+            let dlvLogManageFee = calc_ord_misc(dlvAmt, logMngFee);
+            value["delivery_logistics_management_fee"] = dlvLogManageFee;
+
+            //计算送货运费
+            let dlvFreight = calc_ord_misc(dlvAmt, freight);
+            value["delivery_freight"] = dlvFreight;
+
+            //计算送货税金
+            let dlvTax = calc_ord_misc(dlvAmt, tax);
+            value["delivery_tax"] = dlvTax;
+
+            //计算送货质保金
+            let dlvWrt = calc_ord_misc(dlvAmt, warranty);
+            value["delivery_warranty"] = dlvWrt;
+
+            //计算送货底价
+            let dlvRsvP = calc_ord_rsv_p(
+              dlvAmt,
+              dlvLogManageFee,
+              dlvFreight,
+              dlvTax,
+              dlvWrt
+            );
+            value["delivery_reserve_price"] = dlvRsvP;
+
+            //非3C风阀送货金额
+            let nCsdCmsDlvAmt = 0;
+            if (ordAmt == dlvAmt) {
+              nCsdCmsDlvAmt = nCsdCmsOrdAmt;
+            }
+            value[
+              "not_consideration_commission_delivery_amount"
+            ] = nCsdCmsDlvAmt;
+
+            //非3C风阀送货物流管理费
+            let nCsdCmsDlvLogMngFee = calc_ord_misc(nCsdCmsDlvAmt, logMngFee);
+            value[
+              "not_consideration_commission_delivery_logistics_management_fee"
+            ] = nCsdCmsDlvLogMngFee;
+            //非3C风阀送货运费
+            let nCsdCmsDlvFreight = calc_ord_misc(nCsdCmsDlvAmt, freight);
+            value[
+              "not_consideration_commission_delivery_freight"
+            ] = nCsdCmsDlvFreight;
+            //非3C风阀送货税金
+            let nCsdCmsDlvTax = calc_ord_misc(nCsdCmsDlvAmt, tax);
+            value["not_consideration_commission_delivery_tax"] = nCsdCmsDlvTax;
+            //非3C风阀送货质保金
+            let nCsdCmsDlvWrt = calc_ord_misc(nCsdCmsDlvAmt, warranty);
+            value[
+              "not_consideration_commission_delivery_warranty"
+            ] = nCsdCmsDlvWrt;
+            //非3C风阀送货底价
+            let nCsdCmsDlvRsvP = calc_ord_rsv_p(
+              nCsdCmsDlvAmt,
+              nCsdCmsDlvLogMngFee,
+              nCsdCmsDlvFreight,
+              nCsdCmsDlvTax,
+              nCsdCmsDlvWrt
+            );
+            value[
+              "not_consideration_commission_delivery_reserve_price"
+            ] = nCsdCmsDlvRsvP;
+
+            //未送货金额
+            let unDlvAmt = ordAmt - dlvAmt;
+            isNaN(unDlvAmt)
+              ? (value["undelivered_amount"] = ordAmt)
+              : (value["undelivered_amount"] = unDlvAmt);
+          });
+        },
+      }),
+      rendergridrows: function (obj) {
+        return obj.data;
+      },
+      columns: (function (param) {
+        const columns = [];
+        columns.push({
+          text: "序号",
+          sortable: false,
+          filterable: false,
+          editable: false,
+          pinned: true,
+          groupable: false,
+          draggable: false,
+          resizable: false,
+          cellsAlign: "center",
+          align: "center",
+          datafield: "",
+          columntype: "number",
+          width: 50,
+          cellsrenderer: function (row, column, value) {
+            return (
+              "<div style='margin:4px;text-align:center;'>" +
+              (value + 1) +
+              "</div>"
+            );
+          },
+        });
+        columns.push({
+          text: "下单日期",
+          datafield: "order_date",
+          cellsformat: "yyyy-MM-dd",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 100,
+        });
+        columns.push({
+          text: "大区",
+          datafield: "salesman_company",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 100,
+        });
+        columns.push({
+          text: "办事处",
+          datafield: "salesman_agency",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 100,
+        });
+        columns.push({
+          text: "业务员",
+          datafield: "salesman_name",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 100,
+        });
+        columns.push({
+          text: "省",
+          datafield: "province",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 100,
+        });
+        columns.push({
+          text: "市",
+          datafield: "city",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 100,
+        });
+        columns.push({
+          text: "县",
+          datafield: "county",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 100,
+        });
+        columns.push({
+          text: "合同编号",
+          datafield: "contract_number",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 150,
+        });
+        columns.push({
+          text: "合同金额",
+          datafield: "contract_amount",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 100,
+        });
+        columns.push({
+          text: "下单编号",
+          datafield: "order_number",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 150,
+        });
+        columns.push({
+          text: "项目名称",
+          datafield: "project_name",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          width: 200,
+        });
+        columns.push({
+          text: "下单金额",
+          datafield: "order_amount",
+          align: "center",
+          cellsalign: "center",
+          cellclassname: that.cellClass,
+          aggregates: ["sum"],
+          aggregatesrenderer: that.aggregatesRenderer,
+          width: 100,
+        });
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:consideration_commission_order_amount"
+          )
+        ) {
+          columns.push({
+            text: "3C风阀下单金额",
+            datafield: "consideration_commission_order_amount",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 125,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:not_consideration_commission_order_amount"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀下单金额",
+            datafield: "not_consideration_commission_order_amount",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 125,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (that.hasAuthority(that, "ordDtl:logistics_management_fee")) {
+          columns.push({
+            text: "物流管理费",
+            datafield: "logistics_management_fee",
+            cellsAlign: "center",
+            align: "center",
+            width: 100,
+            cellclassname: that.cellClass,
+            cellsrenderer: function (
+              index,
+              datafield,
+              value,
+              defaultvalue,
+              column,
+              rowdata
+            ) {
+              let logManageFee = rowdata["logistics_management_fee"];
+              if (
+                !isNaN(logManageFee) &&
+                parseFloat(logManageFee) > 0 &&
+                parseFloat(logManageFee) < 1
+              ) {
+                logManageFee = Math.round(logManageFee * 100) + "%";
+              }
+              return (
+                "<div style='margin: 6px;' class='jqx-center-align'>" +
+                logManageFee +
+                "</div>"
+              );
+            },
+          });
+        }
+
+        if (that.hasAuthority(that, "ordDtl:freight")) {
+          columns.push({
+            text: "运费",
+            datafield: "freight",
+            cellsAlign: "center",
+            align: "center",
+            width: 80,
+            cellclassname: that.cellClass,
+            cellsrenderer: function (
+              index,
+              datafield,
+              value,
+              defaultvalue,
+              column,
+              rowdata
+            ) {
+              let freight = rowdata["freight"];
+              if (
+                !isNaN(freight) &&
+                parseFloat(freight) > 0 &&
+                parseFloat(freight) < 1
+              ) {
+                freight = Math.round(freight * 100) + "%";
+              }
+              return (
+                "<div style='margin: 6px;' class='jqx-center-align'>" +
+                freight +
+                "</div>"
+              );
+            },
+          });
+        }
+
+        if (that.hasAuthority(that, "ordDtl:tax")) {
+          columns.push({
+            text: "税金",
+            datafield: "tax",
+            cellsAlign: "center",
+            align: "center",
+            width: 80,
+            cellclassname: that.cellClass,
+            cellsrenderer: function (
+              index,
+              datafield,
+              value,
+              defaultvalue,
+              column,
+              rowdata
+            ) {
+              let tax = rowdata["tax"];
+              if (!isNaN(tax) && parseFloat(tax) > 0 && parseFloat(tax) < 1) {
+                tax = Math.round(tax * 100) + "%";
+              }
+              return (
+                "<div style='margin: 6px;' class='jqx-center-align'>" +
+                tax +
+                "</div>"
+              );
+            },
+          });
+        }
+
+        if (that.hasAuthority(that, "ordDtl:warranty")) {
+          columns.push({
+            text: "质保金",
+            datafield: "warranty",
+            cellsAlign: "center",
+            align: "center",
+            width: 80,
+            cellclassname: that.cellClass,
+            cellsrenderer: function (
+              index,
+              datafield,
+              value,
+              defaultvalue,
+              column,
+              rowdata
+            ) {
+              let warranty = rowdata["warranty"];
+              if (
+                !isNaN(warranty) &&
+                parseFloat(warranty) > 0 &&
+                parseFloat(warranty) < 1
+              ) {
+                warranty = Math.round(warranty * 100) + "%";
+              }
+              return (
+                "<div style='margin: 6px;' class='jqx-center-align'>" +
+                warranty +
+                "</div>"
+              );
+            },
+          });
+        }
+
+        columns.push({
+          text: "安装费",
+          datafield: "install_fee",
+          cellsAlign: "center",
+          align: "center",
+          cellclassname: that.cellClass,
+          width: 125,
+          aggregates: ["sum"],
+          aggregatesrenderer: that.aggregatesRenderer,
+        });
+
+        if (that.hasAuthority(that, "ordDtl:order_logistics_management_fee")) {
+          columns.push({
+            text: "下单物流管理费",
+            datafield: "order_logistics_management_fee",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 125,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (that.hasAuthority(that, "ordDtl:order_freight")) {
+          columns.push({
+            text: "下单运费",
+            datafield: "order_freight",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 100,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (that.hasAuthority(that, "ordDtl:order_tax")) {
+          columns.push({
+            text: "下单税金",
+            datafield: "order_tax",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 100,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (that.hasAuthority(that, "ordDtl:order_warranty")) {
+          columns.push({
+            text: "下单质保金",
+            datafield: "order_warranty",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 125,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (that.hasAuthority(that, "ordDtl:order_reserve_price")) {
+          columns.push({
+            text: "下单底价",
+            datafield: "order_reserve_price",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 100,
+            editable: false,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:not_consideration_commission_order_reserve_price"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀下单底价",
+            datafield: "not_consideration_commission_order_reserve_price",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 125,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        columns.push({
+          text: "送货日期",
+          datafield: "delivery_date",
+          cellsAlign: "center",
+          align: "center",
+          cellclassname: that.cellClass,
+          width: 100,
+        });
+        columns.push({
+          text: "送货金额",
+          datafield: "delivery_amount",
+          cellsAlign: "center",
+          align: "center",
+          width: 100,
+          cellclassname: that.cellClass,
+          aggregates: ["sum"],
+          aggregatesrenderer: that.aggregatesRenderer,
+        });
+        if (
+          that.hasAuthority(that, "ordDtl:delivery_logistics_management_fee")
+        ) {
+          columns.push({
+            text: "送货物流管理费",
+            datafield: "delivery_logistics_management_fee",
+            cellsAlign: "center",
+            align: "center",
+            width: 125,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (that.hasAuthority(that, "ordDtl:delivery_freight")) {
+          columns.push({
+            text: "送货运费",
+            datafield: "delivery_freight",
+            cellsAlign: "center",
+            align: "center",
+            width: 100,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (that.hasAuthority(that, "ordDtl:delivery_tax")) {
+          columns.push({
+            text: "送货税金",
+            datafield: "delivery_tax",
+            cellsAlign: "center",
+            align: "center",
+            width: 100,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (that.hasAuthority(that, "ordDtl:delivery_warranty")) {
+          columns.push({
+            text: "送货质保金",
+            datafield: "delivery_warranty",
+            cellsAlign: "center",
+            align: "center",
+            width: 125,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (that.hasAuthority(that, "ordDtl:delivery_reserve_price")) {
+          columns.push({
+            text: "送货底价",
+            datafield: "delivery_reserve_price",
+            cellsAlign: "center",
+            align: "center",
+            width: 100,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:not_consideration_commission_delivery_amount"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀送货金额",
+            datafield: "not_consideration_commission_delivery_amount",
+            cellsAlign: "center",
+            align: "center",
+            width: 150,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:not_consideration_commission_delivery_logistics_management_fee"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀送货物流管理费",
+            datafield:
+              "not_consideration_commission_delivery_logistics_management_fee",
+            cellsAlign: "center",
+            align: "center",
+            width: 170,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:not_consideration_commission_delivery_freight"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀送货运费",
+            datafield: "not_consideration_commission_delivery_freight",
+            cellsAlign: "center",
+            align: "center",
+            width: 125,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:not_consideration_commission_delivery_tax"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀送货税金",
+            datafield: "not_consideration_commission_delivery_tax",
+            cellsAlign: "center",
+            align: "center",
+            width: 125,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:not_consideration_commission_delivery_warranty"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀送货质保金",
+            datafield: "not_consideration_commission_delivery_warranty",
+            cellsAlign: "center",
+            align: "center",
+            width: 130,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:not_consideration_commission_delivery_reserve_price"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀送货底价",
+            datafield: "not_consideration_commission_delivery_reserve_price",
+            cellsAlign: "center",
+            align: "center",
+            width: 140,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (that.hasAuthority(that, "ordDtl:over_budget_bear")) {
+          columns.push({
+            text: "超点承担",
+            datafield: "over_budget_bear",
+            cellsAlign: "center",
+            align: "center",
+            width: 100,
+            cellclassname: that.cellClass,
+          });
+        }
+        if (that.hasAuthority(that, "ordDtl:actual_freight")) {
+          columns.push({
+            text: "实际运费",
+            datafield: "actual_freight",
+            cellsAlign: "center",
+            align: "center",
+            width: 100,
+            cellclassname: that.cellClass,
+          });
+        }
+        if (that.hasAuthority(that, "ordDtl:undelivered_amount")) {
+          columns.push({
+            text: "未送货金额",
+            datafield: "undelivered_amount",
+            cellsAlign: "center",
+            align: "center",
+            width: 100,
+            cellclassname: that.cellClass,
+          });
+        }
+        if (that.hasAuthority(that, "ordDtl:consideration_commission_status")) {
+          columns.push({
+            text: "计提成状态",
+            datafield: "consideration_commission_status",
+            cellsAlign: "center",
+            align: "center",
+            width: 100,
+            cellclassname: that.cellClass,
+          });
+        }
+
+        columns.push({
+          text: "备注",
+          datafield: "remark",
+          cellsAlign: "center",
+          align: "center",
+          width: 100,
+          cellclassname: that.cellClass,
+        });
+        return columns;
+      })(),
+      rowdetailstemplate: {
+        rowdetails:
+          "<div style='margin: 10px;'>" +
+          "<ul style='margin-left: 30px;'>" +
+          "<li class='title'>送货</li>" +
+          "</ul>" +
+          "<div class='deliveryGrid' style='border-style: none;'></div>" +
+          "</div>",
+        rowdetailsheight: 220,
+        rowdetailshidden: true,
+      },
+    };
+  },
+  mounted() {},
+  methods: {
+    createButtonsContainers: function (toolbar) {
+      let buttonsContainer = document.createElement("div");
+      buttonsContainer.style.cssText =
+        "overflow: hidden; position: relative; margin: 5px;";
+      toolbar[0].appendChild(buttonsContainer);
+      // 添加
+      if (this.hasAuthority(this, "ordDtl:add")) {
+        let addButtonContainer = document.createElement("div");
+        addButtonContainer.id = "addButton";
+        addButtonContainer.style.cssText =
+          "float: left;margin-left: 5px;  cursor: pointer;";
+        buttonsContainer.appendChild(addButtonContainer);
+        let addButton = jqwidgets.createInstance("#addButton", "jqxButton", {
+          imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+        });
+        jqwidgets.createInstance("#addButton", "jqxTooltip", {
+          content: "添加",
+          position: "bottom",
+        });
+      }
+      // 删除
+      if (this.hasAuthority(this, "ordDtl:delete")) {
+        let deleteButtonContainer = document.createElement("div");
+        deleteButtonContainer.id = "deleteButton";
+        deleteButtonContainer.style.cssText =
+          "float: left;margin-left: 5px;  cursor: pointer;";
+        buttonsContainer.appendChild(deleteButtonContainer);
+        let deleteButton = jqwidgets.createInstance(
+          "#deleteButton",
+          "jqxButton",
+          {
+            imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+          }
+        );
+        jqwidgets.createInstance("#deleteButton", "jqxTooltip", {
+          content: "删除",
+          position: "bottom",
+        });
+        deleteButton.addEventHandler("click", (event) => {
+          let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+          if (selectedrowindex < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED });
+            return false;
+          }
+          let id = this.$refs.myGrid.getrowid(selectedrowindex);
+          this.$refs.myGrid.deleterow(id);
+        });
+      }
+      // 修改 和 同步数据
+      if (this.hasAuthority(this, "ordDtl:update")) {
+        let asyncButtonContainer = document.createElement("div");
+        let editButtonContainer = document.createElement("div");
+        editButtonContainer.id = "editButton";
+        asyncButtonContainer.id = "asyncButton";
+        editButtonContainer.style.cssText =
+          "float: left;margin-left: 5px;  cursor: pointer;";
+        asyncButtonContainer.style.cssText =
+          "float: left;margin-left: 5px;  cursor: pointer;";
+        buttonsContainer.appendChild(editButtonContainer);
+        buttonsContainer.appendChild(asyncButtonContainer);
+        let editButton = jqwidgets.createInstance("#editButton", "jqxButton", {
+          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+        });
+        jqwidgets.createInstance("#editButton", "jqxTooltip", {
+          content: "编辑",
+          position: "bottom",
+        });
+
+        let asyncButton = jqwidgets.createInstance(
+          "#asyncButton",
+          "jqxButton",
+          {
+            imgSrc: require(`@/assets/iconfont/custom/async.svg`),
+          }
+        );
+        jqwidgets.createInstance("#asyncButton", "jqxTooltip", {
+          content: "页面数据同步到服务器",
+          position: "bottom",
+        });
+      }
+      // 导入
+      if (this.hasAuthority(this, "ordDtl:import")) {
+        let importButtonContainer = document.createElement("div");
+        importButtonContainer.id = "importButton";
+        importButtonContainer.style.cssText =
+          "float: left;margin-left: 5px;  cursor: pointer;";
+        buttonsContainer.appendChild(importButtonContainer);
+        let importButton = jqwidgets.createInstance(
+          "#importButton",
+          "jqxButton",
+          {
+            imgSrc: require(`@/assets/iconfont/custom/import.svg`),
+          }
+        );
+        jqwidgets.createInstance("#importButton", "jqxTooltip", {
+          content: "导入",
+          position: "bottom",
+        });
+
+        importButton.addEventHandler('click',()=>{
+          this.$refs.orderImportWindow.open(IMPORT_ORDER)
+        })
+      }
+      // 导出
+      if (this.hasAuthority(this, "ordDtl:export")) {
+        let exportButtonContainer = document.createElement("div");
+        exportButtonContainer.id = "exportButton";
+        exportButtonContainer.style.cssText =
+          "float: left;margin-left: 5px;  cursor: pointer;";
+        buttonsContainer.appendChild(exportButtonContainer);
+
+        let exportButton = jqwidgets.createInstance(
+          "#exportButton",
+          "jqxButton",
+          {
+            imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+          }
+        );
+        jqwidgets.createInstance("#exportButton", "jqxTooltip", {
+          content: "导出",
+          position: "bottom",
+        });
+      }
+      // 刷新
+      let reloadButtonContainer = document.createElement("div");
+      reloadButtonContainer.id = "reloadButton";
+      reloadButtonContainer.style.cssText =
+        "float:right;margin-left: 5px;  cursor: pointer;";
+      buttonsContainer.appendChild(reloadButtonContainer);
+      let reloadButton = jqwidgets.createInstance(
+        "#reloadButton",
+        "jqxButton",
+        { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
+      );
+      jqwidgets.createInstance("#reloadButton", "jqxTooltip", {
+        content: "刷新",
+        position: "bottom",
+      });
+      reloadButton.addEventHandler("click", (event) => {
+        this.$refs.myGrid.updatebounddata();
+      });
+    },
+    cellClass(row, columnfield, value) {
+      let deliveryDate = this.$refs.myGrid.getcellvalue(row, "delivery_date");
+      let orderAmount = this.$refs.myGrid.getcellvalue(row, "order_amount");
+
+      let deliveryAmount = this.$refs.myGrid.getcellvalue(
+        row,
+        "delivery_amount"
+      );
+      if (orderAmount == deliveryAmount) {
+        if (
+          new Date(deliveryDate) < new Date("2018-10-01") ||
+          deliveryDate == null ||
+          deliveryDate == ""
+        ) {
+          return "green";
+        }
+        if (deliveryDate != null && deliveryDate != "") {
+          return "green";
+        }
+      }
+    },
+    aggregatesRenderer(aggregates, column, element) {
+      var renderString = "";
+      $.each(aggregates, function (key, value) {
+        switch (key) {
+          case "sum":
+            renderString +=
+              '<div style="position: relative; line-height: 30px; text-align: center; overflow: hidden;">' +
+              "合计" +
+              ": " +
+              value +
+              "</div>";
+            break;
+        }
+      });
+      return renderString;
+    },
+    initrowdetails(index, parentElement, gridElement, record) {
+      parentElement.style["z-index"] = 1000;
+      let tabsDiv = $($(parentElement).children()[0]);
+      let childGrid = null;
+      if (tabsDiv != null) {
+        childGrid = tabsDiv.find(".deliveryGrid");
+        let container = $('<div style="margin: 5px;"></div>');
+        container.appendTo($(childGrid));
+        jqwidgets.createInstance(tabsDiv, "jqxTabs", {
+          width: "96%",
+          height: 170,
+        });
+      }
+      let orderNumber = record.order_number.toString();
+      const jsonParams = {
+        orderNumber,
+      };
+      let source = {
+        datafields: [
+          { name: "id", type: "number" },
+          { name: "order_number", type: "string" },
+          { name: "order_amount", type: "number" },
+          { name: "project_name", type: "string" },
+          { name: "delivery_date", type: "string" },
+          { name: "delivery_amount", type: "number" },
+          { name: "delivery_reserve_price", type: "number" },
+          { name: "logistics_management_fee", type: "string" },
+          { name: "freight", type: "string" },
+          { name: "tax", type: "string" },
+          { name: "warranty", type: "string" },
+        ],
+        id: "id",
+        url: "/dlvDtl/showDeliveryDetailByOrderNumber.do",
+        type: "get",
+        data: { jsonParams: JSON.stringify(jsonParams) },
+        dataType: "json",
+      };
+
+      const nestedGridAdapter = new $.jqx.dataAdapter(source, {
+        formatData: function (data) {
+          return data;
+        },
+        loadServerData: function (serverdata, source, callback) {
+          serverdata = formatFilter(serverdata);
+          getDeliveryByOrderNumber(source, serverdata).then((res) => {
+            callback({
+              records: res.rows,
+              totalrecords: res.total,
+            });
+          });
+        },
+      });
+
+      let childGridInstance = jqwidgets.createInstance(childGrid, "jqxGrid", {
+        localization: getLocalization("zh-CN"),
+        source: nestedGridAdapter,
+        width: "100%",
+        height: "100%",
+        editable: true,
+        editmode: "dblclick",
+        columns: [
+          {
+            text: "送货日期",
+            datafield: "delivery_date",
+            cellsAlign: "center",
+            align: "center",
+          },
+          {
+            text: "送货金额",
+            datafield: "delivery_amount",
+            cellsAlign: "center",
+            align: "center",
+          },
+          {
+            text: "送货底价",
+            datafield: "delivery_reserve_price",
+            cellsAlign: "center",
+            align: "center",
+          },
+          {
+            text: "",
+            datafield: "Delete",
+            columntype: "button",
+            width: 50,
+            cellsrenderer: () => {
+              return "删除";
+            },
+            buttonclick: (rowindex) => {
+              this.$confirm({
+                title: `${Message.CONFIRM_DELETE}`,
+                okText: "确认",
+                cancelText: "取消",
+                centered: true,
+                content: (h) => <div style="color:red;"></div>,
+                onOk() {
+                  let id = childGridInstance.getrowid(rowindex);
+                  const params = {
+                    jsonParams: JSON.stringify({
+                      id,
+                    }),
+                  };
+                  deleteDelivery(params).then((res) => {
+                    console.log(res);
+                  });
+                },
+                onCancel() {},
+                class: "test",
+              });
+            },
+          },
+          {
+            text: "",
+            datafield: "Edit",
+            columntype: "button",
+            width: 50,
+            cellsrenderer: () => {
+              return "编辑";
+            },
+            buttonclick: (rowindex) => {
+              let rowData = childGridInstance.getrowdata(rowindex);
+              this.$refs.deliveryWindow.open(EDIT_DELIVERY,rowData)
+            },
+          },
+        ],
+      });
+    },
+  },
+};
+</script>
+
+<style scoped>
+</style>

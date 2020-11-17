@@ -38,6 +38,7 @@ import HomeNavBar from "./childComps/HomeNavBar";
 import HomeAside from "./childComps/HomeAside";
 import HomeMain from "./childComps/HomeMain";
 import { getPermissions } from "@/network/home.js";
+import { getSalesman } from "@/network/employee.js"
 jqx.theme = "ui-smoothness";
 export default {
   name: "Home",
@@ -48,11 +49,12 @@ export default {
   },
   data() {
     return {
-      collapsed: false
+      collapsed: false,
     };
   },
   created() {
     this.getPermissions();
+    this.getSlasmans();
   },
   mounted() {},
   methods: {
@@ -67,6 +69,14 @@ export default {
         };
         getPermissions(params).then((responese) => {
           this.$store.dispatch("savePermissions", responese).then((res) => {});
+        });
+      }
+    },
+    getSlasmans() {
+      const salesmans = this.$store.state.salesmans;
+      if (salesmans == null) {
+        getSalesman().then((responese) => {
+          this.$store.dispatch("saveSalesmans", responese).then((res) => {});
         });
       }
     },

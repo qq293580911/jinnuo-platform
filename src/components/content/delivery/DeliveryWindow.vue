@@ -24,7 +24,7 @@ import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
-import { ADD_DELIVERY,EDIT_DELIVERY } from "@/common/const.js"
+import { ADD_DELIVERY, EDIT_DELIVERY } from "@/common/const.js";
 export default {
   components: {
     JqxWindow,
@@ -56,26 +56,21 @@ export default {
           rowHeight: "40px",
         },
         {
-          name: "orderAmount",
+          name: "deliveryAmount",
           type: "custom",
-          label: "下单金额",
+          label: "送货金额",
           labelWidth: "100px",
           required: true,
           rowHeight: "40px",
           init: (component) => {
-            that.orderAmountInstance = jqwidgets.createInstance(
-              component,
-              "jqxNumberInput",
-              {
-                width: 250,
-                height: 30,
-                inputMode: "simple",
-                digits: 11,
-                spinButtons: true,
-                decimalDigits: 0,
-                disabled: true,
-              }
-            );
+            jqwidgets.createInstance(component, "jqxNumberInput", {
+              width: 250,
+              height: 30,
+              inputMode: "simple",
+              digits: 11,
+              spinButtons: true,
+              decimalDigits: 2,
+            });
           },
         },
         {
@@ -126,25 +121,21 @@ export default {
           rowHeight: "40px",
         },
         {
-          name: "deliveryAmount",
+          name: "installFee",
           type: "custom",
-          label: "送货金额",
+          label: "安装费",
           labelWidth: "100px",
-          required: true,
+          required: false,
           rowHeight: "40px",
           init: (component) => {
-            that.deliveryAmountInstance = jqwidgets.createInstance(
-              component,
-              "jqxNumberInput",
-              {
-                width: 250,
-                height: 30,
-                inputMode: "simple",
-                digits: 11,
-                spinButtons: true,
-                decimalDigits: 2,
-              }
-            );
+            jqwidgets.createInstance(component, "jqxNumberInput", {
+              width: 250,
+              height: 30,
+              inputMode: "simple",
+              digits: 11,
+              spinButtons: true,
+              decimalDigits: 0,
+            });
           },
         },
         {
@@ -155,18 +146,14 @@ export default {
           required: true,
           rowHeight: "40px",
           init: (component) => {
-            that.deliveryReservePriceInstance = jqwidgets.createInstance(
-              component,
-              "jqxNumberInput",
-              {
-                width: 250,
-                height: 30,
-                inputMode: "simple",
-                digits: 11,
-                spinButtons: true,
-                decimalDigits: 2,
-              }
-            );
+            jqwidgets.createInstance(component, "jqxNumberInput", {
+              width: 250,
+              height: 30,
+              inputMode: "simple",
+              digits: 11,
+              spinButtons: true,
+              decimalDigits: 2,
+            });
           },
         },
         {
@@ -200,10 +187,123 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.orderNumberInstance = this.$refs.myForm.getComponentByName(
+      "orderNumber"
+    );
+    this.orderNumberInstance.jqxInput("disabled", true);
+    this.projectNameInstance = this.$refs.myForm.getComponentByName(
+      "projectName"
+    );
+    this.projectNameInstance.jqxInput("disabled", true);
+    this.orderAmountInstance = this.$refs.myForm.getComponentByName(
+      "orderAmount"
+    );
+
+    this.deliveryDateInstance = this.$refs.myForm.getComponentByName(
+      "deliveryDate"
+    );
+    const $logManageFee = this.$refs.myForm.getComponentByName(
+      "logisticsManagementFee"
+    );
+    this.logisticsManagementFeeInstance = $logManageFee;
+    const $freight = this.$refs.myForm.getComponentByName("freight");
+    this.freightInstance = $freight;
+    const $tax = this.$refs.myForm.getComponentByName("tax");
+    this.taxInstance = $tax;
+    const $warranty = this.$refs.myForm.getComponentByName("warranty");
+    this.warrantyInstance = $warranty;
+    this.deliveryAmountInstance = this.$refs.myForm.getComponentByName(
+      "deliveryAmount"
+    );
+    const $installFee = this.$refs.myForm.getComponentByName("installFee");
+    this.installFeeInstance = $installFee;
+    this.deliveryReservePriceInstance = this.$refs.myForm.getComponentByName(
+      "deliveryReservePrice"
+    );
+
+    // 验证规则
+    this.$refs.myValidator.rules = [
+      {
+        input: $logManageFee,
+        message: "不正确的格式",
+        action: "keyup, blur",
+        rule: function (input) {
+          const value = $(input).val();
+          if (value.length > 0) {
+            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
+            return r;
+          }
+          return true;
+        },
+      },
+      {
+        input: $freight,
+        message: "不正确的格式",
+        action: "keyup, blur",
+        rule: function (input) {
+          const value = $(input).val();
+          if (value.length > 0) {
+            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
+            return r;
+          }
+          return true;
+        },
+      },
+      {
+        input: $tax,
+        message: "不正确的格式",
+        action: "keyup, blur",
+        rule: function (input) {
+          const value = $(input).val();
+          if (value.length > 0) {
+            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
+            return r;
+          }
+          return true;
+        },
+      },
+      {
+        input: $warranty,
+        message: "不正确的格式",
+        action: "keyup, blur",
+        rule: function (input) {
+          const value = $(input).val();
+          if (value.length > 0) {
+            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
+            return r;
+          }
+          return true;
+        },
+      },
+    ];
+    // 提交并验证表单
+    const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
+    confirmBtn[0].addEventListener("click", (event) => {
+      this.$refs.myValidator.validate(document.getElementById("myForm"));
+    });
+  },
   methods: {
     onValidationSuccess(event) {},
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
+      if (params[0] == ADD_DELIVERY) {
+        const orderInfo = params[1];
+        this.$nextTick(() => {
+          this.orderNumberInstance.val(orderInfo["order_number"]);
+          this.projectNameInstance.val(orderInfo["project_name"]);
+          this.logisticsManagementFeeInstance.val(
+            orderInfo["logistics_management_fee"]
+          );
+          this.freightInstance.val(orderInfo["freight"]);
+          this.taxInstance.val(orderInfo["tax"]);
+          this.warrantyInstance.val(orderInfo["warranty"]);
+          this.installFeeInstance.jqxNumberInput(
+            "setDecimal",
+            orderInfo["install_fee"]
+          );
+        });
+      }
       this.$refs.myWindow.open();
     },
   },

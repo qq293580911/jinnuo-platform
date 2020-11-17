@@ -1,5 +1,6 @@
 import {
   SAVE_PERMISSIONS,
+  SAVE_SALESMANS,
   SAVE_PRICE_PLAN,
 } from './mutation-types'
 
@@ -8,6 +9,9 @@ import {
 export default {
   [SAVE_PERMISSIONS](state, payload) {
     state.permissions = payload
+  },
+  [SAVE_SALESMANS](state, payload) {
+    state.salesmans = payload
   },
   [SAVE_PRICE_PLAN](state, payload) {
     state.pricePlan = payload

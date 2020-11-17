@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # myfirstvuepro
 
 ## Project setup
@@ -22,3 +23,6 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+=======
+# jinnuo-platform
+>>>>>>> 823cfda335bf6ebcd605e3c9e81d9525c30965cb

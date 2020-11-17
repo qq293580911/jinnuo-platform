@@ -419,7 +419,6 @@ export default {
       this.$refs.myWindow.setTitle(params[0]);
       if (params[0] == EDIT_EMPLOYEE) {
         const data = params[1];
-        console.log(data);
         const $name = this.$refs.myForm.getComponentByName("empName");
         const $gender = this.$refs.myForm.getComponentByName("gender");
         const $phone = this.$refs.myForm.getComponentByName("phone");

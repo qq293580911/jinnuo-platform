@@ -26,8 +26,23 @@
       :rowdetails="true"
       :initrowdetails="initrowdetails"
       :rowdetailstemplate="rowdetailstemplate"
+      @cellclick="onCellclick($event)"
     >
     </JqxGrid>
+    <JqxMenu
+      ref="jqxMenu"
+      :mode="'popup'"
+      :autoOpenPopup="false"
+      :width="120"
+      :height="140"
+      @itemclick="onItemclick($event)"
+    >
+      <div>
+        <ul>
+          <li>添加送货信息</li>
+        </ul>
+      </div>
+    </JqxMenu>
     <order-window ref="orderWindow"></order-window>
     <order-import-window ref="orderImportWindow"></order-import-window>
     <delivery-window ref="deliveryWindow"></delivery-window>
@@ -37,17 +52,27 @@
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
+import JqxMenu from "jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue";
 
 import OrderImportWindow from "../childComps/OrderImportWindow";
 import OrderWindow from "../childComps/OrderWindow";
-import DeliveryWindow from "@/components/content/delivery/DeliveryWindow"
+import DeliveryWindow from "@/components/content/delivery/DeliveryWindow";
 
 import { getLocalization } from "@/common/localization.js";
 import { formatFilter, calc_ord_misc, calc_ord_rsv_p } from "@/common/util.js";
-import { Message,EDIT_DELIVERY,IMPORT_ORDER } from "@/common/const.js";
+import {
+  Message,
+  ADD_ORDER,
+  EDIT_ORDER,
+  ADD_DELIVERY,
+  EDIT_DELIVERY,
+  IMPORT_ORDER,
+} from "@/common/const.js";
 import {
   showMachineOrderList,
   getDeliveryByOrderNumber,
+  deleteOrder,
+  batahUpdateOrder,
 } from "@/network/order.js";
 import { deleteDelivery } from "@/network/delivery.js";
 export default {
@@ -55,9 +80,10 @@ export default {
   components: {
     JqxGrid,
     JqxTooltip,
+    JqxMenu,
     OrderWindow,
     OrderImportWindow,
-    DeliveryWindow
+    DeliveryWindow,
   },
   beforeCreate() {
     this.source = {
@@ -915,13 +941,20 @@ export default {
       },
     };
   },
-  mounted() {},
+  mounted() {
+    const gridId = this.$refs.myGrid.componentSelector;
+    $(gridId).on("contextmenu", () => {
+      return false;
+    });
+  },
   methods: {
     createButtonsContainers: function (toolbar) {
+      const that = this;
       let buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
       toolbar[0].appendChild(buttonsContainer);
+
       // 添加
       if (this.hasAuthority(this, "ordDtl:add")) {
         let addButtonContainer = document.createElement("div");
@@ -929,12 +962,20 @@ export default {
         addButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(addButtonContainer);
-        let addButton = jqwidgets.createInstance("#addButton", "jqxButton", {
-          imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
-        });
+        let addButtonInstance = jqwidgets.createInstance(
+          "#addButton",
+          "jqxButton",
+          {
+            imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+          }
+        );
         jqwidgets.createInstance("#addButton", "jqxTooltip", {
           content: "添加",
           position: "bottom",
+        });
+
+        addButtonInstance.addEventHandler("click", (event) => {
+          this.$refs.orderWindow.open(ADD_ORDER);
         });
       }
       // 删除
@@ -961,22 +1002,34 @@ export default {
             this.$message.warning({ content: Message.NO_ROWS_SELECTED });
             return false;
           }
-          let id = this.$refs.myGrid.getrowid(selectedrowindex);
-          this.$refs.myGrid.deleterow(id);
+          this.$confirm({
+            title: `${Message.CONFIRM_DELETE}`,
+            okText: "确认",
+            cancelText: "取消",
+            centered: true,
+            content: (h) => <div style="color:red;"></div>,
+            onOk() {
+              let id = this.$refs.myGrid.getrowid(selectedrowindex);
+              const params = {
+                jsonParams: JSON.stringify({
+                  id,
+                }),
+              };
+              deleteOrder(params).then((res) => {});
+            },
+            onCancel() {},
+            class: "test",
+          });
         });
       }
-      // 修改 和 同步数据
+
       if (this.hasAuthority(this, "ordDtl:update")) {
-        let asyncButtonContainer = document.createElement("div");
+        // 修改
         let editButtonContainer = document.createElement("div");
         editButtonContainer.id = "editButton";
-        asyncButtonContainer.id = "asyncButton";
         editButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
-        asyncButtonContainer.style.cssText =
-          "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(editButtonContainer);
-        buttonsContainer.appendChild(asyncButtonContainer);
         let editButton = jqwidgets.createInstance("#editButton", "jqxButton", {
           imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
         });
@@ -984,7 +1037,21 @@ export default {
           content: "编辑",
           position: "bottom",
         });
-
+        editButton.addEventHandler("click", () => {
+          let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+          if (selectedrowindex < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED });
+            return false;
+          }
+          const rowData = this.$refs.myGrid.getrowdata(selectedrowindex);
+          this.$refs.orderWindow.open(EDIT_ORDER, rowData);
+        });
+        // 同步数据
+        let asyncButtonContainer = document.createElement("div");
+        asyncButtonContainer.id = "asyncButton";
+        asyncButtonContainer.style.cssText =
+          "float: left;margin-left: 5px;  cursor: pointer;";
+        buttonsContainer.appendChild(asyncButtonContainer);
         let asyncButton = jqwidgets.createInstance(
           "#asyncButton",
           "jqxButton",
@@ -995,6 +1062,20 @@ export default {
         jqwidgets.createInstance("#asyncButton", "jqxTooltip", {
           content: "页面数据同步到服务器",
           position: "bottom",
+        });
+        asyncButton.addEventHandler("click", () => {
+          this.$confirm({
+            title: `确认同步吗？`,
+            okText: "确认",
+            cancelText: "取消",
+            centered: true,
+            content: (h) => <div style="color:red;"></div>,
+            onOk() {
+              that.syncToServer();
+            },
+            onCancel() {},
+            class: "test",
+          });
         });
       }
       // 导入
@@ -1016,9 +1097,9 @@ export default {
           position: "bottom",
         });
 
-        importButton.addEventHandler('click',()=>{
-          this.$refs.orderImportWindow.open(IMPORT_ORDER)
-        })
+        importButton.addEventHandler("click", () => {
+          this.$refs.orderImportWindow.open(IMPORT_ORDER);
+        });
       }
       // 导出
       if (this.hasAuthority(this, "ordDtl:export")) {
@@ -1216,12 +1297,67 @@ export default {
             },
             buttonclick: (rowindex) => {
               let rowData = childGridInstance.getrowdata(rowindex);
-              this.$refs.deliveryWindow.open(EDIT_DELIVERY,rowData)
+              this.$refs.deliveryWindow.open(EDIT_DELIVERY, rowData);
             },
           },
         ],
       });
     },
+    syncToServer() {
+      const rowsData = this.$refs.myGrid.getrows();
+      const items = rowsData.map((item) => {
+        const map = {};
+        map.order_date = item["order_date"];
+        map.salesman = item["salesman"];
+        map.contract_number = item["contract_number"];
+        map.project_name = item["project_name"];
+        map.order_amount = item["order_amount"];
+        map.order_reserve_price = item["order_reserve_price"];
+        map.consideration_commission_order_amount =
+          item["consideration_commission_order_amount"];
+        map.not_consideration_commission_order_amount =
+          item["not_consideration_commission_order_amount"];
+        map.logistics_management_fee = item["logistics_management_fee"];
+        map.freight = item["freight"];
+        map.tax = item["tax"];
+        map.warranty = item["warranty"];
+        map.consideration_commission_date =
+          item["consideration_commission_date"];
+        map.consideration_commission_status =
+          item["consideration_commission_status"];
+        map.remark = item["remark"];
+        map.id = item["id"];
+        return map;
+      });
+      const params = {
+        jsonParams: JSON.stringify({
+          items,
+        }),
+      };
+      batahUpdateOrder(params).then((res) => {
+        this.$refs.myGrid.updatebounddata();
+      });
+    },
+    onCellclick(event) {
+      if (event.args.rightclick) {
+        const clickCellInfo = event.args;
+        this.clickCellInfo = clickCellInfo
+        let scrollTop = $(window).scrollTop();
+        let scrollLeft = $(window).scrollLeft();
+        this.$refs.jqxMenu.open(
+          parseInt(event.args.originalEvent.clientX) + 5 + scrollLeft,
+          parseInt(event.args.originalEvent.clientY) + 5 + scrollTop
+        );
+        return false;
+      }
+    },
+    onItemclick(event){
+      const menu = event.args.textContent
+      if(menu==ADD_DELIVERY){
+        const rowData = this.clickCellInfo.row.bounddata
+        this.$refs.deliveryWindow.open(ADD_DELIVERY,rowData)
+      }
+    }
   },
 };
 </script>

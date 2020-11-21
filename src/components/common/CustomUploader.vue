@@ -43,6 +43,8 @@
 <script>
 import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
 import JqxButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue";
+
+import LAY_EXCEL from "lay-excel";
 export default {
   name: "CustomUploder",
   components: {
@@ -52,6 +54,7 @@ export default {
   data() {
     return {
       inputValue: "",
+      fileCotent: [],
     };
   },
   props: {
@@ -73,8 +76,8 @@ export default {
     },
   },
   created() {
-    this.textId = "textInput"+JQXLite.generateID();
-    this.fileId = "file"+JQXLite.generateID();
+    this.textId = "textInput" + JQXLite.generateID();
+    this.fileId = "file" + JQXLite.generateID();
   },
   computed: {
     getWidth() {
@@ -82,7 +85,7 @@ export default {
     },
     getHeight() {
       return this.height + "px";
-    }
+    },
   },
   mounted() {
     const that = this;
@@ -105,17 +108,43 @@ export default {
         fileName.lastIndexOf("\\") + 1,
         fileName.length
       );
-      const input = document.getElementById(that.textId)
-      input.value = fileName
-      this.value = null;
-      that.inputValue = fileName
+      // 文件名称
+      const input = document.getElementById(that.textId);
+      input.value = fileName;
+      that.inputValue = fileName;
+      // 文件内容
+      const files = event.target.files;
+      LAY_EXCEL.importExcel(
+        files,
+        {
+          fields: {
+            serialNumber: "A",
+            productName: "B",
+            specModel: "C",
+            unit: "D",
+            quantity: "E",
+            unitPrice: "F",
+            totalPrice: "G",
+            remark: "H",
+            selection: "I",
+            transfer: "J",
+            formula: "K",
+            designateType: "L",
+          },
+        },
+        function (data, book) {
+          console.log(data);
+        }
+      );
+
+      // this.value = null;
     });
   },
   methods: {
     open() {
       const file = document.getElementById(this.fileId);
       file.click();
-    }
+    },
   },
 };
 </script>

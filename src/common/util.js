@@ -71,22 +71,20 @@ export function formatFilter(serverdata) {
 
 // 计算下单杂项费用
 export function calc_ord_misc(...param) {
-  let amount = param[0]
-  let rate = param[1]
-  if(rate==null || rate==''){
-    rate = 0
-  }else if(rate.indexOf("%") > -1){
-    rate = parseFloat(rate) / 100;
-  }
+  let amount = param[0];
+  let rate = param[1];
   amount == null ? amount = 0 : amount = amount
-  if(amount==0){
-    return 0
+  if(amount===0){
+      return 0
   }
-  if (rate % 1 == 0) {
-    return rate
+  if (rate % 1 === 0) {
+      return rate
   }
-  let result = amount - (amount / (1 + rate))
-  result = Math.round(result)
+  if(typeof rate == 'string' && rate.indexOf('%')>-1){
+      rate = rate.replace('%','')/100;
+  }
+  let result = amount - (amount / (1 + rate));
+  result = Math.round(result);
   return isNaN(result)?0:result
 }
 

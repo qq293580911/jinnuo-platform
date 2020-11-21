@@ -207,4 +207,8 @@ export default {
   height: calc(100vh - 66px);
   overflow: hidden;
 }
+::v-deep .jqx-tabs-content-element {
+    height: 100%;
+    overflow: hidden;
+}
 </style>

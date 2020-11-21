@@ -53,9 +53,25 @@ export function updateOrder(params) {
   })
 }
 
+export function importOrder(params) {  
+  return request({
+    url:'/ordDtl/importOrderDetail.do',
+    method:'Post',
+    data:params
+  })
+}
+
 export function batahUpdateOrder(params) {  
   return request({
     url: '/ordDtl/syncToServer.do',
+    method: 'Put',
+    data:params
+  })
+}
+
+export function batchUpdateOrderByOrderNumber(params) {  
+  return request({
+    url: '/ordDtl/batchUpdateOrderDetailByField.do',
     method: 'Put',
     data:params
   })

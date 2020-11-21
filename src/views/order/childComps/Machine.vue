@@ -1296,7 +1296,13 @@ export default {
               return "编辑";
             },
             buttonclick: (rowindex) => {
+              this.childGridInstance = childGridInstance;
+              const installFee = this.$refs.myGrid.getcellvalue(
+                rowindex,
+                "install_fee"
+              );
               let rowData = childGridInstance.getrowdata(rowindex);
+              rowData["install_fee"] = installFee;
               this.$refs.deliveryWindow.open(EDIT_DELIVERY, rowData);
             },
           },
@@ -1341,7 +1347,7 @@ export default {
     onCellclick(event) {
       if (event.args.rightclick) {
         const clickCellInfo = event.args;
-        this.clickCellInfo = clickCellInfo
+        this.clickCellInfo = clickCellInfo;
         let scrollTop = $(window).scrollTop();
         let scrollLeft = $(window).scrollLeft();
         this.$refs.jqxMenu.open(
@@ -1351,13 +1357,19 @@ export default {
         return false;
       }
     },
-    onItemclick(event){
-      const menu = event.args.textContent
-      if(menu==ADD_DELIVERY){
-        const rowData = this.clickCellInfo.row.bounddata
-        this.$refs.deliveryWindow.open(ADD_DELIVERY,rowData)
+    onItemclick(event) {
+      const menu = event.args.textContent;
+      if (menu == ADD_DELIVERY) {
+        const rowData = this.clickCellInfo.row.bounddata;
+        this.$refs.deliveryWindow.open(ADD_DELIVERY, rowData);
       }
-    }
+    },
+    refresh() {
+      this.$refs.myGrid.updatebounddata();
+    },
+    refreshChild() {
+      this.childGridInstance.updatebounddata();
+    },
   },
 };
 </script>

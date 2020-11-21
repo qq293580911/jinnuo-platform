@@ -1,5 +1,11 @@
 import { request } from "@/network/request";
 
+// 报价处理
+export function importFileContent(param) {  
+  
+}
+
+// 报价单管理
 export function getQuotationList(params){
   return request({
     url:"/qtnManage/showQuotationList.do",

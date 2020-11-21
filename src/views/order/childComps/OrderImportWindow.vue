@@ -39,6 +39,7 @@ import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import CustomUploader from "@/components/common/CustomUploader";
 
 import { getLocalization } from "@/common/localization.js";
+import { importOrder, batchUpdateOrderByOrderNumber } from "@/network/order";
 export default {
   components: {
     JqxWindow,
@@ -152,7 +153,39 @@ export default {
     return {
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        beforeLoadComplete(records) {},
+        beforeLoadComplete(records) {
+          const salesmans = this.$store.state.salesmans;
+          records.map((item) => {
+            const ordAmt = item["order_amount"];
+            const logManageFee = item["logistics_management_fee"];
+            let freight = item["freight"];
+            let tax = item["tax"];
+            let warranty = item["warranty"];
+            const installFee = item["install_fee"];
+            // 计算下单杂费
+            const ordLogManageFee = calc_ord_misc(logManageFee);
+            const ordFreight = calc_ord_misc(freight);
+            const ordTax = calc_ord_misc(tax);
+            const ordWarranty = calc_ord_misc(warranty);
+            // 计算下单底价
+            const ordRsvP = calc_ord_rsv_p(
+              ordAmt,
+              ordLogManageFee,
+              ordFreight,
+              ordTax,
+              ordWarranty,
+              installFee
+            );
+            item["order_reserve_price"] = ordRsvP;
+            //放入业务员ID
+            const salesman = salesmans.find((salesman) => {
+              return salesman["emp_name"] == item["salesman_name"];
+            });
+            if (salesman) {
+              item["salesman"] = salesman["emp_id"];
+            }
+          });
+        },
       }),
       columns: [
         {
@@ -304,7 +337,6 @@ export default {
     };
   },
   methods: {
-    onValidationSuccess(event) {},
     createButtonsContainers: (toolbar) => {
       let buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
@@ -418,9 +450,45 @@ export default {
       this.$refs.myWindow.setTitle(params[0]);
       this.$refs.myWindow.open();
     },
+    onValidationSuccess(event) {},
+    importOrder() {
+      const rowsData = this.$refs.myGrid.getrows();
+      const params = {
+        jsonParams: JSON.stringify({
+          items: rowsData,
+        }),
+      };
+      importOrder(params).then((res) => {
+        this.$refs.myWindow.close();
+        this.$parent.refresh();
+      });
+    },
+    batchUpdateOrder() {
+      const rowsData = this.$refs.myGrid.getrows();
+      const field = $("#fieldSelection").val();
+      const arr = rowsData.map((item) => {
+        const map = {};
+        map["order_number"] = item["order_number"];
+        map[field] = item[field];
+      });
+      const params = {
+        jsonParams: JSON.stringify({
+          items: arr,
+        }),
+      };
+      batchUpdateOrderByOrderNumber(params).then((res) => {
+        this.$refs.myWindow.close();
+        this.$parent.refresh();
+      });
+    },
   },
 };
 </script>
 
 <style scoped>
+::v-deep .tool-item {
+  margin-right: 5px;
+  display: inline-block;
+  vertical-align: middle;
+}
 </style>

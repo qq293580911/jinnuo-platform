@@ -25,6 +25,8 @@ import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
 import { ADD_DELIVERY, EDIT_DELIVERY } from "@/common/const.js";
+import { calc_ord_misc, calc_ord_rsv_p } from "@/common/util";
+import { addDelivery, updateDelivery } from "@/network/delivery";
 export default {
   components: {
     JqxWindow,
@@ -43,8 +45,6 @@ export default {
           width: "250px",
           required: true,
           rowHeight: "40px",
-          info: "输入下单编号",
-          infoPosition: "right",
         },
         {
           name: "projectName",
@@ -188,40 +188,48 @@ export default {
     };
   },
   mounted() {
+    // 下单编号
     this.orderNumberInstance = this.$refs.myForm.getComponentByName(
       "orderNumber"
     );
     this.orderNumberInstance.jqxInput("disabled", true);
+    // 项目名称
     this.projectNameInstance = this.$refs.myForm.getComponentByName(
       "projectName"
     );
     this.projectNameInstance.jqxInput("disabled", true);
-    this.orderAmountInstance = this.$refs.myForm.getComponentByName(
-      "orderAmount"
-    );
-
+    // 送货日期
     this.deliveryDateInstance = this.$refs.myForm.getComponentByName(
       "deliveryDate"
     );
+    // 送货金额
+    const $deliveryAmount = this.$refs.myForm.getComponentByName(
+      "deliveryAmount"
+    );
+    this.deliveryAmountInstance = $deliveryAmount;
+    // 安装费
+    const $installFee = this.$refs.myForm.getComponentByName("installFee");
+    // 物管费
     const $logManageFee = this.$refs.myForm.getComponentByName(
       "logisticsManagementFee"
     );
     this.logisticsManagementFeeInstance = $logManageFee;
+    // 运费
     const $freight = this.$refs.myForm.getComponentByName("freight");
     this.freightInstance = $freight;
+    // 税金
     const $tax = this.$refs.myForm.getComponentByName("tax");
     this.taxInstance = $tax;
+    // 质保金
     const $warranty = this.$refs.myForm.getComponentByName("warranty");
     this.warrantyInstance = $warranty;
-    this.deliveryAmountInstance = this.$refs.myForm.getComponentByName(
-      "deliveryAmount"
-    );
-    const $installFee = this.$refs.myForm.getComponentByName("installFee");
+    // 安装费
     this.installFeeInstance = $installFee;
-    this.deliveryReservePriceInstance = this.$refs.myForm.getComponentByName(
+    // 送货底价
+    const $deliveryReservePrice = this.$refs.myForm.getComponentByName(
       "deliveryReservePrice"
     );
-
+    this.deliveryReservePriceInstance = $deliveryReservePrice;
     // 验证规则
     this.$refs.myValidator.rules = [
       {
@@ -277,6 +285,35 @@ export default {
         },
       },
     ];
+    $deliveryAmount
+      .add($logManageFee)
+      .add($freight)
+      .add($tax)
+      .add($warranty)
+      .add($installFee)
+      .on("change", function () {
+        const deliveryAmount = $deliveryAmount.val();
+        const logManageFee = $logManageFee.val();
+        const freight = $freight.val();
+        const tax = $tax.val();
+        const warranty = $warranty.val();
+        const installFee = $installFee.val();
+
+        let dlvManageFee = calc_ord_misc(deliveryAmount, logManageFee);
+        let dlvFreight = calc_ord_misc(deliveryAmount, freight);
+        let dlvTax = calc_ord_misc(deliveryAmount, tax);
+        let dlvWarranty = calc_ord_misc(deliveryAmount, warranty);
+
+        let dlvRsvP = calc_ord_rsv_p(
+          deliveryAmount,
+          dlvManageFee,
+          dlvFreight,
+          dlvTax,
+          dlvWarranty,
+          installFee
+        );
+        $deliveryReservePrice.jqxNumberInput("setDecimal", dlvRsvP);
+      });
     // 提交并验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
     confirmBtn[0].addEventListener("click", (event) => {
@@ -284,9 +321,10 @@ export default {
     });
   },
   methods: {
-    onValidationSuccess(event) {},
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
+      this.clearForm();
+      // 添加送货
       if (params[0] == ADD_DELIVERY) {
         const orderInfo = params[1];
         this.$nextTick(() => {
@@ -304,7 +342,83 @@ export default {
           );
         });
       }
+      // 修改送货
+      if (params[0] == EDIT_DELIVERY) {
+        const data = params[1];
+        this.orderNumberInstance.val(data["order_number"]);
+        this.projectNameInstance.val(data["project_name"]);
+        this.deliveryAmountInstance.jqxNumberInput(
+          "setDecimal",
+          data["delivery_amount"]
+        );
+        this.deliveryDateInstance.jqxDateTimeInput(
+          "setDate",
+          new Date(data["delivery_date"])
+        );
+        this.logisticsManagementFeeInstance.val(
+          data["logistics_management_fee"]
+        );
+        this.freightInstance.val(data["freight"]);
+        this.taxInstance.val(data["tax"]);
+        this.warrantyInstance.val(data["warranty"]);
+        this.installFeeInstance.jqxNumberInput(
+          "setDecimal",
+          data["install_fee"]
+        );
+        this.deliveryReservePriceInstance.jqxNumberInput(
+          "setDecimal",
+          data["delivery_reserve_price"]
+        );
+        $("#dlvDtlId").val(data["id"]);
+      }
       this.$refs.myWindow.open();
+    },
+    onValidationSuccess(event) {
+      const formData = {};
+      formData["orderNumber"] = this.orderNumberInstance.val();
+      formData["deliveryAmount"] = this.deliveryAmountInstance.val();
+      formData[
+        "deliveryReservePrice"
+      ] = this.deliveryReservePriceInstance.val();
+      formData["deliveryDate"] = this.deliveryDateInstance.val();
+      formData["id"] = $("#dlvDtlId").val();
+      const title = this.$refs.myWindow.title;
+      if (title == EDIT_DELIVERY) {
+        this.update(formData);
+      } else {
+        this.add(formData);
+      }
+    },
+    add(formData) {
+      const params = {
+        jsonParams: JSON.stringify(formData),
+      };
+      addDelivery(params).then((res) => {
+        this.$refs.myWindow.close();
+        this.$parent.refreshChild();
+      });
+    },
+    update(formData) {
+      const params = {
+        jsonParams: JSON.stringify(formData),
+      };
+      updateDelivery(params).then((res) => {
+        this.$refs.myWindow.close();
+        this.$parent.refreshChild();
+      });
+    },
+    clearForm() {
+      this.orderNumberInstance.val("");
+      this.projectNameInstance.val("");
+      this.deliveryAmountInstance.jqxNumberInput("setDecimal", 0);
+      this.deliveryDateInstance.val(new Date());
+      this.logisticsManagementFeeInstance.val("");
+      this.freightInstance.val("");
+      this.taxInstance.val("");
+      this.warrantyInstance.val("");
+      this.installFeeInstance.jqxNumberInput("setDecimal", 0);
+      this.deliveryReservePriceInstance.jqxNumberInput("setDecimal", 0);
+      $("#dlvDtlId").val("");
     },
   },
 };

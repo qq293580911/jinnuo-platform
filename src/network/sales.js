@@ -1,8 +1,7 @@
 import {
   request
 } from "@/network/request"
-
-// import LAY_EXCEL from 'layexcel'
+import LAY_EXCEL from 'lay-excel';
 
 export function showMachineList(source, params) {
   return request({
@@ -24,30 +23,27 @@ export function showTubeList(source, params) {
 
 export function exportTubeData(rowsData, columns) {
 
-  console.log(LAY_EXCEL)
+  const headTitle = {}
+  const headFields = []
+  const columnWidths = {}
 
-  const headTitle = {};
-  const head = [];
-  const columnWidths = [];
-
-  columns.records.forEach(function (currentValue, index) {
-    const text = currentValue.text;
-    const dataField = currentValue.datafield;
-    head.push(dataField);
+  columns.records.forEach((item, index) => {
+    const text = item['text']
+    const dataField = item['datafield']
     headTitle[dataField] = text;
-    columnWidths[String.fromCharCode(64 + index + 1)] = currentValue['width'];
-  });
+    headFields.push(dataField);
+    columnWidths[`${String.fromCharCode(64 + index + 1)}`] = Math.round(item['width'] / 2);
+  })
 
-  let data = [];
-  rowsData.forEach(function (currentValue) {
+  let data = rowsData.map(item => {
     const map = {};
-    head.forEach(function (field) {
-      map[field] = currentValue[field];
+    headFields.forEach((field) => {
+      map[field] = item[field];
     });
-    data.push(map);
-  });
+    return map
+  })
 
-  data = layexcel.filterExportData(data, {
+  data = LAY_EXCEL.filterExportData(data, {
     'salesman_company': 'salesman_company',
     'salesman_agency': 'salesman_agency',
     'salesman': 'salesman',
@@ -78,7 +74,10 @@ export function exportTubeData(rowsData, columns) {
     }
   });
 
-  data.unshift(headTitle); //标题
+  console.log(data)
+  //插入标题
+  data.unshift(headTitle);
+  // 插入聚合行
   data.push({
     'salesman_company': '合计',
     'salesman_agency': '',
@@ -86,27 +85,27 @@ export function exportTubeData(rowsData, columns) {
     'is_resign': '',
     'contract_count': {
       t: 'n',
-      f: 'SUM(E2:E' + ([data.length]) + ')'
+      f: `SUM(E2:E${data.length})`
     },
     'contract_amount': {
       t: 'n',
-      f: 'SUM(E2:E' + ([data.length]) + ')'
+      f: `SUM(F2:F${data.length})`
     },
     'order_area': {
       t: 'n',
-      f: 'SUM(G2:G' + ([data.length]) + ')'
+      f: `SUM(G2:G${data.length})`
     },
     'delivery_area': {
       t: 'n',
-      f: 'SUM(H2:H' + ([data.length]) + ')'
+      f: `SUM(H2:H${data.length})`
     }
   });
 
-  var createCellPos = function (n) {
-    var ordA = 'A'.charCodeAt(0);
-    var ordZ = 'Z'.charCodeAt(0);
-    var len = ordZ - ordA + 1;
-    var s = "";
+  const createCellPos = function (n) {
+    const ordA = 'A'.charCodeAt(0);
+    const ordZ = 'Z'.charCodeAt(0);
+    const len = ordZ - ordA + 1;
+    let s = "";
     while (n >= 0) {
       s = String.fromCharCode(n % len + ordA) + s;
       n = Math.floor(n / len) - 1;
@@ -114,8 +113,10 @@ export function exportTubeData(rowsData, columns) {
     return s;
   };
 
+  // console.log(data)
+
   // 2. 调用设置样式的函数，传入设置的范围，支持回调
-  LAY_EXCEL.setExportCellStyle(data, 'A1:' + createCellPos(Object.keys(data[0]).length - 1) + [data.length], {
+  LAY_EXCEL.setExportCellStyle(data, `A1:${createCellPos(Object.keys(data[0]).length - 1) + [data.length]}`, {
     s: {
       font: {
         name: '宋体',
@@ -145,7 +146,6 @@ export function exportTubeData(rowsData, columns) {
     return newCell;
   });
 
-
   LAY_EXCEL.setExportCellStyle(data, 'A1:' + createCellPos(Object.keys(data[0]).length - 1) + '1', {
     s: {
       fill: {
@@ -156,26 +156,28 @@ export function exportTubeData(rowsData, columns) {
     }
   });
 
-  var colConfig = LAY_EXCEL.makeColConfig({
+  const colConfig = LAY_EXCEL.makeColConfig({
     'A': 80,
     'F': 80
   }, 80);
 
-  var end = data.length;
-  var rowConfig = LAY_EXCEL.makeRowConfig({
+  const end = data.length;
+  const rowConfig = LAY_EXCEL.makeRowConfig({
     1: 25,
     [end]: 25
   }, 25);
 
-  var mergeConf = LAY_EXCEL.makeMergeConfig([
+  const mergeConf = LAY_EXCEL.makeMergeConfig([
     ['A' + [end], 'D' + [end]]
   ]);
 
-  LAY_EXCEL.exportExcel(data, '销售统计-风管.xlsx', 'xlsx', {
-    extend: {
-      '!merges': mergeConf,
-      '!cols': colConfig,
-      '!rows': rowConfig
-    }
-  });
+  // console.log(data)
+
+  // LAY_EXCEL.exportExcel(data, '销售统计-风管.xlsx', 'xlsx', {
+  //   extend: {
+  //     '!merges': mergeConf,
+  //     '!cols': colConfig,
+  //     '!rows': rowConfig
+  //   }
+  // });
 }

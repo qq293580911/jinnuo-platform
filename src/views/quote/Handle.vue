@@ -20,7 +20,7 @@
       <!-- 左 -->
       <div data-container="LeftPanel">左</div>
       <!-- 中 -->
-      <div data-container="CenterPanel"  style=" overflow: hidden;">
+      <div data-container="CenterPanel" class="jqx-grid-content-custom">
         <div id="mainGrid"></div>
       </div>
       <!-- 右 -->
@@ -72,7 +72,7 @@ export default {
     JqxLayout,
     JqxPanel,
   },
-  data: function () {
+  data: () => {
     const that = this;
     return {
       // 工具栏
@@ -137,17 +137,15 @@ export default {
                       title: "风机选型",
                       contentContainer: "machineSelectionPanel",
                       initContent: function () {
-
                         let TopComponent = Vue.extend(MachineSelectionGridTop);
-                        new TopComponent(
-                          {}
-                        ).$mount("#machineSelectionGridTop");
+                        new TopComponent({}).$mount("#machineSelectionGridTop");
 
-                        let BottomComponent = Vue.extend(MachineSelectionGridBottom);
-                        new BottomComponent(
-                          {}
-                        ).$mount("#machineSelectionGridBottom");
-                        
+                        let BottomComponent = Vue.extend(
+                          MachineSelectionGridBottom
+                        );
+                        new BottomComponent({}).$mount(
+                          "#machineSelectionGridBottom"
+                        );
                       },
                     },
                     {
@@ -198,62 +196,8 @@ export default {
       ],
     };
   },
-  mounted() {
-    const atTree = document.getElementById("assignTypeTree");
-
-    let tree = jqwidgets.createInstance(atTree, "jqxTree", {
-      source: [
-        {
-          id: 1,
-          parentid: 0,
-          text: "节点1",
-          items: [
-            {
-              id: 2,
-              parentid: 1,
-              text: "节点2",
-            },
-          ],
-        },
-      ],
-      width: 158,
-      height: 300,
-    });
-
-    // const source = {
-    //   datatype: "json",
-    //   datafields: [
-    //     { name: "id", map: "at_id", type: "number" },
-    //     { name: "parentid", map: "at_pid", type: "number" },
-    //     { name: "text", map: "at_name", type: "string" },
-    //     { name: "value", map: "at_id", type: "string" },
-    //   ],
-    //   id: "id",
-    //   type: "json",
-    //   url: "/productCateg/getAssignTypeData.do",
-    // };
-    // const dataAdapter = new jqx.dataAdapter(source, {
-    //   loadServerData(serverdata, source, callback) {
-    //     getAssignType(source.url, source, serverdata).then((res) => {
-    //       callback({
-    //         records: res.records,
-    //       });
-    //     });
-    //   },
-    //   beforeLoadComplete(records) {
-    //     console.log(records);
-    //     records = dataAdapter.getRecordsHierarchy("id", "parentid", "items", [
-    //       { name: "text", map: "label" },
-    //     ]);
-    //     let tree = jqwidgets.createInstance("#assignTypeTree", "jqxTree", {
-    //       source: records,
-    //       width: 158,
-    //       height: 300,
-    //     });
-    //   },
-    // });
-    // dataAdapter.dataBind();
-  },
+  created() {},
+  mounted() {},
   methods: {
     initTopTools: function (type, index, tool, menuToolIninitialization) {
       if (index != this.topToolsIndex) {
@@ -366,6 +310,52 @@ export default {
             jqwidgets.createInstance(dropDownButton, "jqxDropDownButton", {
               width: 161,
             });
+            const source = {
+              datatype: "json",
+              datafields: [
+                { name: "id", map: "at_id", type: "number" },
+                { name: "parentid", map: "at_pid", type: "number" },
+                { name: "text", map: "at_name", type: "string" },
+                { name: "value", map: "at_id", type: "string" },
+              ],
+              id: "id",
+              type: "json",
+              url: "/productCateg/getAssignTypeData.do",
+            };
+            const dataAdapter = new jqx.dataAdapter(source, {
+              loadServerData(serverdata, source, callback) {
+                getAssignType(source.url, source, serverdata).then((res) => {
+                  callback({
+                    records: res.records,
+                  });
+                });
+              },
+              beforeLoadComplete(records) {},
+              loadComplete(records) {
+                records = dataAdapter.getRecordsHierarchy(
+                  "id",
+                  "parentid",
+                  "items",
+                  [{ name: "text", map: "label" }]
+                );
+                console.log(records)
+                $('#assignTypeTree').jqxTree({
+                   source: records,
+                    width: 158,
+                    height: 300,
+                })
+                // let tree = jqwidgets.createInstance(
+                //   "#assignTypeTree",
+                //   "jqxTree",
+                //   {
+                //     source: records,
+                //     width: 158,
+                //     height: 300,
+                //   }
+                // );
+              },
+            });
+            dataAdapter.dataBind();
             break;
           case 1:
             const assignContainer = document.createElement("div");
@@ -577,9 +567,10 @@ export default {
 </script>
 
 <style scoped>
-
 .layout {
   height: calc(100vh - 170px);
 }
-
+::v-deep .jqx-widget-content{
+  overflow: hidden;
+}
 </style>

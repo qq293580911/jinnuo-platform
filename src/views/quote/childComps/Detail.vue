@@ -30,7 +30,7 @@ import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
 
 import { getLocalization } from "@/common/localization.js";
-import { formatFilter } from "@/common/util.js";
+import { formatFilter, dataExport } from "@/common/util.js";
 import { Message } from "@/common/const.js";
 import { showDetailList } from "@/network/quote.js";
 export default {
@@ -127,13 +127,6 @@ export default {
           cellsalign: "center",
           width: 100,
         },
-        // {
-        //     text: '组织',
-        //     datafield: 'salesman_organization',
-        //     align: 'center',
-        //     cellsalign: 'center',
-        //     width: 100
-        // },
         {
           text: "办事处",
           datafield: "salesman_agency",
@@ -356,6 +349,11 @@ export default {
         jqwidgets.createInstance("#exportButton", "jqxTooltip", {
           content: "导出",
           position: "bottom",
+        });
+        exportButton.addEventHandler("click", () => {
+          const columns = this.$refs.myGrid.columns;
+          const rowsData = this.$refs.myGrid.getrows();
+          dataExport("报价数据汇总.xlsx", columns, rowsData);
         });
       }
 

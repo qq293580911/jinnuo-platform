@@ -338,7 +338,6 @@ export default {
                   "items",
                   [{ name: "text", map: "label" }]
                 );
-                console.log(records)
                 $('#assignTypeTree').jqxTree({
                    source: records,
                     width: 158,

@@ -33,7 +33,7 @@ export function addOrder(params) {
   return request({
     url: '/ordDtl/addOrderDetail.do',
     method: 'Post',
-    data:params
+    data: params
   })
 }
 
@@ -41,38 +41,39 @@ export function deleteOrder(params) {
   return request({
     url: '/ordDtl/deleteOrderDetailById.do',
     method: 'Delete',
-    data:params
+    data: params
   })
 }
 
-export function updateOrder(params) {  
+export function updateOrder(params) {
   return request({
     url: '/ordDtl/updateOrderDetail.do',
     method: 'Put',
-    data:params
+    data: params
   })
 }
 
-export function importOrder(params) {  
+export function importOrder(params) {
   return request({
-    url:'/ordDtl/importOrderDetail.do',
-    method:'Post',
-    data:params
+    url: '/ordDtl/importOrderDetail.do',
+    method: 'Post',
+    data: params
   })
 }
 
-export function batahUpdateOrder(params) {  
+export function batahUpdateOrder(params) {
   return request({
     url: '/ordDtl/syncToServer.do',
     method: 'Put',
-    data:params
+    data: params
   })
 }
 
-export function batchUpdateOrderByOrderNumber(params) {  
+export function batchUpdateOrderByOrderNumber(params) {
   return request({
-    url: '/ordDtl/batchUpdateOrderDetailByField.do',
+    url: '/ordDtl/batchUpdateOrderDetailByOrderNumber.do',
     method: 'Put',
-    data:params
+    data: params
   })
 }
+

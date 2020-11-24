@@ -247,7 +247,6 @@ export default {
       });
     },
     refresh() {
-      console.log("刷新");
       this.$refs.myGrid.updatebounddata();
     },
   },

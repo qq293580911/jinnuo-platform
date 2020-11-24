@@ -274,7 +274,7 @@ export default {
                     }
                   );
                   priceModelSelector.addEventHandler("select", (event) => {
-                    console.log(event);
+
                   });
                 });
               },

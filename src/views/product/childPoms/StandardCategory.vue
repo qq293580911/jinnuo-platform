@@ -203,7 +203,6 @@ export default {
           this.formValues.id = item.id;
           const $newName = this.$refs.myForm.getComponentByName("newName");
           this.formValues.name = $newName.val();
-          console.log(this.formValues);
           this.updateCategory( this.formValues)
         } else {
           this.$message.warning(Message.NO_NODE_SELECTED);

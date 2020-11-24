@@ -243,8 +243,6 @@ export default {
       this.$refs.myWindow.setTitle(params[0]);
       if (params[0] == EDIT_MACHINE_PRICE) {
         const data = params[1];
-        console.log(data);
-
         const $id = this.$refs.myForm.getComponentByName("id");
 
         // 设置产品

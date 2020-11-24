@@ -278,7 +278,7 @@ export default {
           return false;
         }
         const rowData = this.$refs.myGrid.getrowdata(index);
-        console.log(rowData);
+
         this.$refs.pricePlanWindow.open("修改价格方案", rowData);
       });
 

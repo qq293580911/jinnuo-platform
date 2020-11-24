@@ -42,7 +42,6 @@ export default {
       showMoreContainer.style.cssText = "float: right;cursor: pointer;";
       buttonsContainer.appendChild(showMoreContainer);
       //创建按钮
-      console.log()
       let showMoreButton = jqwidgets.createInstance("#showMore", "jqxButton", {
         imgSrc: require(`@/assets/iconfont/custom/show-more.svg`),
       });

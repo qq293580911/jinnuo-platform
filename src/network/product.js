@@ -191,7 +191,6 @@ export function addMachinePrice(params) {
 }
 
 export function deleteMachinePrice(params) {  
-  console.log(params)
   return request({
     url: '/productPrice/delMachinePrice.do',
     method:'delete',

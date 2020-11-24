@@ -12,6 +12,7 @@
       :id="fileId"
       multiple
       class="file"
+      @change="changed($event)"
       :style="{
         width: getWidth,
         height: getHeight,
@@ -54,7 +55,7 @@ export default {
   data() {
     return {
       inputValue: "",
-      fileCotent: [],
+      fileCotent: {},
     };
   },
   props: {
@@ -74,6 +75,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    fieldsCofig:{
+      type:Object,
+      default:{}
+    }
   },
   created() {
     this.textId = "textInput" + JQXLite.generateID();
@@ -99,51 +104,35 @@ export default {
         });
         break;
     }
-
-    // file绑定change事件
-    const file = document.getElementById(that.fileId);
-    file.addEventListener("change", function (event) {
-      let fileName = event.target.value;
-      fileName = fileName.substring(
-        fileName.lastIndexOf("\\") + 1,
-        fileName.length
-      );
-      // 文件名称
-      const input = document.getElementById(that.textId);
-      input.value = fileName;
-      that.inputValue = fileName;
-      // 文件内容
-      const files = event.target.files;
-      LAY_EXCEL.importExcel(
-        files,
-        {
-          fields: {
-            serialNumber: "A",
-            productName: "B",
-            specModel: "C",
-            unit: "D",
-            quantity: "E",
-            unitPrice: "F",
-            totalPrice: "G",
-            remark: "H",
-            selection: "I",
-            transfer: "J",
-            formula: "K",
-            designateType: "L",
-          },
-        },
-        function (data, book) {
-          console.log(data);
-        }
-      );
-
-      // this.value = null;
-    });
   },
   methods: {
     open() {
       const file = document.getElementById(this.fileId);
       file.click();
+    },
+    changed(event) {
+      const that = this
+      // 文件名称
+      let fileName = event.target.value;
+      fileName = fileName.substring(
+        fileName.lastIndexOf("\\") + 1,
+        fileName.length
+      );
+
+      const input = document.getElementById(this.textId);
+      input.value = fileName;
+      this.inputValue = fileName;
+      // 文件内容
+      const files = event.target.files;
+      LAY_EXCEL.importExcel(
+        files,
+        that.fieldsCofig,
+        function (data, book) {
+          that.fileCotent = data
+          that.$emit('changed',data)
+        }
+      );
+      //this.value = null;
     },
   },
 };

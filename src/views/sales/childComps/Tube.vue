@@ -23,13 +23,11 @@
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
-// import MachineWindow from "./MachineWindow";
-// import layexcel from 'layexcel'
 
-import { formatFilter } from "@/common/util.js";
+import { formatFilter,dataExport } from "@/common/util.js";
 import { Message } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
-import { showTubeList,exportTubeData } from "@/network/sales.js";
+import { showTubeList } from "@/network/sales.js";
 export default {
   name: "SalesTube",
   components: {
@@ -253,7 +251,7 @@ export default {
       exportButton.addEventHandler("click", (event) => {
         let rowsData = this.$refs.myGrid.getrows();
         let columns = this.$refs.myGrid.columns;
-        exportTubeData(rowsData, columns);
+        dataExport('销售统计-风管.xlsx',columns,rowsData)
       });
 
       reloadButton.addEventHandler("click", (event) => {

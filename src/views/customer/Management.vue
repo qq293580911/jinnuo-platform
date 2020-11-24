@@ -213,7 +213,7 @@ export default {
           return false;
         }
         const rowData = this.$refs.myGrid.getrowdata(index);
-        console.log(rowData);
+
         this.$refs.myWindow.open("修改客户信息", rowData);
       });
 

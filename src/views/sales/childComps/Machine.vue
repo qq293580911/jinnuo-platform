@@ -23,9 +23,8 @@
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
-// import MachineWindow from "./MachineWindow";
 
-import { formatFilter } from "@/common/util.js";
+import { formatFilter, dataExport } from "@/common/util.js";
 import { Message } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import { showMachineList } from "@/network/sales.js";
@@ -215,13 +214,17 @@ export default {
         "overflow: hidden; position: relative; margin: 5px;";
       let startDateContainer = document.createElement("div");
       let endDateContainer = document.createElement("div");
+      let exportButtonContainer = document.createElement("div");
       let reloadButtonContainer = document.createElement("div");
       startDateContainer.id = "startDate";
       endDateContainer.id = "endDate";
+      exportButtonContainer.id = "exportButton";
       reloadButtonContainer.id = "reloadButton";
       startDateContainer.style.cssText =
         "float: left; margin-left: 5px;cursor: pointer;";
       endDateContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor: pointer;";
+      exportButtonContainer.style.cssText =
         "float: left; margin-left: 5px;cursor: pointer;";
       reloadButtonContainer.style.cssText =
         "float:right;margin-left: 5px;  cursor: pointer;";
@@ -229,6 +232,7 @@ export default {
       buttonsContainer.appendChild(startDateContainer);
       // buttonsContainer.appendChild(<span>-</span>);
       buttonsContainer.appendChild(endDateContainer);
+      buttonsContainer.appendChild(exportButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
       statusbar[0].appendChild(buttonsContainer);
       //创建部件
@@ -248,14 +252,32 @@ export default {
         value: new Date(this.params.endDate),
       });
 
+      let exportButton = jqwidgets.createInstance(
+        "#exportButton",
+        "jqxButton",
+        {
+          imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+        }
+      );
+
       startDate.addEventHandler("change", (event) => {
-        this.params.startDate = event.target.value
-        this.$refs.myGrid.updatebounddata()
+        this.params.startDate = event.target.value;
+        this.$refs.myGrid.updatebounddata();
       });
 
       endDate.addEventHandler("change", (event) => {
-        this.params.endDate = event.target.value
-        this.$refs.myGrid.updatebounddata()
+        this.params.endDate = event.target.value;
+        this.$refs.myGrid.updatebounddata();
+      });
+
+      exportButton.addEventHandler("click", (event) => {
+        let rowsData = this.$refs.myGrid.getrows();
+        let columns = this.$refs.myGrid.columns;
+        dataExport("销售统计-设备.xlsx", columns, rowsData);
+      });
+
+      reloadButton.addEventHandler("click", (event) => {
+        this.$refs.myGrid.updatebounddata();
       });
 
       let reloadButton = jqwidgets.createInstance(

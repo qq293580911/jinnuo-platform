@@ -37,8 +37,9 @@ import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 
 import CustomUploader from "@/components/common/CustomUploader";
-
 import { getLocalization } from "@/common/localization.js";
+import { Message } from "@/common/const";
+import { calc_ord_misc, calc_ord_rsv_p } from "@/common/util";
 import { importOrder, batchUpdateOrderByOrderNumber } from "@/network/order";
 export default {
   components: {
@@ -145,7 +146,7 @@ export default {
         },
       ],
       dataType: "json",
-      localData: [],
+      localdata: [],
     };
   },
   data() {
@@ -154,7 +155,7 @@ export default {
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
         beforeLoadComplete(records) {
-          const salesmans = this.$store.state.salesmans;
+          const salesmans = that.$store.state.salesmans;
           records.map((item) => {
             const ordAmt = item["order_amount"];
             const logManageFee = item["logistics_management_fee"];
@@ -196,6 +197,7 @@ export default {
           width: 100,
           cellclassname: function (row, columnfield, value, data) {
             if (/^设备$/.test(value) == false) {
+              that.allowedFormat = false;
               return "yellow";
             }
             return "";
@@ -210,6 +212,7 @@ export default {
           cellclassname: function (row, columnfield, value, data) {
             let r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/);
             if (r == null) {
+              that.allowedFormat = false;
               return "yellow";
             }
             return "";
@@ -223,6 +226,7 @@ export default {
           width: 80,
           cellclassname: function (row, columnfield, value, data) {
             if (data["salesman"] == null) {
+              that.allowedFormat = false;
               return "yellow";
             }
             return "";
@@ -334,10 +338,91 @@ export default {
           width: 80,
         },
       ],
+      fileContent: [],
+      startRow: 0,
+      endRow: 0,
+      allowedFormat: true,
     };
   },
+  watch: {
+    startRow() {
+      if (this.endRow < this.startRow) {
+        this.$message.warning(Message.END_ROW_LESS_THAN_START_ROW);
+      } else {
+        const data = this.fileContent.slice(this.startRow, this.endRow);
+        this.source.localdata = data;
+        this.$refs.myGrid.updatebounddata();
+      }
+    },
+    endRow() {
+      if (this.endRow < this.startRow) {
+        this.$message.warning(Message.END_ROW_LESS_THAN_START_ROW);
+      } else {
+        const data = this.fileContent.slice(this.startRow, this.endRow);
+        this.source.localdata = data;
+        this.$refs.myGrid.updatebounddata();
+      }
+    },
+  },
+  mounted() {
+    const that = this;
+    // 上传器绑定值改变事件
+    this.uploaderInstance.$on("changed", (data) => {
+      let sheetName = Object.keys(data[0])[0];
+      const fileContent = data[0][sheetName];
+      fileContent.forEach(function (value, index) {
+        if (index > 0) {
+          value["orderDate"] = LAY_EXCEL.dateCodeFormat(
+            value["orderDate"],
+            "YYYY-MM-DD"
+          );
+        }
+      });
+      that.fileContent = fileContent;
+      that.source.localdata = that.fileContent;
+      that.$refs.myGrid.updatebounddata();
+    });
+    // 开始行绑定选择事件
+    this.startRowInstance.addEventHandler("change", (event) => {
+      const startRow = event.args.value;
+      that.startRow = startRow;
+    });
+    // 结束行绑定选择事件
+    this.endRowInstance.addEventHandler("change", (event) => {
+      const endRow = event.args.value;
+      that.endRow = endRow;
+    });
+    // 确认导入按钮绑定点击事件
+    this.importInstance.addEventHandler("click", () => {
+      if (this.fileContent.length == 0) {
+        this.$message.warning(Message.NOT_FOUND_CONTENT);
+        return false;
+      }
+      if (this.allowedFormat == false) {
+        this.$message.warning(Message.NOT_ALLOWED_FORMAT);
+        return false;
+      }
+      // 导入前再确认
+      this.$confirm({
+        title: `${Message.CONFIRM_DELETE}`,
+        okText: "确认",
+        cancelText: "取消",
+        centered: true,
+        content: (h) => <div style="color:red;"></div>,
+        onOk() {
+          that.importOrder()
+        },
+        onCancel() {},
+        class: "test",
+      });
+    });
+    // 批量修改按钮绑定点击事件
+    this.batchUpdateInstance.addEventHandler("click", () => {
+      this.batchUpdateOrder()
+    });
+  },
   methods: {
-    createButtonsContainers: (toolbar) => {
+    createButtonsContainers: function (toolbar) {
       let buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
@@ -350,15 +435,34 @@ export default {
       uploader.id = "uploader";
       uploadContainer.appendChild(uploader);
       let uploaderComponent = Vue.extend(CustomUploader);
-      let uploaderInstance = new uploaderComponent({
+      this.uploaderInstance = new uploaderComponent({
         propsData: {
           width: 190,
           height: 25,
           type: "jqxInput",
           showUploadButton: true,
+          fieldsCofig: {
+            fields: {
+              orderDate: "A",
+              salesmanName: "B",
+              contractNumber: "C",
+              orderNumber: "D",
+              projectName: "E",
+              orderAmount: "F",
+              considerationCommissionOrderAmount: "G",
+              notConsiderationCommissionOrderAmount: "H",
+              logisticsManagementFee: "I",
+              freight: "J",
+              tax: "K",
+              warranty: "L",
+              orderArea: "M",
+              remark: "N",
+              considerationCommissionStatus: "O",
+              actualFreight: "P",
+            },
+          },
         },
       }).$mount("#uploader");
-
       // 开始行
       let spanContainer = document.createElement("span");
       spanContainer.classList.add("tool-item");
@@ -368,7 +472,7 @@ export default {
       startRowContainer.classList.add("tool-item");
       buttonsContainer.appendChild(spanContainer);
       buttonsContainer.appendChild(startRowContainer);
-      let startRowInstance = jqwidgets.createInstance(
+      this.startRowInstance = jqwidgets.createInstance(
         "#startRow",
         "jqxNumberInput",
         {
@@ -389,7 +493,7 @@ export default {
       endRowContainer.id = "endRow";
       endRowContainer.classList.add("tool-item");
       buttonsContainer.appendChild(endRowContainer);
-      let endRowInstance = jqwidgets.createInstance(
+      this.endRowInstance = jqwidgets.createInstance(
         "#endRow",
         "jqxNumberInput",
         {
@@ -412,10 +516,14 @@ export default {
         "jqxButton",
         { height: 25, width: 40, value: "确认" }
       );
-      jqwidgets.createInstance("#confirmImport", "jqxTooltip", {
-        content: "确认导入",
-        position: "bottom",
-      });
+      this.importInstance = jqwidgets.createInstance(
+        "#confirmImport",
+        "jqxTooltip",
+        {
+          content: "确认导入",
+          position: "bottom",
+        }
+      );
 
       // 批量修改按钮
       let batchUpdateContainer = document.createElement("div");
@@ -427,16 +535,20 @@ export default {
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/batch-update.svg`) }
       );
-      jqwidgets.createInstance("#batchUpdateButton", "jqxTooltip", {
-        content: "批量更新",
-        position: "bottom",
-      });
+      this.batchUpdateInstance = jqwidgets.createInstance(
+        "#batchUpdateButton",
+        "jqxTooltip",
+        {
+          content: "批量更新",
+          position: "bottom",
+        }
+      );
       // 字段选择
       let fieldSelection = document.createElement("div");
       fieldSelection.id = "fieldSelection";
       fieldSelection.classList.add("tool-item");
       buttonsContainer.appendChild(fieldSelection);
-      let fieldSelectionInstance = jqwidgets.createInstance(
+      this.fieldSelectionInstance = jqwidgets.createInstance(
         "#fieldSelection",
         "jqxDropDownList",
         {
@@ -465,15 +577,9 @@ export default {
     },
     batchUpdateOrder() {
       const rowsData = this.$refs.myGrid.getrows();
-      const field = $("#fieldSelection").val();
-      const arr = rowsData.map((item) => {
-        const map = {};
-        map["order_number"] = item["order_number"];
-        map[field] = item[field];
-      });
       const params = {
         jsonParams: JSON.stringify({
-          items: arr,
+          items: rowsData,
         }),
       };
       batchUpdateOrderByOrderNumber(params).then((res) => {

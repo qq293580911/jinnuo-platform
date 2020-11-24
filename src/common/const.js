@@ -19,7 +19,10 @@ export const Message = {
   UNLABLE_DELETE_HAS_ITEMS: '无法删除包含子集的元素',
   NO_REPEAT_SUBMIT: '不要重复提交',
   CONTAINS_INVALID_SYMBOL: '包含无效字符',
-  END_DATE_LESS_THAN_START_DATE: '结束日期不能小于开始日期'
+  END_DATE_LESS_THAN_START_DATE: '结束日期不能小于开始日期',
+  END_ROW_LESS_THAN_START_ROW:'结束行不能小于开始行',
+  NOT_FOUND_CONTENT:'未发现内容',
+  NOT_ALLOWED_FORMAT:'不允许的格式'
 };
 
 export const Module = {

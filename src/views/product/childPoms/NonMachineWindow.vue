@@ -104,7 +104,7 @@ export default {
 
             //树绑定选择事件
             dropDownTree.addEventHandler("select", (event) => {
-              console.log(event);
+
             });
           },
         },

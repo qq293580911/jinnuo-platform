@@ -59,7 +59,7 @@ import OrderWindow from "../childComps/OrderWindow";
 import DeliveryWindow from "@/components/content/delivery/DeliveryWindow";
 
 import { getLocalization } from "@/common/localization.js";
-import { formatFilter, calc_ord_misc, calc_ord_rsv_p } from "@/common/util.js";
+import { formatFilter, calc_ord_misc, calc_ord_rsv_p,dataExport } from "@/common/util.js";
 import {
   Message,
   ADD_ORDER,
@@ -72,7 +72,7 @@ import {
   showMachineOrderList,
   getDeliveryByOrderNumber,
   deleteOrder,
-  batahUpdateOrder,
+  batahUpdateOrder
 } from "@/network/order.js";
 import { deleteDelivery } from "@/network/delivery.js";
 export default {
@@ -1116,6 +1116,9 @@ export default {
             imgSrc: require(`@/assets/iconfont/custom/export.svg`),
           }
         );
+        exportButton.addEventHandler("click", () => {
+          this.exportToExcel();
+        });
         jqwidgets.createInstance("#exportButton", "jqxTooltip", {
           content: "导出",
           position: "bottom",
@@ -1139,6 +1142,11 @@ export default {
       reloadButton.addEventHandler("click", (event) => {
         this.$refs.myGrid.updatebounddata();
       });
+    },
+    exportToExcel() {
+      const columns = this.$refs.myGrid.columns;
+      const rowsData = this.$refs.myGrid.getrows();
+      dataExport('下单详细数据汇总.xlsx',columns,rowsData)
     },
     cellClass(row, columnfield, value) {
       let deliveryDate = this.$refs.myGrid.getcellvalue(row, "delivery_date");
@@ -1279,7 +1287,7 @@ export default {
                     }),
                   };
                   deleteDelivery(params).then((res) => {
-                    console.log(res);
+
                   });
                 },
                 onCancel() {},

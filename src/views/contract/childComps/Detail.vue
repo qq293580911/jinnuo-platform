@@ -28,7 +28,7 @@
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 
-import { formatFilter } from "@/common/util.js";
+import { formatFilter,dataExport } from "@/common/util.js";
 import { Message } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import { showContractDetails } from "@/network/contract.js";
@@ -607,7 +607,6 @@ export default {
 
       // 创建修改按钮
       if (this.hasAuthority(this, "contrDtl:update")) {
-        console.log(1);
         let editButtonContainer = document.createElement("div");
         editButtonContainer.id = "editButton";
         editButtonContainer.style.cssText = "float: left; margin-left: 5px;";
@@ -627,7 +626,6 @@ export default {
             return false;
           }
           const rowData = this.$refs.myGrid.getrowdata(index);
-          console.log(rowData);
           this.$refs.myWindow.open("修改合同信息", rowData);
         });
       }
@@ -650,6 +648,12 @@ export default {
           "jqxTooltip",
           { content: "导出", position: "bottom" }
         );
+
+        exportButton.addEventHandler('click',()=>{
+          const columns = this.$refs.myGrid.columns
+          const rowsData = this.$refs.myGrid.getrows()
+          dataExport('合同数据汇总.xlsx',columns,rowsData)
+        })
       }
       // 创建上传按钮
       if (this.hasAuthority(this, "contrAnnex:upload")) {

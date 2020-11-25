@@ -156,7 +156,7 @@ export default {
       dataAdapter: new jqx.dataAdapter(this.source, {
         beforeLoadComplete(records) {
           const salesmans = that.$store.state.salesmans;
-          records.forEach((item) => {
+          records.map((item) => {
             const ordAmt = item["order_amount"];
             const logManageFee = item["logistics_management_fee"];
             let freight = item["freight"];
@@ -349,6 +349,7 @@ export default {
       if (this.endRow < this.startRow) {
         this.$message.warning(Message.END_ROW_LESS_THAN_START_ROW);
       } else {
+        this.allowedFormat = true;
         const data = this.fileContent.slice(this.startRow, this.endRow);
         this.source.localdata = data;
         this.$refs.myGrid.updatebounddata();
@@ -358,6 +359,7 @@ export default {
       if (this.endRow < this.startRow) {
         this.$message.warning(Message.END_ROW_LESS_THAN_START_ROW);
       } else {
+        this.allowedFormat = true;
         const data = this.fileContent.slice(this.startRow, this.endRow);
         this.source.localdata = data;
         this.$refs.myGrid.updatebounddata();
@@ -383,12 +385,12 @@ export default {
       that.$refs.myGrid.updatebounddata();
     });
     // 开始行绑定选择事件
-    this.startRowInstance.addEventHandler("change", (event) => {
+    this.startRowInstance.addEventHandler("valueChanged", (event) => {
       const startRow = event.args.value;
       that.startRow = startRow;
     });
     // 结束行绑定选择事件
-    this.endRowInstance.addEventHandler("change", (event) => {
+    this.endRowInstance.addEventHandler("valueChanged", (event) => {
       const endRow = event.args.value;
       that.endRow = endRow;
     });
@@ -404,21 +406,22 @@ export default {
       }
       // 导入前再确认
       this.$confirm({
-        title: `${Message.CONFIRM_DELETE}`,
+        title: `${Message.CONFIRM_IMPORT}`,
         okText: "确认",
         cancelText: "取消",
         centered: true,
         content: (h) => <div style="color:red;"></div>,
         onOk() {
-          that.importOrder()
+          that.importOrder();
         },
         onCancel() {},
         class: "test",
+        zIndex: 1500,
       });
     });
     // 批量修改按钮绑定点击事件
     this.batchUpdateInstance.addEventHandler("click", () => {
-      this.batchUpdateOrder()
+      this.batchUpdateOrder();
     });
   },
   methods: {
@@ -443,22 +446,23 @@ export default {
           showUploadButton: true,
           fieldsCofig: {
             fields: {
-              orderDate: "A",
-              salesmanName: "B",
-              contractNumber: "C",
-              orderNumber: "D",
-              projectName: "E",
-              orderAmount: "F",
-              considerationCommissionOrderAmount: "G",
-              notConsiderationCommissionOrderAmount: "H",
-              logisticsManagementFee: "I",
-              freight: "J",
-              tax: "K",
-              warranty: "L",
-              orderArea: "M",
-              remark: "N",
-              considerationCommissionStatus: "O",
-              actualFreight: "P",
+              productType: "A",
+              orderDate: "B",
+              salesmanName: "C",
+              contractNumber: "D",
+              orderNumber: "E",
+              projectName: "F",
+              orderAmount: "G",
+              considerationCommissionOrderAmount: "H",
+              notConsiderationCommissionOrderAmount: "I",
+              logisticsManagementFee: "J",
+              freight: "K",
+              tax: "L",
+              warranty: "M",
+              installFee: "N",
+              remark: "O",
+              considerationCommissionStatus: "P",
+              actualFreight: "Q",
             },
           },
         },

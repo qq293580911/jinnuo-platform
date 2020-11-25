@@ -225,6 +225,10 @@ export default {
           width: 80,
         },
       ],
+      fileContent: [],
+      startRow: 0,
+      endRow: 0,
+      allowedFormat: true,
     };
   },
   watch: {
@@ -232,6 +236,7 @@ export default {
       if (this.endRow < this.startRow) {
         this.$message.warning(Message.END_ROW_LESS_THAN_START_ROW);
       } else {
+        this.allowedFormat = true;
         const data = this.fileContent.slice(this.startRow, this.endRow);
         this.source.localdata = data;
         this.$refs.myGrid.updatebounddata();
@@ -241,13 +246,14 @@ export default {
       if (this.endRow < this.startRow) {
         this.$message.warning(Message.END_ROW_LESS_THAN_START_ROW);
       } else {
+        this.allowedFormat = true;
         const data = this.fileContent.slice(this.startRow, this.endRow);
         this.source.localdata = data;
         this.$refs.myGrid.updatebounddata();
       }
     },
   },
-    mounted() {
+  mounted() {
     const that = this;
     // 上传器绑定值改变事件
     this.uploaderInstance.$on("changed", (data) => {
@@ -266,17 +272,17 @@ export default {
       that.$refs.myGrid.updatebounddata();
     });
     // 开始行绑定选择事件
-    this.startRowInstance.addEventHandler("change", (event) => {
+    this.startRowInstance.addEventHandler("valueChanged", (event) => {
       const startRow = event.args.value;
       that.startRow = startRow;
     });
     // 结束行绑定选择事件
-    this.endRowInstance.addEventHandler("change", (event) => {
+    this.endRowInstance.addEventHandler("valueChanged", (event) => {
       const endRow = event.args.value;
       that.endRow = endRow;
     });
     // 确认导入按钮绑定点击事件
-    this.importInstance.addEventHandler("click", () => {
+    this.confirmImportInstance.addEventHandler("click", () => {
       if (this.fileContent.length == 0) {
         this.$message.warning(Message.NOT_FOUND_CONTENT);
         return false;
@@ -287,21 +293,22 @@ export default {
       }
       // 导入前再确认
       this.$confirm({
-        title: `${Message.CONFIRM_DELETE}`,
+        title: `${Message.CONFIRM_IMPORT}`,
         okText: "确认",
         cancelText: "取消",
         centered: true,
         content: (h) => <div style="color:red;"></div>,
         onOk() {
-          that.importOrder()
+          that.importOrder();
         },
         onCancel() {},
         class: "test",
+        zIndex:1500
       });
     });
     // 批量修改按钮绑定点击事件
     this.batchUpdateInstance.addEventHandler("click", () => {
-      this.batchUpdateOrder()
+      this.batchUpdateOrder();
     });
   },
   methods: {
@@ -326,22 +333,17 @@ export default {
           showUploadButton: true,
           fieldsCofig: {
             fields: {
-              orderDate: "A",
-              salesmanName: "B",
-              contractNumber: "C",
-              orderNumber: "D",
-              projectName: "E",
-              orderAmount: "F",
-              considerationCommissionOrderAmount: "G",
-              notConsiderationCommissionOrderAmount: "H",
-              logisticsManagementFee: "I",
-              freight: "J",
-              tax: "K",
-              warranty: "L",
-              orderArea: "M",
-              remark: "N",
-              considerationCommissionStatus: "O",
-              actualFreight: "P",
+              productType: "A",
+              orderDate: "B",
+              projectName: "C",
+              salesmanName: "D",
+              contractNumber: "E",
+              orderNumber: "F",
+              orderAmount: "G",
+              orderArea: "H",
+              remark: "I",
+              considerationCommissionStatus: "J",
+              actualFright: "K",
             },
           },
         },
@@ -399,7 +401,7 @@ export default {
         "jqxButton",
         { height: 25, width: 40, value: "确认" }
       );
-      this.importInstance = jqwidgets.createInstance(
+      this.confirmImportInstance = jqwidgets.createInstance(
         "#confirmImport",
         "jqxTooltip",
         {
@@ -445,6 +447,18 @@ export default {
       this.$refs.myWindow.setTitle(IMPORT_ORDER);
       this.$refs.myWindow.open();
     },
+    importOrder() {
+      const rowsData = this.$refs.myGrid.getrows();
+      const params = {
+        jsonParams: JSON.stringify({
+          items: rowsData,
+        }),
+      };
+      importOrder(params).then((res) => {
+        this.$refs.myWindow.close();
+        this.$parent.refresh();
+      });
+    },
   },
 };
 </script>
@@ -454,5 +468,8 @@ export default {
   margin-right: 5px;
   display: inline-block;
   vertical-align: middle;
+}
+::v-deep .jqx-window{
+  z-index:500;
 }
 </style>

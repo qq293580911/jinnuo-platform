@@ -23,30 +23,66 @@
       :showstatusbar="true"
       :showaggregates="true"
       :statusbarheight="30"
+      :rowdetails="true"
+      :initrowdetails="initrowdetails"
+      :rowdetailstemplate="rowdetailstemplate"
+      @cellclick="onCellclick($event)"
     >
     </JqxGrid>
+    <JqxMenu
+      ref="jqxMenu"
+      :mode="'popup'"
+      :autoOpenPopup="false"
+      :width="120"
+      :height="140"
+      @itemclick="onItemclick($event)"
+    >
+      <div>
+        <ul>
+          <li>添加送货信息</li>
+        </ul>
+      </div>
+    </JqxMenu>
     <order-window ref="orderWindow"></order-window>
     <order-import-window ref="orderImportWindow"></order-import-window>
+    <delivery-window
+      ref="deliveryWindow"
+      :install-fee-disabled="true"
+    ></delivery-window>
   </div>
 </template>
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
+import JqxMenu from "jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue";
 
 import OrderImportWindow from "../childComps/OrderImportWindowTube";
 import OrderWindow from "../childComps/OrderWindowTube";
+import DeliveryWindow from "@/components/content/delivery/DeliveryWindow";
 
 import { getLocalization } from "@/common/localization.js";
-import { formatFilter,dataExport } from "@/common/util.js";
-import { Message, ADD_ORDER, EDIT_ORDER } from "@/common/const";
-import { showTubeOrderList, deleteOrder } from "@/network/order.js";
+import { formatFilter, dataExport } from "@/common/util.js";
+import {
+  Message,
+  ADD_ORDER,
+  EDIT_ORDER,
+  ADD_DELIVERY,
+  EDIT_DELIVERY,
+} from "@/common/const";
+import {
+  showTubeOrderList,
+  deleteOrder,
+  getDeliveryByOrderNumber,
+} from "@/network/order.js";
 export default {
   name: "TubeOrder",
   components: {
+    JqxMenu,
     JqxGrid,
     OrderImportWindow,
     OrderWindow,
+    DeliveryWindow,
   },
   beforeCreate() {
     this.source = {
@@ -297,9 +333,25 @@ export default {
         });
         return columns;
       })(),
+      rowdetailstemplate: {
+        rowdetails:
+          "<div style='margin: 10px;'>" +
+          "<ul style='margin-left: 30px;'>" +
+          "<li class='title'>送货</li>" +
+          "</ul>" +
+          "<div class='deliveryGrid' style='border-style: none;'></div>" +
+          "</div>",
+        rowdetailsheight: 220,
+        rowdetailshidden: true,
+      },
     };
   },
-  mounted() {},
+  mounted() {
+    const gridId = this.$refs.myGrid.componentSelector;
+    $(gridId).on("contextmenu", () => {
+      return false;
+    });
+  },
   methods: {
     createButtonsContainers: function (toolbar) {
       const that = this;
@@ -478,10 +530,10 @@ export default {
         this.$refs.myGrid.updatebounddata();
       });
     },
-        exportToExcel() {
+    exportToExcel() {
       const columns = this.$refs.myGrid.columns;
       const rowsData = this.$refs.myGrid.getrows();
-      dataExport('下单详细数据汇总—风管.xlsx',columns,rowsData)
+      dataExport("下单详细数据汇总—风管.xlsx", columns, rowsData);
     },
     cellClass(row, columnfield, value) {
       let deliveryDate = this.$refs.myGrid.getcellvalue(row, "delivery_date");
@@ -519,6 +571,156 @@ export default {
         }
       });
       return renderString;
+    },
+    initrowdetails(index, parentElement, gridElement, record) {
+      parentElement.style["z-index"] = 1000;
+      let tabsDiv = $($(parentElement).children()[0]);
+      let childGrid = null;
+      if (tabsDiv != null) {
+        childGrid = tabsDiv.find(".deliveryGrid");
+        let container = $('<div style="margin: 5px;"></div>');
+        container.appendTo($(childGrid));
+        jqwidgets.createInstance(tabsDiv, "jqxTabs", {
+          width: "96%",
+          height: 170,
+        });
+      }
+      let orderNumber = record.order_number.toString();
+      const jsonParams = {
+        orderNumber,
+      };
+      let source = {
+        datafields: [
+          { name: "id", type: "number" },
+          { name: "order_number", type: "string" },
+          { name: "order_amount", type: "number" },
+          { name: "project_name", type: "string" },
+          { name: "delivery_date", type: "string" },
+          { name: "delivery_amount", type: "number" },
+          { name: "delivery_reserve_price", type: "number" },
+          { name: "logistics_management_fee", type: "string" },
+          { name: "freight", type: "string" },
+          { name: "tax", type: "string" },
+          { name: "warranty", type: "string" },
+        ],
+        id: "id",
+        url: "/dlvDtl/showDeliveryDetailByOrderNumber.do",
+        type: "get",
+        data: { jsonParams: JSON.stringify(jsonParams) },
+        dataType: "json",
+      };
+
+      const nestedGridAdapter = new $.jqx.dataAdapter(source, {
+        formatData: function (data) {
+          return data;
+        },
+        loadServerData: function (serverdata, source, callback) {
+          serverdata = formatFilter(serverdata);
+          getDeliveryByOrderNumber(source, serverdata).then((res) => {
+            callback({
+              records: res.rows,
+              totalrecords: res.total,
+            });
+          });
+        },
+      });
+
+      let childGridInstance = jqwidgets.createInstance(childGrid, "jqxGrid", {
+        localization: getLocalization("zh-CN"),
+        source: nestedGridAdapter,
+        width: "100%",
+        height: "100%",
+        editable: true,
+        editmode: "dblclick",
+        columns: [
+          {
+            text: "送货日期",
+            datafield: "delivery_date",
+            cellsAlign: "center",
+            align: "center",
+          },
+          {
+            text: "送货金额",
+            datafield: "delivery_amount",
+            cellsAlign: "center",
+            align: "center",
+          },
+          {
+            text: "送货底价",
+            datafield: "delivery_reserve_price",
+            cellsAlign: "center",
+            align: "center",
+          },
+          {
+            text: "",
+            datafield: "Delete",
+            columntype: "button",
+            width: 50,
+            cellsrenderer: () => {
+              return "删除";
+            },
+            buttonclick: (rowindex) => {
+              this.$confirm({
+                title: `${Message.CONFIRM_DELETE}`,
+                okText: "确认",
+                cancelText: "取消",
+                centered: true,
+                content: (h) => <div style="color:red;"></div>,
+                onOk() {
+                  let id = childGridInstance.getrowid(rowindex);
+                  const params = {
+                    jsonParams: JSON.stringify({
+                      id,
+                    }),
+                  };
+                  deleteDelivery(params).then((res) => {});
+                },
+                onCancel() {},
+                class: "test",
+              });
+            },
+          },
+          {
+            text: "",
+            datafield: "Edit",
+            columntype: "button",
+            width: 50,
+            cellsrenderer: () => {
+              return "编辑";
+            },
+            buttonclick: (rowindex) => {
+              this.childGridInstance = childGridInstance;
+              const installFee = this.$refs.myGrid.getcellvalue(
+                rowindex,
+                "install_fee"
+              );
+              let rowData = childGridInstance.getrowdata(rowindex);
+              rowData["install_fee"] = installFee;
+              this.$refs.deliveryWindow.open(EDIT_DELIVERY, rowData);
+            },
+          },
+        ],
+      });
+    },
+    onCellclick(event) {
+      if (event.args.rightclick) {
+        const clickCellInfo = event.args;
+        this.clickCellInfo = clickCellInfo;
+        let scrollTop = $(window).scrollTop();
+        let scrollLeft = $(window).scrollLeft();
+        this.$refs.jqxMenu.open(
+          parseInt(event.args.originalEvent.clientX) + 5 + scrollLeft,
+          parseInt(event.args.originalEvent.clientY) + 5 + scrollTop
+        );
+        return false;
+      }
+    },
+    onItemclick(event) {
+      const menu = event.args.textContent;
+      if (menu == ADD_DELIVERY) {
+        const rowData = this.clickCellInfo.row.bounddata;
+        this.$refs.deliveryWindow.open(ADD_DELIVERY, rowData);
+      }
     },
     refresh() {
       this.$refs.myGrid.updatebounddata();

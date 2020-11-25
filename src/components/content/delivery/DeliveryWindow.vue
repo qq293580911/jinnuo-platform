@@ -33,6 +33,9 @@ export default {
     JqxValidator,
     JqxForm,
   },
+  props:{
+    installFeeDisabled:false
+  },
   data() {
     const that = this;
     return {
@@ -135,6 +138,8 @@ export default {
               digits: 11,
               spinButtons: true,
               decimalDigits: 0,
+              disabled:that.installFeeDisabled,
+              allowNull:true
             });
           },
         },

@@ -20,22 +20,37 @@
       :selectionmode="'multiplerowsextended'"
       :virtualmode="true"
       :rendergridrows="rendergridrows"
+      :showstatusbar="true"
+      :statusbarheight="30"
+      :showaggregates="true"
+      :rowdetails="true"
+      :initrowdetails="initrowdetails"
+      :rowdetailstemplate="rowdetailstemplate"
     >
     </JqxGrid>
+    <preview-window ref="previewWindow" :src="previewUrl"></preview-window>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 
-import { formatFilter,dataExport } from "@/common/util.js";
+import PreviewWindow from "@/components/common/PreviewWindow.vue";
+
+import { formatFilter, dataExport } from "@/common/util.js";
 import { Message } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
-import { showContractDetails } from "@/network/contract.js";
+import {
+  showContractDetails,
+  getContractAnnexList,
+} from "@/network/contract.js";
+import { getAnnexUrl, downloadAnnex } from "@/network/annex.js";
 export default {
   name: "Detail",
   components: {
     JqxGrid,
+    PreviewWindow,
   },
   beforeCreate: function () {
     this.source = {
@@ -547,6 +562,12 @@ export default {
 
         return columns;
       })(),
+      rowdetailstemplate: {
+        rowdetails: "<div class='child-grid' style='margin: 10px;'></div>",
+        rowdetailsheight: 220,
+        rowdetailshidden: true,
+      },
+      previewUrl: "",
     };
   },
   methods: {
@@ -649,11 +670,11 @@ export default {
           { content: "导出", position: "bottom" }
         );
 
-        exportButton.addEventHandler('click',()=>{
-          const columns = this.$refs.myGrid.columns
-          const rowsData = this.$refs.myGrid.getrows()
-          dataExport('合同数据汇总.xlsx',columns,rowsData)
-        })
+        exportButton.addEventHandler("click", () => {
+          const columns = this.$refs.myGrid.columns;
+          const rowsData = this.$refs.myGrid.getrows();
+          dataExport("合同数据汇总.xlsx", columns, rowsData);
+        });
       }
       // 创建上传按钮
       if (this.hasAuthority(this, "contrAnnex:upload")) {
@@ -694,6 +715,201 @@ export default {
       reloadButton.addEventHandler("click", (event) => {
         this.$refs.myGrid.updatebounddata();
       });
+    },
+    initrowdetails(index, parentElement, gridElement, record) {
+      const that = this;
+      parentElement.style["z-index"] = 1000;
+      const id = record.uid.toString();
+      const childGrid = $($(parentElement).children()[0]);
+      const params = {
+        jsonParams: JSON.stringify({
+          boundId: id,
+          annexType: "合同附件",
+        }),
+      };
+      const annexSource = {
+        dataFields: [
+          { name: "annex_id", type: "number" },
+          { name: "annex_name", type: "string" },
+          { name: "bound_id", type: "number" },
+        ],
+
+        url: "/annex/showAnnexBySelectBoundId.do",
+        type: "get",
+        data: params,
+        dataType: "json",
+        id: "annex_id",
+      };
+
+      const nestedGridAdapter = new jqx.dataAdapter(annexSource, {
+        formatData: function (data) {
+          return data;
+        },
+        loadServerData: function (serverdata, source, callback) {
+          serverdata = formatFilter(serverdata);
+          getContractAnnexList(source, serverdata).then((res) => {
+            callback({
+              records: res.rows,
+              totalrecords: res.total,
+            });
+          });
+        },
+        loadComplete(records) {
+          records.records.forEach((item) => {
+            const annexName = item["annex_name"];
+            const suffix = annexName.substring(annexName.lastIndexOf(".") + 1);
+            item["file_type"] = suffix;
+          });
+        },
+      });
+
+      let childGridInstance = jqwidgets.createInstance(childGrid, "jqxGrid", {
+        localization: getLocalization("zh-CN"),
+        source: nestedGridAdapter,
+        width: "96%",
+        height: 200,
+        columns: (function () {
+          const columns = [];
+          columns.push({
+            text: "附件名称",
+            datafield: "annex_name",
+            cellsAlign: "center",
+            align: "center",
+          });
+          columns.push({
+            text: "文件类型",
+            datafield: "file_type",
+            cellsAlign: "center",
+            align: "center",
+            cellsrenderer: function (row, column, value) {
+              const imgurl = require(`@/assets/iconfont/custom/${value}.svg`);
+              const img =
+                '<div style="text-align:center;"><img style="margin: 8px;" width="16" height="16" src="' +
+                imgurl +
+                '"></div>';
+              return img;
+            },
+          });
+          if (that.hasAuthority(that, "contrAnnex:delete")) {
+            columns.push({
+              text: "",
+              datafield: "annexDelete",
+              columntype: "button",
+              width: 50,
+              cellsrenderer: function () {
+                return "删除";
+              },
+              buttonclick: function (rowindex) {
+                that.$confirm({
+                  title: `${Message.CONFIRM_DELETE}`,
+                  okText: "确认",
+                  cancelText: "取消",
+                  centered: true,
+                  content: (h) => <div style="color:red;"></div>,
+                  onOk() {
+                    // const annexId = grid.jqxGrid("getrowid", rowindex);
+                    // const jsonParams = {};
+                    // jsonParams.annexId = annexId;
+                  },
+                  onCancel() {},
+                  class: "test",
+                });
+              },
+            });
+          }
+          if (that.hasAuthority(that, "contrAnnex:preview")) {
+            columns.push({
+              text: "",
+              datafield: "annexPreview",
+              columntype: "button",
+              width: 50,
+              cellsrenderer: function () {
+                return "预览";
+              },
+              buttonclick: function (rowindex) {
+                const annexId = childGridInstance.getrowid(rowindex);
+                const params = {
+                  jsonParams: JSON.stringify({
+                    annexId,
+                  }),
+                };
+                getAnnexUrl(params).then((res) => {
+                  const suffix = res.substring(res.lastIndexOf(".") + 1);
+                  if (["xlsx", "xls", "doc", "docx"].includes(suffix, 0)) {
+                    that.previewUrl = `https://view.officeapps.live.com/op/view.aspx?src=${res}`;
+                  } else {
+                    that.previewUrl = res;
+                  }
+                  that.$refs.previewWindow.open("预览");
+                });
+              },
+            });
+          }
+          if (that.hasAuthority(that, "contrAnnex:download")) {
+            columns.push({
+              text: "",
+              datafield: "annexDownload",
+              columntype: "button",
+              width: 50,
+              cellsrenderer: function () {
+                return "下载";
+              },
+              buttonclick: function (rowindex) {
+                const annexId = childGridInstance.getcellvalue(
+                  rowindex,
+                  "annex_id"
+                );
+                const fileName = childGridInstance.getcellvalue(
+                  rowindex,
+                  "annex_name"
+                );
+                const params = {
+                  annexId,
+                };
+                // axios请求二进制流下载
+                axios({
+                  method: "post",
+                  url: "/api/annex/downloadFile.do",
+                  data: params,
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  responseType: "blob",
+                }).then((res) => {
+                  const content = res.data;
+                  const blob = new Blob([content]);
+                  let blobUrl = URL.createObjectURL(blob);
+                  const elink = document.createElement("a");
+                  elink.download = fileName;
+                  elink.style.display = "none";
+                  elink.href = URL.createObjectURL(blob);
+                  document.body.appendChild(elink);
+                  elink.click();
+                  URL.revokeObjectURL(elink.href); // 释放URL 对象
+                  document.body.removeChild(elink);
+                });
+              },
+            });
+          }
+          return columns;
+        })(),
+      });
+    },
+    aggregatesRenderer(aggregates, column, element) {
+      var renderString = "";
+      $.each(aggregates, function (key, value) {
+        switch (key) {
+          case "sum":
+            renderString +=
+              '<div style="position: relative; line-height: 30px; text-align: center; overflow: hidden;">' +
+              "合计" +
+              ": " +
+              value +
+              "</div>";
+            break;
+        }
+      });
+      return renderString;
     },
   },
 };

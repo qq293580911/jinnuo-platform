@@ -54,8 +54,8 @@ import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
 import JqxMenu from "jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue";
 
-import OrderImportWindow from "../childComps/OrderImportWindow";
-import OrderWindow from "../childComps/OrderWindow";
+import OrderImportWindow from "../childComps/OrderImportWindowMachine";
+import OrderWindow from "../childComps/OrderWindowMachine";
 import DeliveryWindow from "@/components/content/delivery/DeliveryWindow";
 
 import { getLocalization } from "@/common/localization.js";
@@ -1146,7 +1146,7 @@ export default {
     exportToExcel() {
       const columns = this.$refs.myGrid.columns;
       const rowsData = this.$refs.myGrid.getrows();
-      dataExport('下单详细数据汇总.xlsx',columns,rowsData)
+      dataExport('下单详细数据汇总—设备.xlsx',columns,rowsData)
     },
     cellClass(row, columnfield, value) {
       let deliveryDate = this.$refs.myGrid.getcellvalue(row, "delivery_date");

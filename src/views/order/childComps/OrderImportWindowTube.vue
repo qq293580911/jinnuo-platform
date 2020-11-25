@@ -32,21 +32,19 @@
 <script>
 import Vue from "vue";
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
-import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
-import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 
 import CustomUploader from "@/components/common/CustomUploader";
+
 import { getLocalization } from "@/common/localization.js";
-import { Message } from "@/common/const";
+import { Message, IMPORT_ORDER } from "@/common/const";
 import { calc_ord_misc, calc_ord_rsv_p } from "@/common/util";
 import { importOrder, batchUpdateOrderByOrderNumber } from "@/network/order";
 export default {
   components: {
     JqxWindow,
-    JqxValidator,
-    JqxForm,
     JqxGrid,
+    CustomUploader,
   },
   beforeCreate() {
     this.source = {
@@ -91,43 +89,14 @@ export default {
           type: "number",
         },
         {
-          name: "consideration_commission_order_amount",
-          map: "considerationCommissionOrderAmount",
-          type: "number",
-        },
-        {
-          name: "not_consideration_commission_order_amount",
-          map: "notConsiderationCommissionOrderAmount",
-          type: "number",
-        },
-        {
-          name: "logistics_management_fee",
-          map: "logisticsManagementFee",
+          name: "remark",
+          map: "remark",
           type: "string",
         },
         {
-          name: "freight",
-          map: "freight",
-          type: "string",
-        },
-        {
-          name: "tax",
-          map: "tax",
-          type: "string",
-        },
-        {
-          name: "warranty",
-          map: "warranty",
-          type: "string",
-        },
-        {
-          name: "install_fee",
-          map: "installFee",
-          type: "string",
-        },
-        {
-          name: "order_reserve_price",
-          type: "number",
+          name: "order_area",
+          map: "orderArea",
+          type: "float",
         },
         {
           name: "consideration_commission_status",
@@ -135,14 +104,9 @@ export default {
           type: "string",
         },
         {
-          name: "remark",
-          map: "remark",
-          type: "string",
-        },
-        {
           name: "actual_freight",
-          map: "actualFreight",
-          type: "string",
+          map: "actualFright",
+          type: "float",
         },
       ],
       dataType: "json",
@@ -156,28 +120,7 @@ export default {
       dataAdapter: new jqx.dataAdapter(this.source, {
         beforeLoadComplete(records) {
           const salesmans = that.$store.state.salesmans;
-          records.map((item) => {
-            const ordAmt = item["order_amount"];
-            const logManageFee = item["logistics_management_fee"];
-            let freight = item["freight"];
-            let tax = item["tax"];
-            let warranty = item["warranty"];
-            const installFee = item["install_fee"];
-            // 计算下单杂费
-            const ordLogManageFee = calc_ord_misc(logManageFee);
-            const ordFreight = calc_ord_misc(freight);
-            const ordTax = calc_ord_misc(tax);
-            const ordWarranty = calc_ord_misc(warranty);
-            // 计算下单底价
-            const ordRsvP = calc_ord_rsv_p(
-              ordAmt,
-              ordLogManageFee,
-              ordFreight,
-              ordTax,
-              ordWarranty,
-              installFee
-            );
-            item["order_reserve_price"] = ordRsvP;
+          records.forEach((item) => {
             //放入业务员ID
             const salesman = salesmans.find((salesman) => {
               return salesman["emp_name"] == item["salesman_name"];
@@ -194,9 +137,8 @@ export default {
           dataField: "product_type",
           cellsAlign: "center",
           align: "center",
-          width: 100,
           cellclassname: function (row, columnfield, value, data) {
-            if (/^设备$/.test(value) == false) {
+            if (/^风管+(辅材)?$/.test(value) == false) {
               that.allowedFormat = false;
               return "yellow";
             }
@@ -208,7 +150,6 @@ export default {
           dataField: "order_date",
           cellsAlign: "center",
           align: "center",
-          width: 100,
           cellclassname: function (row, columnfield, value, data) {
             let r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/);
             if (r == null) {
@@ -219,11 +160,17 @@ export default {
           },
         },
         {
+          text: "项目名称",
+          dataField: "project_name",
+          cellsAlign: "center",
+          align: "center",
+          width: 150,
+        },
+        {
           text: "业务员",
           dataField: "salesman_name",
           cellsAlign: "center",
           align: "center",
-          width: 80,
           cellclassname: function (row, columnfield, value, data) {
             if (data["salesman"] == null) {
               that.allowedFormat = false;
@@ -237,91 +184,31 @@ export default {
           dataField: "contract_number",
           cellsAlign: "center",
           align: "center",
-          width: 150,
         },
         {
           text: "下单编号",
           dataField: "order_number",
           cellsAlign: "center",
           align: "center",
-          width: 150,
-        },
-        {
-          text: "项目名称",
-          dataField: "project_name",
-          cellsAlign: "center",
-          align: "center",
-          width: 300,
         },
         {
           text: "下单金额",
           dataField: "order_amount",
           cellsAlign: "center",
           align: "center",
-          width: 120,
         },
+
         {
-          text: "计提成下单金额",
-          dataField: "consideration_commission_order_amount",
+          text: "下单面积",
+          dataField: "order_area",
           cellsAlign: "center",
           align: "center",
-          width: 120,
-        },
-        {
-          text: "非3C风阀下单金额",
-          dataField: "not_consideration_commission_order_amount",
-          cellsAlign: "center",
-          align: "center",
-          width: 120,
-        },
-        {
-          text: "物流管理费",
-          dataField: "logistics_management_fee",
-          cellsAlign: "center",
-          align: "center",
-          width: 100,
-        },
-        {
-          text: "运费",
-          dataField: "freight",
-          cellsAlign: "center",
-          align: "center",
-          width: 80,
-        },
-        {
-          text: "税金",
-          dataField: "tax",
-          cellsAlign: "center",
-          align: "center",
-          width: 80,
-        },
-        {
-          text: "质保金",
-          dataField: "warranty",
-          cellsAlign: "center",
-          align: "center",
-          width: 80,
-        },
-        {
-          text: "安装费",
-          dataField: "install_fee",
-          cellsAlign: "center",
-          align: "center",
-          width: 80,
-        },
-        {
-          text: "下单底价",
-          dataField: "order_reserve_price",
-          cellsAlign: "center",
-          align: "center",
-          width: 100,
         },
         {
           text: "备注",
           dataField: "remark",
           cellsAlign: "center",
           align: "center",
-          width: 150,
         },
         {
           text: "计提成状态",
@@ -338,10 +225,6 @@ export default {
           width: 80,
         },
       ],
-      fileContent: [],
-      startRow: 0,
-      endRow: 0,
-      allowedFormat: true,
     };
   },
   watch: {
@@ -364,7 +247,7 @@ export default {
       }
     },
   },
-  mounted() {
+    mounted() {
     const that = this;
     // 上传器绑定值改变事件
     this.uploaderInstance.$on("changed", (data) => {
@@ -559,33 +442,8 @@ export default {
       );
     },
     open(...params) {
-      this.$refs.myWindow.setTitle(params[0]);
+      this.$refs.myWindow.setTitle(IMPORT_ORDER);
       this.$refs.myWindow.open();
-    },
-    onValidationSuccess(event) {},
-    importOrder() {
-      const rowsData = this.$refs.myGrid.getrows();
-      const params = {
-        jsonParams: JSON.stringify({
-          items: rowsData,
-        }),
-      };
-      importOrder(params).then((res) => {
-        this.$refs.myWindow.close();
-        this.$parent.refresh();
-      });
-    },
-    batchUpdateOrder() {
-      const rowsData = this.$refs.myGrid.getrows();
-      const params = {
-        jsonParams: JSON.stringify({
-          items: rowsData,
-        }),
-      };
-      batchUpdateOrderByOrderNumber(params).then((res) => {
-        this.$refs.myWindow.close();
-        this.$parent.refresh();
-      });
     },
   },
 };

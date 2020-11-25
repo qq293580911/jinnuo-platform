@@ -4,7 +4,7 @@ export function login(params) {
   return request({
     url: 'login.do',
     method: 'post',
-    params
+    data:params
   })
 }
 

@@ -31,7 +31,7 @@ export default {
   data() {
     return {
       menus: ["设备部分", "风管部分"],
-      currentMenuName: "设备部分",
+      currentMenuName: "风管部分",
     };
   },
   created() {},

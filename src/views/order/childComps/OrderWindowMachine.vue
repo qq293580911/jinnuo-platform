@@ -582,19 +582,19 @@ export default {
       this.contractNumberInstance.val("");
       this.orderNumberInstance.val("");
       this.projectNameInstance.val("");
-      this.reservePriceInstance.jqxNumberInput("setDecimale", 0);
-      this.orderAmountInstance.jqxNumberInput("setDecimale", 0);
+      this.reservePriceInstance.jqxNumberInput("setDecimal", 0);
+      this.orderAmountInstance.jqxNumberInput("setDecimal", 0);
       this.logManageFeeInstance.val("");
       this.freightInstance.val();
       this.taxInstance.val("");
       this.warrantyInstance.val("");
-      this.installFeeInstance.jqxNumberInput("setDecimale", 0);
-      this.orderReservePriceInstance.jqxNumberInput("setDecimale", 0);
-      this.actualFreightInstance.jqxNumberInput("setDecimale", 0);
-      this.considerationCommissionOrderAmount.jqxNumberInput("setDecimale", 0);
+      this.installFeeInstance.jqxNumberInput("setDecimal", 0);
+      this.orderReservePriceInstance.jqxNumberInput("setDecimal", 0);
+      this.actualFreightInstance.jqxNumberInput("setDecimal", 0);
+      this.considerationCommissionOrderAmount.jqxNumberInput("setDecimal", 0);
       this.considerationCommissionStatus.jqxComboBox("clearSelection");
       this.notConsiderationCommissionOrderAmount.jqxNumberInput(
-        "setDecimale",
+        "setDecimal",
         0
       );
       this.remarkInstance.val("");

@@ -4,8 +4,8 @@
       ref="myGrid"
       :width="'100%'"
       :height="'100%'"
-      :columnsresize='true'
-      :columnsautoresize='true'
+      :columnsresize="true"
+      :columnsautoresize="true"
       :localization="localization"
       :source="dataAdapter"
       :columns="columns"
@@ -18,7 +18,8 @@
       :filterable="true"
       :altrows="true"
       :enabletooltip="true"
-      :editable="false"
+      :editable="editable"
+      :editmode="'dblclick'"
       :selectionmode="'multiplerowsextended'"
       :virtualmode="true"
       :rendergridrows="rendergridrows"
@@ -28,19 +29,37 @@
       :rowdetails="true"
       :initrowdetails="initrowdetails"
       :rowdetailstemplate="rowdetailstemplate"
+      @cellclick="onCellclick($event)"
     >
     </JqxGrid>
+    <JqxMenu
+      ref="jqxMenu"
+      :mode="'popup'"
+      :autoOpenPopup="false"
+      :width="120"
+      :height="140"
+      @itemclick="onItemclick($event)"
+    >
+      <div>
+        <ul>
+          <li>设置客户</li>
+        </ul>
+      </div>
+    </JqxMenu>
     <preview-window ref="previewWindow" :src="previewUrl"></preview-window>
     <contract-window ref="contractWindow"></contract-window>
+    <set-customer-window ref="setCustomerWindow" @sendCustomer="sendCustomer"></set-customer-window>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
+import JqxMenu from "jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue";
 
 import PreviewWindow from "@/components/common/PreviewWindow.vue";
 import ContractWindow from "./ContractWindow.vue";
+import SetCustomerWindow from "./SetCustomerWindow.vue";
 
 import { formatFilter, dataExport } from "@/common/util.js";
 import { Message, ADD_CONTRACT, EDIT_CONTRACT } from "@/common/const.js";
@@ -54,8 +73,16 @@ export default {
   name: "Detail",
   components: {
     JqxGrid,
+    JqxMenu,
     PreviewWindow,
     ContractWindow,
+    SetCustomerWindow,
+  },
+  props: {
+    isSigned: {
+      type: Boolean,
+      default: false,
+    },
   },
   beforeCreate: function () {
     this.source = {
@@ -108,12 +135,20 @@ export default {
       sortdirection: "desc",
       id: "id",
       url: `/contrDtl/showContractDetails.do`,
+      updaterow(rowid, newdata, commit) {
+        //console.log(newdata)
+      },
     };
+  },
+  created() {
+    if (this.hasAuthority(this, "contrDtl:update")) {
+      this.editable = true;
+    }
   },
   data() {
     const that = this;
     return {
-      permissions: [],
+      editable: false,
       //数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
@@ -121,6 +156,11 @@ export default {
           return data;
         },
         loadServerData: function (serverdata, source, callback) {
+          if (that.isSigned) {
+            serverdata["jsonParams"] = JSON.stringify({
+              signStatus: "已签",
+            });
+          }
           serverdata = formatFilter(serverdata);
           showContractDetails(source, serverdata).then((res) => {
             callback({
@@ -575,6 +615,12 @@ export default {
       previewUrl: "",
     };
   },
+  mounted() {
+    const gridId = this.$refs.myGrid.componentSelector;
+    $(gridId).on("contextmenu", () => {
+      return false;
+    });
+  },
   methods: {
     createButtonsContainers: function (statusbar) {
       let buttonsContainer = document.createElement("div");
@@ -656,7 +702,7 @@ export default {
             return false;
           }
           const rowData = this.$refs.myGrid.getrowdata(index);
-          this.$refs.contractWindow.open(EDIT_CONTRACT,rowData);
+          this.$refs.contractWindow.open(EDIT_CONTRACT, rowData);
         });
       }
 
@@ -917,8 +963,31 @@ export default {
       });
       return renderString;
     },
-    refresh(){
-      this.$refs.myGrid.updatebounddata()
+    refresh() {
+      this.$refs.myGrid.updatebounddata();
+    },
+    onCellclick(event) {
+      if (event.args.rightclick) {
+        const clickCellInfo = event.args;
+        this.clickCellInfo = clickCellInfo;
+        let scrollTop = $(window).scrollTop();
+        let scrollLeft = $(window).scrollLeft();
+        this.$refs.jqxMenu.open(
+          parseInt(event.args.originalEvent.clientX) + 5 + scrollLeft,
+          parseInt(event.args.originalEvent.clientY) + 5 + scrollTop
+        );
+        return false;
+      }
+    },
+    onItemclick(event) {
+      const menu = event.args.textContent;
+      if (menu == "设置客户") {
+        const rowData = this.clickCellInfo.row.bounddata;
+        this.$refs.setCustomerWindow.open("设置客户", rowData);
+      }
+    },
+    sendCustomer(item){
+      console.log(item)
     }
   },
 };

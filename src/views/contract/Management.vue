@@ -11,20 +11,20 @@
       </ul>
     </JqxMenu>
     <keep-alive>
-      <detail v-if="currentMenuName == menus[0]"></detail>
-      <detail v-if="currentMenuName == menus[1]" :isSigned="true"></detail>
+      <detail v-if="currentMenuName == menus[0]" key="detail"></detail>
+      <detail v-if="currentMenuName == menus[1]" key="signed" :is-signed="true" ></detail>
     </keep-alive>
   </div>
 </template>
 
 <script>
 import JqxMenu from "jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue";
-import Detail from "./childComps/Detail";
+import Detail from "./childComps/Detail"
 export default {
   name: "ContractManagement",
   components: {
     JqxMenu,
-    Detail,
+    Detail
   },
   data() {
     return {

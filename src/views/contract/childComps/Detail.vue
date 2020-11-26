@@ -4,6 +4,8 @@
       ref="myGrid"
       :width="'100%'"
       :height="'100%'"
+      :columnsresize='true'
+      :columnsautoresize='true'
       :localization="localization"
       :source="dataAdapter"
       :columns="columns"
@@ -29,6 +31,7 @@
     >
     </JqxGrid>
     <preview-window ref="previewWindow" :src="previewUrl"></preview-window>
+    <contract-window ref="contractWindow"></contract-window>
   </div>
 </template>
 
@@ -37,9 +40,10 @@ import axios from "axios";
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 
 import PreviewWindow from "@/components/common/PreviewWindow.vue";
+import ContractWindow from "./ContractWindow.vue";
 
 import { formatFilter, dataExport } from "@/common/util.js";
-import { Message } from "@/common/const.js";
+import { Message, ADD_CONTRACT, EDIT_CONTRACT } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import {
   showContractDetails,
@@ -51,6 +55,7 @@ export default {
   components: {
     JqxGrid,
     PreviewWindow,
+    ContractWindow,
   },
   beforeCreate: function () {
     this.source = {
@@ -314,7 +319,7 @@ export default {
             },
           });
         }
-        if (that.hasAuthority(that, "contrDtl:contrDtl:customer_company")) {
+        if (that.hasAuthority(that, "contrDtl:customer_company")) {
           columns.push({
             text: "客户公司",
             datafield: "customer_company",
@@ -583,16 +588,20 @@ export default {
         addButtonContainer.id = "addButton";
         addButtonContainer.style.cssText = "float: left; margin-left: 5px;";
         buttonsContainer.appendChild(addButtonContainer);
-        let addButton = jqwidgets.createInstance("#addButton", "jqxButton", {
-          imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
-        });
+        let addButtonInstance = jqwidgets.createInstance(
+          "#addButton",
+          "jqxButton",
+          {
+            imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+          }
+        );
         let addButtonTooltip = jqwidgets.createInstance(
           "#addButton",
           "jqxTooltip",
           { content: "添加", position: "bottom" }
         );
-        addButton.addEventHandler("click", (event) => {
-          this.$refs.customerWindow.open("添加客户信息");
+        addButtonInstance.addEventHandler("click", (event) => {
+          this.$refs.contractWindow.open(ADD_CONTRACT);
         });
       }
 
@@ -647,7 +656,7 @@ export default {
             return false;
           }
           const rowData = this.$refs.myGrid.getrowdata(index);
-          this.$refs.myWindow.open("修改合同信息", rowData);
+          this.$refs.contractWindow.open(EDIT_CONTRACT,rowData);
         });
       }
 
@@ -871,9 +880,6 @@ export default {
                   method: "post",
                   url: "/api/annex/downloadFile.do",
                   data: params,
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
                   responseType: "blob",
                 }).then((res) => {
                   const content = res.data;
@@ -911,6 +917,9 @@ export default {
       });
       return renderString;
     },
+    refresh(){
+      this.$refs.myGrid.updatebounddata()
+    }
   },
 };
 </script>

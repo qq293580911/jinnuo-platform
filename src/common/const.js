@@ -76,3 +76,5 @@ export const EDIT_ORDER = "编辑下单信息"
 export const IMPORT_ORDER = "导入下单信息"
 export const ADD_DELIVERY = "添加送货信息"
 export const EDIT_DELIVERY = "修改送货信息"
+export const ADD_CONTRACT = '添加合同信息'
+export const EDIT_CONTRACT = '修改合同信息'

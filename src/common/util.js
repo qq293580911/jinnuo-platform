@@ -1,4 +1,64 @@
- // 函数防抖
+// 省市县多级联动
+const {
+  data,
+  province,
+  city,
+  area,
+  town,
+} = require("province-city-china/data");
+// 获得省
+export function getProvince() {
+  return province
+}
+// 获得市
+export function getCity(provinceValue) {
+  let cities = []
+  // 北京，天津，上海，重庆特别行政区只有两级
+  // 港，澳，台只有一级
+  if (['11', '12','31','50','71','81','82'].includes(provinceValue, 0)) {
+    cities = province.filter(item => {
+      return item['province'] == provinceValue
+    }).map(item => {
+      item['city'] = '01'
+      return item
+    })
+  } else {
+    cities = city.filter((item) => {
+      return item['province'] == provinceValue;
+    });
+  }
+  return cities
+}
+// 获得县
+export function getArea(provinceValue, cityValue) {
+  let areas = []
+  areas = area.filter(item => {
+    return item['province'] == provinceValue && item['city'] == cityValue
+  })
+  return areas
+}
+
+// 通过省名获得省值
+// export function getProvinceValue(provinceName) {  
+//   const obj = province.filter(item=>{
+//     return provinceName == item['name']
+//   })
+//   console.log(provinceValue)
+//   return obj['province']
+// }
+// // 通过市名获得市值
+// export function getCityValue(cityName) {  
+//   if(){
+    
+//   }
+//   const obj = province.filter(item=>{
+//     return provinceName == item['name']
+//   })
+//   console.log(provinceValue)
+//   return obj['province']
+// }
+
+// 函数防抖
 export function debounce(func, delay) {
   let timer = null
   return function (...args) {
@@ -186,8 +246,8 @@ export function dataExport(...params) {
         wrapText: true
       }
     }
-  }, function (cell, newCell, row, config, currentRow, currentCol, fieldKey) {   
-    if(currentRow===0){
+  }, function (cell, newCell, row, config, currentRow, currentCol, fieldKey) {
+    if (currentRow === 0) {
       newCell['s']['fill'] = {
         fgColor: {
           rgb: "BABABA"

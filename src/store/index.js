@@ -8,8 +8,7 @@ import getters from './getters';
 Vue.use(Vuex)
 
 const state = {
-    // 价格方案
-    pricePlan:[]
+
 }
 
 //2、创建对象

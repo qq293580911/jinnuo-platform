@@ -45,6 +45,7 @@ html {
 }
 
 .jqx-validator-hint {
+  height:20px;
   width: auto;
   cursor: pointer;
   padding-left: 5px;

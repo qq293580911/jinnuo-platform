@@ -39,6 +39,7 @@ import HomeAside from "./childComps/HomeAside";
 import HomeMain from "./childComps/HomeMain";
 import { getPermissions } from "@/network/home.js";
 import { getSalesman } from "@/network/employee.js"
+import { getPricePlan } from "@/network/product.js"
 jqx.theme = "ui-smoothness";
 export default {
   name: "Home",
@@ -53,10 +54,13 @@ export default {
     };
   },
   created() {
+
+  },
+  mounted() {
     this.getPermissions();
     this.getSlasmans();
+    this.getPricePlans()
   },
-  mounted() {},
   methods: {
     getPermissions() {
       const permissions = this.$store.state.permissions;
@@ -80,6 +84,14 @@ export default {
         });
       }
     },
+    getPricePlans(){
+      const pricePlans = this.$store.state.pricePlans;
+      if(pricePlans==null){
+        getPricePlan().then((responese) => {
+          this.$store.dispatch("savePricePlan", responese).then((res) => {});
+        });
+      }
+    }
   },
 };
 </script>

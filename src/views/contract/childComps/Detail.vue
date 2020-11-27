@@ -48,7 +48,14 @@
     </JqxMenu>
     <preview-window ref="previewWindow" :src="previewUrl"></preview-window>
     <contract-window ref="contractWindow"></contract-window>
-    <set-customer-window ref="setCustomerWindow" @sendCustomer="sendCustomer"></set-customer-window>
+    <upload-window
+      ref="uploadWindow"
+      :annex-type="annexType"
+    ></upload-window>
+    <set-customer-window
+      ref="setCustomerWindow"
+      @sendCustomer="sendCustomer"
+    ></set-customer-window>
   </div>
 </template>
 
@@ -60,9 +67,15 @@ import JqxMenu from "jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue";
 import PreviewWindow from "@/components/common/PreviewWindow.vue";
 import ContractWindow from "./ContractWindow.vue";
 import SetCustomerWindow from "./SetCustomerWindow.vue";
+import UploadWindow from "@/components/common/UploadWindow.vue";
 
 import { formatFilter, dataExport } from "@/common/util.js";
-import { Message, ADD_CONTRACT, EDIT_CONTRACT } from "@/common/const.js";
+import {
+  Message,
+  ADD_CONTRACT,
+  EDIT_CONTRACT,
+  FILE_UPLOAD,
+} from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import {
   showContractDetails,
@@ -77,6 +90,7 @@ export default {
     PreviewWindow,
     ContractWindow,
     SetCustomerWindow,
+    UploadWindow,
   },
   props: {
     isSigned: {
@@ -149,6 +163,7 @@ export default {
     const that = this;
     return {
       editable: false,
+      annexType:'合同附件',
       //数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
@@ -749,6 +764,16 @@ export default {
           "jqxTooltip",
           { content: "上传", position: "bottom" }
         );
+
+        uploadButton.addEventHandler("click", () => {
+          const index = this.$refs.myGrid.getselectedrowindex();
+          if (index < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED });
+            return false;
+          }
+          const boundId = this.$refs.myGrid.getrowid(index)
+          this.$refs.uploadWindow.open(FILE_UPLOAD,boundId);
+        });
       }
 
       // 创建刷新按钮
@@ -986,9 +1011,9 @@ export default {
         this.$refs.setCustomerWindow.open("设置客户", rowData);
       }
     },
-    sendCustomer(item){
-      console.log(item)
-    }
+    sendCustomer(item) {
+      console.log(item);
+    },
   },
 };
 </script>

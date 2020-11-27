@@ -38,7 +38,13 @@ import CustomUploader from "@/components/common/CustomUploader";
 
 import { getLocalization } from "@/common/localization.js";
 import { Message, IMPORT_ORDER } from "@/common/const";
-import { calc_ord_misc, calc_ord_rsv_p } from "@/common/util";
+import {
+  calc_misc_log_manage_fee,
+  calc_misc_freight,
+  calc_misc_tax,
+  calc_misc_warranty,
+  calc_rsv_p,
+} from "@/common/util";
 import { importOrder, batchUpdateOrderByOrderNumber } from "@/network/order";
 export default {
   components: {
@@ -303,7 +309,7 @@ export default {
         },
         onCancel() {},
         class: "test",
-        zIndex:1500
+        zIndex: 1500,
       });
     });
     // 批量修改按钮绑定点击事件
@@ -469,7 +475,7 @@ export default {
   display: inline-block;
   vertical-align: middle;
 }
-::v-deep .jqx-window{
-  z-index:500;
+::v-deep .jqx-window {
+  z-index: 500;
 }
 </style>

@@ -64,8 +64,11 @@ import DeliveryWindow from "@/components/content/delivery/DeliveryWindow";
 import { getLocalization } from "@/common/localization.js";
 import {
   formatFilter,
-  calc_ord_misc,
-  calc_ord_rsv_p,
+  calc_misc_log_manage_fee,
+  calc_misc_freight,
+  calc_misc_tax,
+  calc_misc_warranty,
+  calc_rsv_p,
   dataExport,
 } from "@/common/util.js";
 import {
@@ -182,20 +185,31 @@ export default {
             let installFee = value["install_fee"];
 
             //计算下单物流管理费
-            let ordLogManageFee = calc_ord_misc(ordAmt, logMngFee);
+            let ordLogManageFee = calc_misc_log_manage_fee(
+              ordAmt,
+              installFee,
+              logMngFee
+            );
             value["order_logistics_management_fee"] = ordLogManageFee;
-            //计算下单运费
-            let ordFreight = calc_ord_misc(ordAmt, freight);
-            value["order_freight"] = ordFreight;
             //计算下单税金
-            let orderTax = calc_ord_misc(ordAmt, tax);
+            let orderTax = calc_misc_tax(ordAmt, installFee, tax);
             value["order_tax"] = orderTax;
             //计算下单质保金
-            let ordWarranty = calc_ord_misc(ordAmt, warranty);
+            let ordWarranty = calc_misc_warranty(ordAmt, installFee, warranty);
             value["order_warranty"] = ordWarranty;
+            //计算下单运费
+            let ordFreight = calc_misc_freight(
+              ordAmt,
+              installFee,
+              ordLogManageFee,
+              orderTax,
+              ordWarranty,
+              freight
+            );
+            value["order_freight"] = ordFreight;
 
             //计算下单底价
-            let ordRsvP = calc_ord_rsv_p(
+            let ordRsvP = calc_rsv_p(
               ordAmt,
               ordLogManageFee,
               ordFreight,
@@ -209,57 +223,84 @@ export default {
             let nCsdCmsOrdAmt =
               value["not_consideration_commission_order_amount"];
             //计算非3C风阀下单物流管理费
-            let nCsdCmsOrdLogMngFee = calc_ord_misc(nCsdCmsOrdAmt, logMngFee);
+            let nCsdCmsOrdLogMngFee = calc_misc_log_manage_fee(
+              nCsdCmsOrdAmt,
+              installFee,
+              logMngFee
+            );
             value[
               "not_consideration_commission_order_logistics_management_fee"
             ] = nCsdCmsOrdLogMngFee;
 
-            //计算非3C风阀下单运费
-            let nCndCmsOrdFreight = calc_ord_misc(nCsdCmsOrdAmt, freight);
-            value[
-              "not_consideration_commission_order_freight"
-            ] = nCndCmsOrdFreight;
-
             //计算非3C风阀下单税金
-            let nCsdCmsOrdTax = calc_ord_misc(nCsdCmsOrdAmt, tax);
+            let nCsdCmsOrdTax = calc_misc_tax(nCsdCmsOrdAmt, installFee, tax);
             value["not_consideration_commission_order_tax"] = nCsdCmsOrdTax;
 
             //计算非3C风阀下单质保金
-            let nCndCmsOrdWrt = calc_ord_misc(nCsdCmsOrdAmt, warranty);
+            let nCndCmsOrdWrt = calc_misc_warranty(
+              nCsdCmsOrdAmt,
+              installFee,
+              warranty
+            );
             value[
               "not_consideration_commission_order_warranty"
             ] = nCndCmsOrdWrt;
 
+            //计算非3C风阀下单运费
+            let nCndCmsOrdFreight = calc_misc_freight(
+              nCsdCmsOrdAmt,
+              installFee,
+              nCsdCmsOrdLogMngFee,
+              nCsdCmsOrdTax,
+              nCndCmsOrdWrt,
+              freight
+            );
+            value[
+              "not_consideration_commission_order_freight"
+            ] = nCndCmsOrdFreight;
+
             //计算非3C风阀下单底价
-            let nCndCmsOrdRsvP = calc_ord_rsv_p(
+            let nCndCmsOrdRsvP = calc_rsv_p(
               nCsdCmsOrdAmt,
               nCsdCmsOrdLogMngFee,
               nCndCmsOrdFreight,
               nCsdCmsOrdTax,
-              nCndCmsOrdWrt
+              nCndCmsOrdWrt,
+              installFee
             );
             value[
               "not_consideration_commission_order_reserve_price"
             ] = nCndCmsOrdRsvP;
 
             //计算送货物流管理费
-            let dlvLogManageFee = calc_ord_misc(dlvAmt, logMngFee);
+            let dlvLogManageFee = calc_misc_log_manage_fee(
+              dlvAmt,
+              installFee,
+              logMngFee
+            );
             value["delivery_logistics_management_fee"] = dlvLogManageFee;
 
-            //计算送货运费
-            let dlvFreight = calc_ord_misc(dlvAmt, freight);
-            value["delivery_freight"] = dlvFreight;
-
             //计算送货税金
-            let dlvTax = calc_ord_misc(dlvAmt, tax);
+            let dlvTax = calc_misc_tax(dlvAmt, installFee, tax);
             value["delivery_tax"] = dlvTax;
 
             //计算送货质保金
-            let dlvWrt = calc_ord_misc(dlvAmt, warranty);
+            let dlvWrt = calc_misc_warranty(dlvAmt, installFee, warranty);
             value["delivery_warranty"] = dlvWrt;
 
+            //计算送货运费
+            let dlvFreight = calc_misc_freight(
+              dlvAmt,
+              installFee,
+              dlvLogManageFee,
+              dlvTax,
+              dlvWrt,
+              freight
+            );
+            value["delivery_freight"] = dlvFreight;
+
             //计算送货底价
-            let dlvRsvP = calc_ord_rsv_p(
+            let dlvRsvP = calc_rsv_p(
               dlvAmt,
               dlvLogManageFee,
               dlvFreight,
@@ -278,25 +319,41 @@ export default {
             ] = nCsdCmsDlvAmt;
 
             //非3C风阀送货物流管理费
-            let nCsdCmsDlvLogMngFee = calc_ord_misc(nCsdCmsDlvAmt, logMngFee);
+            let nCsdCmsDlvLogMngFee = calc_misc_log_manage_fee(
+              nCsdCmsDlvAmt,
+              installFee,
+              logMngFee
+            );
             value[
               "not_consideration_commission_delivery_logistics_management_fee"
             ] = nCsdCmsDlvLogMngFee;
-            //非3C风阀送货运费
-            let nCsdCmsDlvFreight = calc_ord_misc(nCsdCmsDlvAmt, freight);
-            value[
-              "not_consideration_commission_delivery_freight"
-            ] = nCsdCmsDlvFreight;
+
             //非3C风阀送货税金
-            let nCsdCmsDlvTax = calc_ord_misc(nCsdCmsDlvAmt, tax);
+            let nCsdCmsDlvTax = calc_misc_tax(nCsdCmsDlvAmt, installFee, tax);
             value["not_consideration_commission_delivery_tax"] = nCsdCmsDlvTax;
             //非3C风阀送货质保金
-            let nCsdCmsDlvWrt = calc_ord_misc(nCsdCmsDlvAmt, warranty);
+            let nCsdCmsDlvWrt = calc_misc_warranty(
+              nCsdCmsDlvAmt,
+              installFee,
+              warranty
+            );
             value[
               "not_consideration_commission_delivery_warranty"
             ] = nCsdCmsDlvWrt;
+            //非3C风阀送货运费
+            let nCsdCmsDlvFreight = calc_misc_freight(
+              nCsdCmsDlvAmt,
+              installFee,
+              nCsdCmsDlvLogMngFee,
+              nCsdCmsDlvTax,
+              nCsdCmsDlvWrt,
+              freight
+            );
+            value[
+              "not_consideration_commission_delivery_freight"
+            ] = nCsdCmsDlvFreight;
             //非3C风阀送货底价
-            let nCsdCmsDlvRsvP = calc_ord_rsv_p(
+            let nCsdCmsDlvRsvP = calc_rsv_p(
               nCsdCmsDlvAmt,
               nCsdCmsDlvLogMngFee,
               nCsdCmsDlvFreight,

@@ -25,7 +25,13 @@ import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
 import { EDIT_ORDER } from "@/common/const";
-import { calc_ord_misc, calc_ord_rsv_p } from "@/common/util";
+import {
+  calc_misc_log_manage_fee,
+  calc_misc_freight,
+  calc_misc_tax,
+  calc_misc_warranty,
+  calc_rsv_p,
+} from "@/common/util";
 import { addOrder, updateOrder } from "@/network/order";
 export default {
   components: {
@@ -520,12 +526,23 @@ export default {
         const warranty = $warranty.val();
         const installFee = $installFee.val();
 
-        let ordManageFee = calc_ord_misc(orderAmount, logManageFee);
-        let ordFreight = calc_ord_misc(orderAmount, freight);
-        let ordTax = calc_ord_misc(orderAmount, tax);
-        let ordWarranty = calc_ord_misc(orderAmount, warranty);
+        let ordManageFee = calc_misc_log_manage_fee(
+          orderAmount,
+          installFee,
+          logManageFee
+        );
 
-        let ordRsvP = calc_ord_rsv_p(
+        let ordTax = calc_misc_tax(orderAmount, installFee, tax);
+        let ordWarranty = calc_misc_warranty(orderAmount, installFee, warranty);
+        let ordFreight = calc_misc_freight(
+          orderAmount,
+          installFee,
+          ordManageFee,
+          ordTax,
+          ordWarranty,
+          freight
+        );
+        let ordRsvP = calc_rsv_p(
           orderAmount,
           ordManageFee,
           ordFreight,

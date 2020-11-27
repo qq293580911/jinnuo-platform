@@ -39,7 +39,13 @@ import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import CustomUploader from "@/components/common/CustomUploader";
 import { getLocalization } from "@/common/localization.js";
 import { Message } from "@/common/const";
-import { calc_ord_misc, calc_ord_rsv_p } from "@/common/util";
+import {
+  calc_misc_log_manage_fee,
+  calc_misc_freight,
+  calc_misc_tax,
+  calc_misc_warranty,
+  calc_rsv_p,
+} from "@/common/util";
 import { importOrder, batchUpdateOrderByOrderNumber } from "@/network/order";
 export default {
   components: {
@@ -159,17 +165,17 @@ export default {
           records.map((item) => {
             const ordAmt = item["order_amount"];
             const logManageFee = item["logistics_management_fee"];
-            let freight = item["freight"];
-            let tax = item["tax"];
-            let warranty = item["warranty"];
+            const freight = item["freight"];
+            const tax = item["tax"];
+            const warranty = item["warranty"];
             const installFee = item["install_fee"];
             // 计算下单杂费
-            const ordLogManageFee = calc_ord_misc(logManageFee);
-            const ordFreight = calc_ord_misc(freight);
-            const ordTax = calc_ord_misc(tax);
-            const ordWarranty = calc_ord_misc(warranty);
+            const ordLogManageFee = calc_misc_log_manage_fee(ordAmt,installFee,logManageFee);
+            const ordTax = calc_misc_tax(ordAmt,installFee,tax);
+            const ordWarranty = calc_misc_warranty(ordAmt,installFee,warranty);
+            const ordFreight = calc_misc_freight(ordAmt,installFee,ordLogManageFee,ordTax,ordWarranty,freight);
             // 计算下单底价
-            const ordRsvP = calc_ord_rsv_p(
+            const ordRsvP = calc_rsv_p(
               ordAmt,
               ordLogManageFee,
               ordFreight,

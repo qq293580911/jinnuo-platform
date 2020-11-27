@@ -25,7 +25,13 @@ import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
 import { ADD_DELIVERY, EDIT_DELIVERY } from "@/common/const.js";
-import { calc_ord_misc, calc_ord_rsv_p } from "@/common/util";
+import {
+  calc_misc_log_manage_fee,
+  calc_misc_freight,
+  calc_misc_tax,
+  calc_misc_warranty,
+  calc_rsv_p,
+} from "@/common/util";
 import { addDelivery, updateDelivery } from "@/network/delivery";
 export default {
   components: {
@@ -33,8 +39,8 @@ export default {
     JqxValidator,
     JqxForm,
   },
-  props:{
-    installFeeDisabled:false
+  props: {
+    installFeeDisabled: false,
   },
   data() {
     const that = this;
@@ -138,8 +144,8 @@ export default {
               digits: 11,
               spinButtons: true,
               decimalDigits: 0,
-              disabled:that.installFeeDisabled,
-              allowNull:true
+              disabled: that.installFeeDisabled,
+              allowNull: true,
             });
           },
         },
@@ -304,12 +310,23 @@ export default {
         const warranty = $warranty.val();
         const installFee = $installFee.val();
 
-        let dlvManageFee = calc_ord_misc(deliveryAmount, logManageFee);
-        let dlvFreight = calc_ord_misc(deliveryAmount, freight);
-        let dlvTax = calc_ord_misc(deliveryAmount, tax);
-        let dlvWarranty = calc_ord_misc(deliveryAmount, warranty);
+        let dlvManageFee = calc_misc_log_manage_fee(
+          deliveryAmount,
+          installFee,
+          logManageFee
+        );
+        let dlvTax = calc_misc_tax(deliveryAmount, installFee, tax);
+        let dlvWarranty = calc_misc_warranty(deliveryAmount, installFee, warranty);
+        let dlvFreight = calc_misc_freight(
+          deliveryAmount,
+          installFee,
+          dlvManageFee,
+          dlvTax,
+          dlvWarranty,
+          freight
+        );
 
-        let dlvRsvP = calc_ord_rsv_p(
+        let dlvRsvP = calc_rsv_p(
           deliveryAmount,
           dlvManageFee,
           dlvFreight,

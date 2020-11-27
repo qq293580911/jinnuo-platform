@@ -15,7 +15,7 @@ export function getCity(provinceValue) {
   let cities = []
   // 北京，天津，上海，重庆特别行政区只有两级
   // 港，澳，台只有一级
-  if (['11', '12','31','50','71','81','82'].includes(provinceValue, 0)) {
+  if (['11', '12', '31', '50', '71', '81', '82'].includes(provinceValue, 0)) {
     cities = province.filter(item => {
       return item['province'] == provinceValue
     }).map(item => {
@@ -49,7 +49,7 @@ export function getArea(provinceValue, cityValue) {
 // // 通过市名获得市值
 // export function getCityValue(cityName) {  
 //   if(){
-    
+
 //   }
 //   const obj = province.filter(item=>{
 //     return provinceName == item['name']
@@ -129,11 +129,11 @@ export function formatFilter(serverdata) {
   return serverdata
 }
 
-// 计算下单杂项费用
-export function calc_ord_misc(...param) {
-  let amount = param[0];
-  let rate = param[1];
-  amount == null ? amount = 0 : amount = amount
+// 计算杂项税金
+export function calc_misc_tax(...params) {
+  const amount = params[0]
+  const installFee = params[1]
+  let rate = params[2]
   if (amount === 0) {
     return 0
   }
@@ -143,13 +143,70 @@ export function calc_ord_misc(...param) {
   if (typeof rate == 'string' && rate.indexOf('%') > -1) {
     rate = rate.replace('%', '') / 100;
   }
-  let result = amount - (amount / (1 + rate));
+  let result = (amount - installFee) / (1 + rate)*rate;
+  result = Math.round(result);
+  return isNaN(result) ? 0 : result
+}
+
+// 计算杂项物管费
+export function calc_misc_log_manage_fee(...params) {
+  const amount = params[0]
+  const installFee = params[1]
+  let rate = params[2]
+  if (amount === 0) {
+    return 0
+  }
+  if (rate % 1 === 0) {
+    return rate
+  }
+  if (typeof rate == 'string' && rate.indexOf('%') > -1) {
+    rate = rate.replace('%', '') / 100;
+  }
+  let result = (amount - installFee)*rate;
+  result = Math.round(result);
+  return isNaN(result) ? 0 : result
+}
+
+// 计算杂项质保金
+export function calc_misc_warranty(...params) {  
+  const amount = params[0]
+  const installFee = params[1]
+  let rate = params[2]
+  if (amount === 0) {
+    return 0
+  }
+  if (rate % 1 === 0) {
+    return rate
+  }
+  if (typeof rate == 'string' && rate.indexOf('%') > -1) {
+    rate = rate.replace('%', '') / 100;
+  }
+  let result = (amount - installFee)*rate;
+  result = Math.round(result);
+  return isNaN(result) ? 0 : result
+}
+
+// 计算杂项运费
+export function calc_misc_freight(...params) {
+  const amount = params[0]
+  const installFee = params[1]
+  const tax = params[2]
+  const logManageFee = params[3]
+  const warranty = params[4]
+  let rate = params[5]
+  if (amount === 0) {
+    return 0
+  }
+  if (rate % 1 === 0) {
+    return rate
+  }
+  let result = (amount - installFee - tax - logManageFee - warranty)*rate;
   result = Math.round(result);
   return isNaN(result) ? 0 : result
 }
 
 // 计算下单底价
-export function calc_ord_rsv_p(...param) {
+export function calc_rsv_p(...param) {
   let result = param.reduce(function (prev, curr, idx, arr) {
     return prev - curr; //reduce() 方法接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值
   });

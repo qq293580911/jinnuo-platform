@@ -103,12 +103,12 @@ export default {
         },
         beforeLoadComplete(records) {
           records.forEach(function (value, index, array) {
-            var ordAmt = value["order_amount"];
-            var dlvAmt = value["delivery_amount"];
-            var logManageFee = value["logistics_management_fee"];
-            var freight = value["freight"];
-            var tax = value["tax"];
-            var warranty = value["warranty"];
+            const ordAmt = value["order_amount"];
+            const dlvAmt = value["delivery_amount"];
+            const logManageFee = value["logistics_management_fee"];
+            const freight = value["freight"];
+            const tax = value["tax"];
+            const warranty = value["warranty"];
 
             if (logManageFee.indexOf("%") > -1) {
               logManageFee = parseFloat(logManageFee) / 100;

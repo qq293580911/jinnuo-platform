@@ -38,26 +38,6 @@ export function getArea(provinceValue, cityValue) {
   return areas
 }
 
-// 通过省名获得省值
-// export function getProvinceValue(provinceName) {  
-//   const obj = province.filter(item=>{
-//     return provinceName == item['name']
-//   })
-//   console.log(provinceValue)
-//   return obj['province']
-// }
-// // 通过市名获得市值
-// export function getCityValue(cityName) {  
-//   if(){
-
-//   }
-//   const obj = province.filter(item=>{
-//     return provinceName == item['name']
-//   })
-//   console.log(provinceValue)
-//   return obj['province']
-// }
-
 // 函数防抖
 export function debounce(func, delay) {
   let timer = null

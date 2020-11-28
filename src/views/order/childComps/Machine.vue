@@ -533,6 +533,35 @@ export default {
           });
         }
 
+        if (that.hasAuthority(that, "ordDtl:tax")) {
+          columns.push({
+            text: "税金",
+            datafield: "tax",
+            cellsAlign: "center",
+            align: "center",
+            width: 80,
+            cellclassname: that.cellClass,
+            cellsrenderer: function (
+              index,
+              datafield,
+              value,
+              defaultvalue,
+              column,
+              rowdata
+            ) {
+              let tax = rowdata["tax"];
+              if (!isNaN(tax) && parseFloat(tax) > 0 && parseFloat(tax) < 1) {
+                tax = Math.round(tax * 100) + "%";
+              }
+              return (
+                "<div style='margin: 6px;' class='jqx-center-align'>" +
+                tax +
+                "</div>"
+              );
+            },
+          });
+        }
+
         if (that.hasAuthority(that, "ordDtl:logistics_management_fee")) {
           columns.push({
             text: "物流管理费",
@@ -560,68 +589,6 @@ export default {
               return (
                 "<div style='margin: 6px;' class='jqx-center-align'>" +
                 logManageFee +
-                "</div>"
-              );
-            },
-          });
-        }
-
-        if (that.hasAuthority(that, "ordDtl:freight")) {
-          columns.push({
-            text: "运费",
-            datafield: "freight",
-            cellsAlign: "center",
-            align: "center",
-            width: 80,
-            cellclassname: that.cellClass,
-            cellsrenderer: function (
-              index,
-              datafield,
-              value,
-              defaultvalue,
-              column,
-              rowdata
-            ) {
-              let freight = rowdata["freight"];
-              if (
-                !isNaN(freight) &&
-                parseFloat(freight) > 0 &&
-                parseFloat(freight) < 1
-              ) {
-                freight = Math.round(freight * 100) + "%";
-              }
-              return (
-                "<div style='margin: 6px;' class='jqx-center-align'>" +
-                freight +
-                "</div>"
-              );
-            },
-          });
-        }
-
-        if (that.hasAuthority(that, "ordDtl:tax")) {
-          columns.push({
-            text: "税金",
-            datafield: "tax",
-            cellsAlign: "center",
-            align: "center",
-            width: 80,
-            cellclassname: that.cellClass,
-            cellsrenderer: function (
-              index,
-              datafield,
-              value,
-              defaultvalue,
-              column,
-              rowdata
-            ) {
-              let tax = rowdata["tax"];
-              if (!isNaN(tax) && parseFloat(tax) > 0 && parseFloat(tax) < 1) {
-                tax = Math.round(tax * 100) + "%";
-              }
-              return (
-                "<div style='margin: 6px;' class='jqx-center-align'>" +
-                tax +
                 "</div>"
               );
             },
@@ -661,6 +628,39 @@ export default {
           });
         }
 
+        if (that.hasAuthority(that, "ordDtl:freight")) {
+          columns.push({
+            text: "运费",
+            datafield: "freight",
+            cellsAlign: "center",
+            align: "center",
+            width: 80,
+            cellclassname: that.cellClass,
+            cellsrenderer: function (
+              index,
+              datafield,
+              value,
+              defaultvalue,
+              column,
+              rowdata
+            ) {
+              let freight = rowdata["freight"];
+              if (
+                !isNaN(freight) &&
+                parseFloat(freight) > 0 &&
+                parseFloat(freight) < 1
+              ) {
+                freight = Math.round(freight * 100) + "%";
+              }
+              return (
+                "<div style='margin: 6px;' class='jqx-center-align'>" +
+                freight +
+                "</div>"
+              );
+            },
+          });
+        }
+
         columns.push({
           text: "安装费",
           datafield: "install_fee",
@@ -672,10 +672,36 @@ export default {
           aggregatesrenderer: that.aggregatesRenderer,
         });
 
+        if (that.hasAuthority(that, "ordDtl:order_tax")) {
+          columns.push({
+            text: "下单税金",
+            datafield: "order_tax",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 100,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
         if (that.hasAuthority(that, "ordDtl:order_logistics_management_fee")) {
           columns.push({
             text: "下单物流管理费",
             datafield: "order_logistics_management_fee",
+            cellsAlign: "center",
+            align: "center",
+            cellclassname: that.cellClass,
+            width: 125,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+
+        if (that.hasAuthority(that, "ordDtl:order_warranty")) {
+          columns.push({
+            text: "下单质保金",
+            datafield: "order_warranty",
             cellsAlign: "center",
             align: "center",
             cellclassname: that.cellClass,
@@ -693,32 +719,6 @@ export default {
             align: "center",
             cellclassname: that.cellClass,
             width: 100,
-            aggregates: ["sum"],
-            aggregatesrenderer: that.aggregatesRenderer,
-          });
-        }
-
-        if (that.hasAuthority(that, "ordDtl:order_tax")) {
-          columns.push({
-            text: "下单税金",
-            datafield: "order_tax",
-            cellsAlign: "center",
-            align: "center",
-            cellclassname: that.cellClass,
-            width: 100,
-            aggregates: ["sum"],
-            aggregatesrenderer: that.aggregatesRenderer,
-          });
-        }
-
-        if (that.hasAuthority(that, "ordDtl:order_warranty")) {
-          columns.push({
-            text: "下单质保金",
-            datafield: "order_warranty",
-            cellsAlign: "center",
-            align: "center",
-            cellclassname: that.cellClass,
-            width: 125,
             aggregates: ["sum"],
             aggregatesrenderer: that.aggregatesRenderer,
           });
@@ -774,12 +774,37 @@ export default {
           aggregates: ["sum"],
           aggregatesrenderer: that.aggregatesRenderer,
         });
+
+        if (that.hasAuthority(that, "ordDtl:delivery_tax")) {
+          columns.push({
+            text: "送货税金",
+            datafield: "delivery_tax",
+            cellsAlign: "center",
+            align: "center",
+            width: 100,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
         if (
           that.hasAuthority(that, "ordDtl:delivery_logistics_management_fee")
         ) {
           columns.push({
             text: "送货物流管理费",
             datafield: "delivery_logistics_management_fee",
+            cellsAlign: "center",
+            align: "center",
+            width: 125,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (that.hasAuthority(that, "ordDtl:delivery_warranty")) {
+          columns.push({
+            text: "送货质保金",
+            datafield: "delivery_warranty",
             cellsAlign: "center",
             align: "center",
             width: 125,
@@ -795,30 +820,6 @@ export default {
             cellsAlign: "center",
             align: "center",
             width: 100,
-            cellclassname: that.cellClass,
-            aggregates: ["sum"],
-            aggregatesrenderer: that.aggregatesRenderer,
-          });
-        }
-        if (that.hasAuthority(that, "ordDtl:delivery_tax")) {
-          columns.push({
-            text: "送货税金",
-            datafield: "delivery_tax",
-            cellsAlign: "center",
-            align: "center",
-            width: 100,
-            cellclassname: that.cellClass,
-            aggregates: ["sum"],
-            aggregatesrenderer: that.aggregatesRenderer,
-          });
-        }
-        if (that.hasAuthority(that, "ordDtl:delivery_warranty")) {
-          columns.push({
-            text: "送货质保金",
-            datafield: "delivery_warranty",
-            cellsAlign: "center",
-            align: "center",
-            width: 125,
             cellclassname: that.cellClass,
             aggregates: ["sum"],
             aggregatesrenderer: that.aggregatesRenderer,
@@ -857,43 +858,6 @@ export default {
         if (
           that.hasAuthority(
             that,
-            "ordDtl:not_consideration_commission_delivery_logistics_management_fee"
-          )
-        ) {
-          columns.push({
-            text: "非3C风阀送货物流管理费",
-            datafield:
-              "not_consideration_commission_delivery_logistics_management_fee",
-            cellsAlign: "center",
-            align: "center",
-            width: 170,
-            cellclassname: that.cellClass,
-            aggregates: ["sum"],
-            aggregatesrenderer: that.aggregatesRenderer,
-          });
-        }
-
-        if (
-          that.hasAuthority(
-            that,
-            "ordDtl:not_consideration_commission_delivery_freight"
-          )
-        ) {
-          columns.push({
-            text: "非3C风阀送货运费",
-            datafield: "not_consideration_commission_delivery_freight",
-            cellsAlign: "center",
-            align: "center",
-            width: 125,
-            cellclassname: that.cellClass,
-            aggregates: ["sum"],
-            aggregatesrenderer: that.aggregatesRenderer,
-          });
-        }
-
-        if (
-          that.hasAuthority(
-            that,
             "ordDtl:not_consideration_commission_delivery_tax"
           )
         ) {
@@ -911,6 +875,24 @@ export default {
         if (
           that.hasAuthority(
             that,
+            "ordDtl:not_consideration_commission_delivery_logistics_management_fee"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀送货物流管理费",
+            datafield:
+              "not_consideration_commission_delivery_logistics_management_fee",
+            cellsAlign: "center",
+            align: "center",
+            width: 170,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (
+          that.hasAuthority(
+            that,
             "ordDtl:not_consideration_commission_delivery_warranty"
           )
         ) {
@@ -920,6 +902,23 @@ export default {
             cellsAlign: "center",
             align: "center",
             width: 130,
+            cellclassname: that.cellClass,
+            aggregates: ["sum"],
+            aggregatesrenderer: that.aggregatesRenderer,
+          });
+        }
+        if (
+          that.hasAuthority(
+            that,
+            "ordDtl:not_consideration_commission_delivery_freight"
+          )
+        ) {
+          columns.push({
+            text: "非3C风阀送货运费",
+            datafield: "not_consideration_commission_delivery_freight",
+            cellsAlign: "center",
+            align: "center",
+            width: 125,
             cellclassname: that.cellClass,
             aggregates: ["sum"],
             aggregatesrenderer: that.aggregatesRenderer,

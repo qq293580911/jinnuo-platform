@@ -9,6 +9,14 @@ export function getAnnexUrl(params) {
   })
 }
 
+export function deleteAnnex(params) {  
+  return request({
+    url:'/annex/deleteAnnexById.do',
+    method:'Delete',
+    data:params
+  })
+}
+
 export function downloadAnnex(params) {  
   return request({
     url:'/annex/downloadFile.do',

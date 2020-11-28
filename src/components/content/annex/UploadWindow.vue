@@ -44,8 +44,9 @@ export default {
   data() {
     return {
       fileCount: 0,
-      uploadUrl: `/annex/uploadAnnex.do`,
+      uploadUrl: `/api/annex/uploadAnnex.do`,
       fileInputName: "file",
+      boundId: 0,
       localization: {
         browseButton: "浏览",
         uploadButton: "上传",
@@ -59,8 +60,8 @@ export default {
   methods: {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
-      this.uploadUrl += `?annexType=${this.annexType}&&boundId=${params[1]}`
-      console.log(this.uploadUrl)
+      this.boundId = params[1];
+      console.log(this.uploadUrl);
       this.$refs.myWindow.open();
     },
     onSelect(event) {
@@ -76,10 +77,15 @@ export default {
     },
     onRemove(event) {
       this.fileCount--;
-      console.log(this.fileCount);
     },
-    onUploadStart(event){
-      console.log(event)
+    onUploadStart(event) {
+      const boundId = this.boundId;
+      const annexType = this.annexType;
+      $("form")
+        .append(`<input type="hidden" name="boundId" value="${boundId}" />`)
+        .append(
+          `<input type="hidden" name="annexType" value="${annexType}" />`
+        );
     },
     onUploadEnd(event) {
       const args = event.args;

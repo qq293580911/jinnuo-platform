@@ -1,9 +1,27 @@
 import axios from 'axios'
 import qs from 'qs'
 import {
-  message
+  message,
+  Modal
 } from 'ant-design-vue'
-// axios.defaults.baseURL = '/api'
+
+import {
+  debounce
+} from '@/common/util.js'
+
+import context from '../main.js'
+// 退出登录的提示
+const logOutTip = debounce((msg) => {
+
+  Modal.warning({
+    title: `${msg}`,
+    okText: "确认",
+    onOk() {
+      context.$router.push('/login')
+    },
+    class: "test",
+  })
+}, 500)
 
 export function request(config) {
   const instance = axios.create({
@@ -72,6 +90,9 @@ export function request(config) {
     }
     if (res.data.code == 1) {
       message.success(res.data.message)
+    }
+    if (res.data.state == 403) {
+      logOutTip(res.data.msg)
     }
     return res.data
   }, error => {

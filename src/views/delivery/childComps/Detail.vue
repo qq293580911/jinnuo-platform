@@ -310,23 +310,17 @@ export default {
           aggregates: ["sum"],
           aggregatesrenderer: this.aggregatesRenderer,
         },
-        {
-          text: "物流管理费",
-          datafield: "logistics_management_fee",
-          cellsAlign: "center",
-          align: "center",
-          width: 80,
-        },
-        {
-          text: "运费",
-          datafield: "freight",
-          cellsAlign: "center",
-          align: "center",
-          width: 80,
-        },
+
         {
           text: "税金",
           datafield: "tax",
+          cellsAlign: "center",
+          align: "center",
+          width: 80,
+        },
+        {
+          text: "物流管理费",
+          datafield: "logistics_management_fee",
           cellsAlign: "center",
           align: "center",
           width: 80,
@@ -340,19 +334,13 @@ export default {
           editable: false,
         },
         {
-          text: "送货物流管理费",
-          datafield: "delivery_logistics_management_fee",
+          text: "运费",
+          datafield: "freight",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 80,
         },
-        {
-          text: "送货运费",
-          datafield: "delivery_freight",
-          cellsAlign: "center",
-          align: "center",
-          width: 125,
-        },
+
         {
           text: "送货税金",
           datafield: "delivery_tax",
@@ -361,8 +349,22 @@ export default {
           width: 125,
         },
         {
+          text: "送货物流管理费",
+          datafield: "delivery_logistics_management_fee",
+          cellsAlign: "center",
+          align: "center",
+          width: 125,
+        },
+        {
           text: "送货质保金",
           datafield: "delivery_warranty",
+          cellsAlign: "center",
+          align: "center",
+          width: 125,
+        },
+        {
+          text: "送货运费",
+          datafield: "delivery_freight",
           cellsAlign: "center",
           align: "center",
           width: 125,

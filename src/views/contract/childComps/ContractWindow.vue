@@ -745,6 +745,11 @@ export default {
     confirmBtn[0].addEventListener("click", (event) => {
       this.$refs.myValidator.validate(document.getElementById("myForm"));
     });
+
+    const cancelButton = this.$refs.myForm.getComponentByName("cancelButton");
+    cancelButton[0].addEventListener('click',()=>{
+      this.$refs.myWindow.close();
+    })
   },
   methods: {
     onValidationSuccess(event) {

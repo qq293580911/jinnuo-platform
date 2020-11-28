@@ -67,7 +67,7 @@ import JqxMenu from "jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue";
 import PreviewWindow from "@/components/common/PreviewWindow.vue";
 import ContractWindow from "./ContractWindow.vue";
 import SetCustomerWindow from "./SetCustomerWindow.vue";
-import UploadWindow from "@/components/common/UploadWindow.vue";
+import UploadWindow from "@/components/content/annex/UploadWindow.vue";
 
 import { formatFilter, dataExport } from "@/common/util.js";
 import {
@@ -81,7 +81,7 @@ import {
   showContractDetails,
   getContractAnnexList,
 } from "@/network/contract.js";
-import { getAnnexUrl, downloadAnnex } from "@/network/annex.js";
+import { getAnnexUrl, downloadAnnex,deleteAnnex } from "@/network/annex.js";
 export default {
   name: "Detail",
   components: {
@@ -887,9 +887,15 @@ export default {
                   centered: true,
                   content: (h) => <div style="color:red;"></div>,
                   onOk() {
-                    // const annexId = grid.jqxGrid("getrowid", rowindex);
-                    // const jsonParams = {};
-                    // jsonParams.annexId = annexId;
+                    const annexId = childGridInstance.getrowid(rowindex);
+                    const params = {
+                    jsonParams: JSON.stringify({
+                      annexId,
+                    }),
+                  };
+                  deleteAnnex(params).then((res) => {
+                    childGridInstance.updatebounddata()
+                  });
                   },
                   onCancel() {},
                   class: "test",

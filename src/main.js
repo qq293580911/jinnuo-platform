@@ -29,11 +29,11 @@ Vue.component('my-icon', myicon)
 //添加事件总线对象
 Vue.prototype.$bus = new Vue()
 
-
-
 let myVue = new Vue({
   render: h => h(App),
   // 挂载到Vue示例上
   router,
   store
 }).$mount('#app')
+
+export default myVue

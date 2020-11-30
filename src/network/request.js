@@ -32,8 +32,16 @@ export function request(config) {
       headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
       headers.delete['Content-Type'] = "application/x-www-form-urlencoded"
       headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
+      if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+        // 把一个参数对象格式化为一个字符串
+        return qs.stringify(data)
+      } else if (headers['Content-Type'] === 'multipart/form-data;charset=UTF-8') {
+        return data
+      } else {
+        headers['Content-Type'] = 'application/json'
+      }
       // 对 data 进行转换处理
-      data = qs.stringify(data)
+      // data = qs.stringify(data)
       return data;
     }],
   })

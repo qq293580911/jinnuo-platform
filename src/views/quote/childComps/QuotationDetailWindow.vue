@@ -8,7 +8,12 @@
       :position="{ x: '30%', y: '20%' }"
     >
       <div>
-        <JqxForm ref="myForm" :template="template"> </JqxForm>
+        <JqxValidator
+          ref="myValidator"
+          @validationSuccess="onValidationSuccess($event)"
+        >
+          <JqxForm ref="myForm" :template="template"> </JqxForm>
+        </JqxValidator>
       </div>
     </JqxWindow>
   </div>
@@ -16,28 +21,23 @@
 
 <script>
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
+import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
-import { getQuoter, getSalesman } from "@/network/employee.js";
-import { getPricePlan } from "@/network/product.js";
-const {
-  data,
-  province,
-  city,
-  area,
-  town,
-} = require("province-city-china/data");
+import { debounce, getProvince, getCity, getArea } from "@/common/util.js";
 
+import { ADD_QUOTATION } from "@/common/const.js";
+import { queryDuplicate,addQuotationAndDetail } from "@/network/quote.js";
 export default {
   name: "QuotationDetailWindow",
   components: {
     JqxWindow,
+    JqxValidator,
     JqxForm,
   },
   data() {
     const that = this;
     return {
-      formValues: {},
       template: [
         {
           type: "label",
@@ -74,15 +74,14 @@ export default {
               labelWidth: "110px",
               required: true,
               columnWidth: "50%",
-              init: function (component) {
-                getQuoter().then((res) => {
-                  jqwidgets.createInstance(component, "jqxComboBox", {
-                    displayMember: "emp_name",
-                    valueMember: "emp_id",
-                    source: res,
-                    width: 250,
-                    height: 30,
-                  });
+              init: (component) => {
+                const quoters = that.$store.state.quoters;
+                jqwidgets.createInstance(component, "jqxComboBox", {
+                  source: quoters,
+                  width: 250,
+                  height: 30,
+                  displayMember: "emp_name",
+                  valueMember: "emp_id",
                 });
               },
             },
@@ -93,15 +92,14 @@ export default {
               labelWidth: "110px",
               required: true,
               columnWidth: "50%",
-              init: function (component) {
-                getSalesman().then((res) => {
-                  jqwidgets.createInstance(component, "jqxComboBox", {
-                    displayMember: "emp_name",
-                    valueMember: "emp_id",
-                    source: res,
-                    width: 250,
-                    height: 30,
-                  });
+              init: (component) => {
+                const salesmans = that.$store.state.salesmans;
+                jqwidgets.createInstance(component, "jqxComboBox", {
+                  source: salesmans,
+                  width: 250,
+                  height: 30,
+                  displayMember: "emp_name",
+                  valueMember: "emp_id",
                 });
               },
             },
@@ -116,31 +114,27 @@ export default {
               labelWidth: "110px",
               required: true,
               columnWidth: "50%",
-              init: function (component) {
+              init: (component) => {
                 let provinceSelector = jqwidgets.createInstance(
                   component,
                   "jqxComboBox",
                   {
-                    source: province,
+                    source: getProvince(),
                     width: 250,
                     height: 30,
                     displayMember: "name",
-                    valueMember: "province",
+                    valueMember: "name",
                   }
                 );
                 // 省份绑定选择事件
                 provinceSelector.addEventHandler("select", (event) => {
-                  const provinceValue = event.args.item.value;
-                  that.formValues.province = provinceValue;
-                  const citys = city.filter((item) => {
-                    return item.province == provinceValue;
-                  });
+                  const provinceValue = event.args.item.originalItem.province;
                   // 当选择省份的时候，更新城市的数据
                   const $city = that.$refs.myForm.getComponentByName("city");
                   jqwidgets.createInstance($city, "jqxComboBox", {
-                    source: citys,
+                    source: getCity(provinceValue),
                   });
-                  // 重置县镇为空
+                  // 重置县/区为空
                   const $county = that.$refs.myForm.getComponentByName(
                     "county"
                   );
@@ -151,7 +145,7 @@ export default {
               },
             },
             {
-              name: "customerName",
+              name: "customer",
               type: "text",
               label: "客户名称",
               labelWidth: "110px",
@@ -170,7 +164,7 @@ export default {
               labelWidth: "110px",
               required: true,
               columnWidth: "50%",
-              init: function (component) {
+              init: (component) => {
                 let citySelector = jqwidgets.createInstance(
                   component,
                   "jqxComboBox",
@@ -179,26 +173,22 @@ export default {
                     width: 250,
                     height: 30,
                     displayMember: "name",
-                    valueMember: "city",
+                    valueMember: "name",
                   }
                 );
-
+                const $province = that.$refs.myForm.getComponentByName(
+                  "province"
+                );
                 citySelector.addEventHandler("select", (event) => {
-                  const provinceValue = that.formValues.province;
-                  const cityValue = event.args.item.value;
-                  that.formValues.city = cityValue;
-
+                  const provinceValue = $province.jqxComboBox("getSelectedItem")
+                    .originalItem.province;
+                  const cityValue = event.args.item.originalItem.city;
                   // 更新县镇的数据
-                  const counties = area.filter((item) => {
-                    return (
-                      item.province == provinceValue && item.city == cityValue
-                    );
-                  });
                   const $county = that.$refs.myForm.getComponentByName(
                     "county"
                   );
-                  jqwidgets.createInstance($county, "jqxComBoBox", {
-                    source: counties,
+                  jqwidgets.createInstance($county, "jqxComboBox", {
+                    source: getArea(provinceValue, cityValue),
                   });
                 });
               },
@@ -231,12 +221,10 @@ export default {
                     width: 250,
                     height: 30,
                     source: [],
+                    displayMember: "name",
+                    valueMember: "name",
                   }
                 );
-                countySelector.addEventHandler("select", (event) => {
-                  const county = event.args.item.value;
-                  that.formValues.county = county;
-                });
               },
             },
             {
@@ -259,40 +247,26 @@ export default {
               labelWidth: "110px",
               required: true,
               columnWidth: "50%",
-              init: function (component) {
-                let priceModelSelector = null;
-                getPricePlan().then((res) => {
-                  priceModelSelector = jqwidgets.createInstance(
-                    component,
-                    "jqxComboBox",
-                    {
-                      source: res,
-                      displayMember: "rule",
-                      valueMember: "id",
-                      width: 250,
-                      height: 30,
-                    }
-                  );
-                  priceModelSelector.addEventHandler("select", (event) => {
-
-                  });
+              init: (component) => {
+                const pricePlan = that.$store.state.pricePlan;
+                jqwidgets.createInstance(component, "jqxComboBox", {
+                  source: pricePlan,
+                  displayMember: "rule",
+                  valueMember: "id",
+                  width: 250,
+                  height: 30,
                 });
               },
             },
             {
               name: "isRepeat",
-              type: "custom",
+              type: "dropdownlist",
               label: "是否重复",
               labelWidth: "110px",
+              width: 250,
               required: true,
               columnWidth: "50%",
-              init: function (component) {
-                jqwidgets.createInstance(component, "jqxDropDownList", {
-                  width: 250,
-                  height: 30,
-                  source: ["常规", "重复"],
-                });
-              },
+              options: ["常规", "重复"],
             },
           ],
         },
@@ -401,18 +375,13 @@ export default {
             },
             {
               name: "quoteDate",
-              type: "custom",
+              type: "date",
               label: "报价日期",
               labelWidth: "110px",
+              width: 250,
               required: false,
               columnWidth: "50%",
-              init: function (component) {
-                jqwidgets.createInstance(component, "jqxDateTimeInput", {
-                  width: 250,
-                  height: 30,
-                  formatString: "yyyy-MM-dd",
-                });
-              },
+              formatString: "yyyy-MM-dd",
             },
           ],
         },
@@ -499,8 +468,191 @@ export default {
     };
   },
   mounted() {
-    this.$bus.$on("openDetailWindow", (val) => {
-      this.$refs.myWindow.setTitle("添加报价详细");
+    const that = this;
+    const $projectName = this.$refs.myForm.getComponentByName("projectName");
+    const $projectAddress = this.$refs.myForm.getComponentByName(
+      "projectAddress"
+    );
+    const $quoter = this.$refs.myForm.getComponentByName("quoter");
+    const $salesman = this.$refs.myForm.getComponentByName("salesman");
+    const $province = this.$refs.myForm.getComponentByName("province");
+    const $city = this.$refs.myForm.getComponentByName("city");
+    const $county = this.$refs.myForm.getComponentByName("county");
+    const $customer = this.$refs.myForm.getComponentByName("customer");
+    const $customerPhone = this.$refs.myForm.getComponentByName(
+      "customerPhone"
+    );
+    const $customerCompany = this.$refs.myForm.getComponentByName(
+      "customerCompany"
+    );
+    const $priceModel = this.$refs.myForm.getComponentByName("priceModel");
+    const $isRepeat = this.$refs.myForm.getComponentByName("isRepeat");
+    const $regionTax = this.$refs.myForm.getComponentByName("regionTax");
+    const $brokerage = this.$refs.myForm.getComponentByName("brokerage");
+    const $freight = this.$refs.myForm.getComponentByName("freight");
+    const $tax = this.$refs.myForm.getComponentByName("tax");
+    const $reservePrice = this.$refs.myForm.getComponentByName("reservePrice");
+    const $quotePrice = this.$refs.myForm.getComponentByName("quotePrice");
+    const $remark = this.$refs.myForm.getComponentByName("remark");
+    const $quoteDate = this.$refs.myForm.getComponentByName("quoteDate");
+    const $controlBoxReservePrice = this.$refs.myForm.getComponentByName(
+      "controlBoxReservePrice"
+    );
+    const $controlBoxQuotePrice = this.$refs.myForm.getComponentByName(
+      "controlBoxQuotePrice"
+    );
+
+    // 根据项目名称和业务员判断报价是否重复
+    $projectName.on(
+      "input",
+      debounce((event) => {
+        that.queryDuplicate();
+      }, 1000)
+    );
+
+    $salesman.on("select", (event) => {
+      that.queryDuplicate();
+    });
+
+    this.projectNameInstance = $projectName;
+    this.projectAddressInstance = $projectAddress;
+    this.quoterInstance = $quoter;
+    this.salesmanInstance = $salesman;
+    this.provinceInstance = $province;
+    this.cityInstance = $city;
+    this.countyInstance = $county;
+    this.customerInstance = $customer;
+    this.customerPhoneInstance = $customerPhone;
+    this.customerCompanyInstance = $customerCompany;
+    this.priceModelInstance = $priceModel;
+    this.isRepeatInstance = $isRepeat;
+    this.regionTaxInstance = $regionTax;
+    this.brokerageInstance = $brokerage;
+    this.freightInstance = $freight;
+    this.taxInstance = $tax;
+    this.reservePriceInstance = $reservePrice;
+    this.quotePriceInstance = $quotePrice;
+    this.remarkInstance = $remark;
+    this.quoteDateInstance = $quoteDate;
+    this.controlBoxReservePriceInstance = $controlBoxReservePrice;
+    this.controlBoxQuotePriceInstance = $controlBoxQuotePrice;
+
+    this.$refs.myValidator.rules = [
+      {
+        input: $projectName,
+        message: "不能为空!",
+        action: "keyup, blur",
+        rule: "required",
+      },
+      {
+        input: $quoter,
+        message: "该项必选",
+        action: "select",
+        rule: () => {
+          const selectIndex = $quoter.jqxComboBox("getSelectedIndex");
+          return selectIndex > -1;
+        },
+      },
+      {
+        input: $salesman,
+        message: "该项必选!",
+        action: "change",
+        rule: () => {
+          const selectIndex = $salesman.jqxComboBox("getSelectedIndex");
+          return selectIndex > -1;
+        },
+      },
+      {
+        input: $priceModel,
+        action: "select",
+        message: "该项必选!",
+        rule: () => {
+          const selectIndex = $priceModel.jqxComboBox("getSelectedIndex");
+          return selectIndex > -1;
+        },
+      },
+      {
+        input: $isRepeat,
+        message: "该项必选!",
+        rule: () => {
+          const selectIndex = $isRepeat.jqxDropDownList("getSelectedIndex");
+          return selectIndex > -1;
+        },
+      },
+      {
+        input: $province,
+        action: "change",
+        message: "该项必选!",
+        rule: () => {
+          const selectIndex = $province.jqxComboBox("getSelectedIndex");
+          return selectIndex > -1;
+        },
+      },
+      {
+        input: $city,
+        action: "change",
+        message: "该项必选!",
+        rule: () => {
+          const selectIndex = $city.jqxComboBox("getSelectedIndex");
+          return selectIndex > -1;
+        },
+      },
+      {
+        input: $customer,
+        message: "不能为空!",
+        action: "keyup, blur",
+        rule: "required",
+      },
+      {
+        input: $customer,
+        message: "只能为中文!",
+        action: "keyup, blur",
+        rule: "notNumber",
+      },
+      {
+        input: $customerPhone,
+        message: "不正确的手机格式!",
+        action: "keyup, blur",
+        rule: () => {
+          const phone = $customerPhone.val();
+          const reg = /^(1[3456789]\d{9})?$/;
+          return reg.test(phone);
+        },
+      },
+      {
+        input: $quoteDate,
+        message: "你选择的日期不合理",
+        action: "valueChanged",
+        rule: () => {
+          const quoteDate = $quoteDate.val();
+          return new Date(quoteDate) <= new Date();
+        },
+      },
+    ];
+
+    // 提交并验证表单
+    const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
+    confirmBtn[0].addEventListener("click", (event) => {
+      this.$refs.myValidator.validate(document.getElementById("myForm"));
+    });
+
+    this.$bus.$on("openDetailWindow", (...params) => {
+      this.$refs.myWindow.setTitle(ADD_QUOTATION);
+      const data = params[0];
+      $projectName.val(data["projectName"]);
+      $projectAddress.val(data["projectAddress"]);
+      $quoter.jqxComboBox("selectItem", data["quotor"]);
+      $salesman.jqxComboBox("selectItem", data["salesman"]);
+      $customerCompany.val(data["customerCompany"]);
+      $customer.val(data["customer"]);
+      $customerPhone.val(data["customerPhone"]);
+      $isRepeat.jqxDropDownList("selectItem", data["isRepeat"]);
+      $reservePrice.jqxNumberInput("setDecimal", data["reservePrice"]);
+      $quotePrice.jqxNumberInput("setDecimal", data["quotePrice"]);
+      $quoteDate.jqxDateTimeInput("setDate", new Date(data["quoteDate"]));
+      // 文件
+      this.reservePriceFile = params[1];
+      this.quotePriceFile = params[2];
       this.$refs.myWindow.open();
     });
   },
@@ -508,6 +660,87 @@ export default {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
       this.$refs.myWindow.open();
+    },
+    onValidationSuccess() {
+      const that = this;
+      const formData = {};
+      formData.projectName = this.projectNameInstance.val();
+      formData.projectAddress = this.projectAddressInstance.val();
+      formData.quoter = this.quoterInstance.val();
+      formData.salesman = this.salesmanInstance.val();
+      formData.province = this.provinceInstance.val();
+      formData.city = this.cityInstance.val();
+      formData.county = this.countyInstance.val();
+      formData.customerName = this.customerInstance.val();
+      formData.customerPhone = this.customerPhoneInstance.val();
+      formData.customerCompany = this.customerCompanyInstance.val();
+      formData.formulaModel = this.priceModelInstance.jqxComboBox(
+        "getSelectedItem"
+      ).label;
+      formData.isRepeat = this.isRepeatInstance.jqxDropDownList(
+        "getSelectedItem"
+      ).label;
+      formData.regionTax = this.regionTaxInstance.val();
+      formData.brokerage = this.brokerageInstance.val();
+      formData.freight = this.freightInstance.val();
+      formData.tax = this.taxInstance.val();
+      formData.reservePrice = this.reservePriceInstance.val();
+      formData.quotePrice = this.quotePriceInstance.val();
+      formData.remark = this.remarkInstance.val();
+      formData.quoteDate = this.quoteDateInstance.val();
+      formData.controlBoxReservePrice = this.controlBoxReservePriceInstance.val();
+      formData.controlBoxQuotePrice = this.controlBoxQuotePriceInstance.val();
+
+      let form = new FormData();
+      form.append("jsonParams", JSON.stringify(formData));
+      form.append("files", that.reservePriceFile);
+      form.append("files", that.quotePriceFile);
+      // 执行添加
+      this.add(form)
+    },
+    add(form){    
+      addQuotationAndDetail(form).then(res=>{
+        this.$refs.myWindow.close()
+        this.$parent.render()
+        this.clearForm()
+      })
+    },
+    clearForm(){
+      this.projectNameInstance.val('')
+      this.projectAddressInstance.val('')
+      this.quoterInstance.jqxComboBox('clearSelection')
+      this.salesmanInstance.jqxComboBox('clearSelection')
+      this.provinceInstance.jqxComboBox('clearSelection')
+      this.cityInstance.jqxComboBox('clearSelection')
+      this.countyInstance.jqxComboBox('clearSelection')
+      this.customerInstance.val('')
+      this.customerPhoneInstance.val('')
+      this.customerCompanyInstance.val('')
+      this.priceModelInstance.jqxComboBox('clearSelection')
+      this.isRepeatInstance.jqxComboBox('clearSelection')
+      this.regionTaxInstance.val('')
+      this.brokerageInstance.val('')
+      this.freightInstance.val('')
+      this.taxInstance.val('')
+      this.reservePriceInstance.jqxNumberInput('setDecimal',0)
+      this.quotePriceInstance.jqxNumberInput('setDecimal',0)
+      this.remarkInstance.val('')
+      this.quoteDateInstance.jqxDateTimeInput('setDate',new Date())
+      this.controlBoxReservePriceInstance.jqxNumberInput('setDecimal',0)
+      this.controlBoxQuotePriceInstance.jqxNumberInput('setDecimal',0)
+    },
+    queryDuplicate() {
+      const projectName = this.projectNameInstance.val();
+      const salesman = this.salesmanInstance.val();
+      const params = {
+        jsonParams: JSON.stringify({
+          projectName,
+          salesman,
+        }),
+      };
+      queryDuplicate(params).then((res) => {
+        this.isRepeatInstance.jqxDropDownList("selectItem", res["repeat"]);
+      });
     },
   },
 };

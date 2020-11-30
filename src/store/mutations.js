@@ -1,6 +1,7 @@
 import {
   SAVE_PERMISSIONS,
   SAVE_SALESMANS,
+  SAVE_QUOTERS,
   SAVE_PRICE_PLAN,
 } from './mutation-types'
 
@@ -12,6 +13,9 @@ export default {
   },
   [SAVE_SALESMANS](state, payload) {
     state.salesmans = payload
+  },
+  [SAVE_QUOTERS](state, payload) {
+    state.quoters = payload
   },
   [SAVE_PRICE_PLAN](state, payload) {
     state.pricePlan = payload

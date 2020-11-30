@@ -56,6 +56,7 @@ export default {
     return {
       inputValue: "",
       fileCotent: {},
+      file: null,
     };
   },
   props: {
@@ -75,10 +76,12 @@ export default {
       type: Boolean,
       default: false,
     },
-    fieldsCofig:{
-      type:Object,
-      default:{}
-    }
+    fieldsCofig: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
   },
   created() {
     this.textId = "textInput" + JQXLite.generateID();
@@ -111,7 +114,8 @@ export default {
       file.click();
     },
     changed(event) {
-      const that = this
+      this.file = event.target.files[0];
+      const that = this;
       // 文件名称
       let fileName = event.target.value;
       fileName = fileName.substring(
@@ -124,15 +128,13 @@ export default {
       this.inputValue = fileName;
       // 文件内容
       const files = event.target.files;
-      LAY_EXCEL.importExcel(
-        files,
-        that.fieldsCofig,
-        function (data, book) {
-          that.fileCotent = data
-          that.$emit('changed',data)
-        }
-      );
-      //this.value = null;
+      LAY_EXCEL.importExcel(files, that.fieldsCofig, function (data, book) {
+        event.srcElement.value = ""; //及时清空,避免下次选择相同的文件无法触发事件
+        that.fileCotent = data;
+        that.$emit("changed", data);
+      });
+      
+      
     },
   },
 };

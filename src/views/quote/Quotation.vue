@@ -216,6 +216,7 @@ export default {
       this.$confirm({
         title: `${Message.CONFIRM_DELETE}`,
         okText: "确认",
+        okType: "danger",
         cancelText: "取消",
         centered: true,
         content: (h) => <div style="color:red;">将连关联文件一并删除</div>,
@@ -439,6 +440,12 @@ export default {
         }),
       };
       deleteCard(params).then((res) => {
+        const lastSelectedElement = document.getElementById(
+          "card" + this.selectCardId
+        );
+        if (lastSelectedElement) {
+          lastSelectedElement.classList.remove("selected");
+        }
         this.selectCardId = 0;
         this.render();
       });
@@ -514,6 +521,6 @@ export default {
   margin-left: auto;
 }
 .selected {
-  background: #356AA0;
+  background: #356aa0;
 }
 </style>

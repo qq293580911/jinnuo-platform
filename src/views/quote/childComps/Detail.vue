@@ -309,7 +309,6 @@ export default {
         deleteButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(deleteButtonContainer);
-        //创建按钮
         let deleteButton = jqwidgets.createInstance(
           "#deleteButton",
           "jqxButton",

@@ -1,37 +1,39 @@
-import { request } from "@/network/request";
+import {
+  request
+} from "@/network/request";
 
 // 报价处理
-export function importFileContent(param) {  
-  
+export function importFileContent(param) {
+
 }
 
 // 报价单管理
-export function getQuotationList(params){
+export function getQuotationList(params) {
   return request({
-    url:"/qtnManage/showQuotationList.do",
-    method:"GET",
+    url: "/qtnManage/showQuotationList.do",
+    method: "GET",
     params
   })
 }
 
-export function deleteCard(params) {  
+export function deleteCard(params) {
   return request({
-    url:"/qtnManage/deleteQuotationById.do",
-    method:"Delete",
+    url: "/qtnManage/deleteQuotationById.do",
+    method: "Delete",
     params
   })
 }
 
-export function download(params){
+export function download(params) {
   return request({
-    url:"/qtnManage/getDownloadURL.do",
-    method:"GET",
+    url: "/qtnManage/getDownloadURL.do",
+    method: "GET",
     params
   })
 }
 
 // 报价详细
-export function showDetailList(source, params){
+export function showDetailList(source, params) {
   return request({
     url: source.url,
     method: source.type,
@@ -40,4 +42,21 @@ export function showDetailList(source, params){
   })
 }
 
+export function queryDuplicate(params) {
+  return request({
+    url: '/qtnManage/queryQuotationExist.do',
+    method: 'Get',
+    params
+  })
+}
 
+export function addQuotationAndDetail(form) {
+  return request({
+    url: '/qtnManage/addQuotationAndDetail.do',
+    method: 'Post',
+    data: form,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}

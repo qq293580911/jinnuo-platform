@@ -16,6 +16,17 @@ export default {
   components: {
     CustomUploader,
   },
+  created() {
+    this.init()
+  },
+  methods: {
+    init(){
+      let formData = new FormData()
+      formData.append('sdsd','sdsdssdsdsdd')
+      console.log(formData)
+      console.log(formData.get('sdsd'))
+    }
+  },
 };
 </script>
 

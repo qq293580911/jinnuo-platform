@@ -71,6 +71,7 @@ export const EDIT_MACHINE_PRICE = '修改设备价格';
 export const ADD_EMPLOYEE = '添加员工';
 export const EDIT_EMPLOYEE = '修改员工';
 export const ASSIGN_POSITION = "分配职位"
+export const ADD_QUOTATION = "添加报价信息"
 export const ADD_ORDER = "添加下单信息"
 export const EDIT_ORDER = "编辑下单信息"
 export const IMPORT_ORDER = "导入下单信息"

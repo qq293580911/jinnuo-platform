@@ -29,19 +29,18 @@ export function request(config) {
     timeout: 5000,
     transformRequest: [function (data, headers) {
       // 对请求头设置
-      headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-      headers.delete['Content-Type'] = "application/x-www-form-urlencoded"
-      headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
-      if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
-        // 把一个参数对象格式化为一个字符串
+      if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {  
         return qs.stringify(data)
       } else if (headers['Content-Type'] === 'multipart/form-data;charset=UTF-8') {
         return data
+      }else if(headers['Content-Type'] == 'application/json'){
+        return data
       } else {
-        headers['Content-Type'] = 'application/json'
+        headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+        headers.delete['Content-Type'] = "application/x-www-form-urlencoded"
+        headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
+        data = qs.stringify(data)
       }
-      // 对 data 进行转换处理
-      // data = qs.stringify(data)
       return data;
     }],
   })

@@ -7,25 +7,24 @@
       :showUploadButton="true"
       refs="uploader"
     ></CustomUploader>
+    <selection-tool
+      ref="selectionTool"
+      :selection-type="'换气扇选型'"
+    ></selection-tool>
   </div>
 </template>
 
 <script>
 import CustomUploader from "@/components/common/CustomUploader";
+import SelectionTool from "@/views/quote/childComps/SelectionTool";
 export default {
   components: {
     CustomUploader,
+    SelectionTool,
   },
-  created() {
-    this.init()
-  },
+  created() {},
   methods: {
-    init(){
-      let formData = new FormData()
-      formData.append('sdsd','sdsdssdsdsdd')
-      console.log(formData)
-      console.log(formData.get('sdsd'))
-    }
+    init() {},
   },
 };
 </script>

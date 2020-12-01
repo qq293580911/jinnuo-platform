@@ -12,7 +12,8 @@
       :toolbarheight="33"
       :selectionmode="'singlerow'"
       :columngroups="columngroups"
-    ></JqxGrid>
+    >
+    </JqxGrid>
   </div>
 </template>
 
@@ -21,9 +22,16 @@ import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 
 import { getLocalization } from "@/common/localization.js";
 export default {
-  name: "MachineSelectionGridBottom",
   components: {
-    JqxGrid
+    JqxGrid,
+  },
+  props: {
+    fieldsCofig: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
   },
   beforeCreate() {
     this.source = {
@@ -44,8 +52,8 @@ export default {
           type: "number",
         },
         {
-          name: "priceCcc",
-          map: "price_ccc",
+          name: "priceNonCcc",
+          map: "price_non_ccc",
           type: "number",
         },
         { name: "power", map: "power", type: "string" },
@@ -54,6 +62,7 @@ export default {
       localdata: [],
     };
   },
+  created() {},
   data() {
     return {
       localization: getLocalization("zh-CN"),
@@ -105,7 +114,7 @@ export default {
       ],
       columngroups: [
         {
-          text: "3C",
+          text: "非3C",
           align: "center",
           name: "SelectionDetails",
           align: "left",
@@ -113,6 +122,8 @@ export default {
       ],
     };
   },
+
+  mounted() {},
   methods: {},
 };
 </script>

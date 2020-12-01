@@ -3,6 +3,14 @@ import {
 } from "@/network/request";
 
 // 报价处理
+export function getToolsCompsSource(params) {  
+  return request({
+    url:'/qtnProc/getToolbarComponentResource.do',
+    method:'Get',
+    params
+  })
+}
+
 export function importFileContent(param) {
 
 }

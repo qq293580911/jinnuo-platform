@@ -55,7 +55,7 @@ export default {
   data() {
     return {
       inputValue: "",
-      fileCotent: {},
+      fileContent: {},
       file: null,
     };
   },
@@ -130,7 +130,7 @@ export default {
       const files = event.target.files;
       LAY_EXCEL.importExcel(files, that.fieldsCofig, function (data, book) {
         event.srcElement.value = ""; //及时清空,避免下次选择相同的文件无法触发事件
-        that.fileCotent = data;
+        that.fileContent = data;
         that.$emit("changed", data);
       });
       

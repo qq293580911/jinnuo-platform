@@ -26,9 +26,61 @@ export default {
       toolsIndex: -1,
     };
   },
+  mounted() {
+    const that = this;
+    // 上传器监听文件读取内容
+    this.uploaderInstance.$on("changed", (data) => {
+      let sheetName = Object.keys(data[0])[0];
+      const fileName = that.uploaderInstance.inputValue
+      const fileContent = data[0][sheetName];
+      this.$store.dispatch('saveCurrentQuoteName',fileName)
+      this.$store.dispatch("saveCurrentQuoteContent", fileContent);
+    });
+    // 导入
+    this.importInstance.addEventHandler("click", () => {
+      const priceRule = this.priceRuleInsatnce.getSelectedItem().value;
+      this.$confirm({
+        title: `导入内容`,
+        okText: "确认",
+        cancelText: "取消",
+        centered: true,
+        content: (h) => (
+          <div style="color:red;">
+            你现在选择的是<span style="color:green;">{priceRule}</span>的价格，
+            <span style="color:green;">{priceRule}</span>
+            的拆分，确认导入数据吗？?
+          </div>
+        ),
+        onOk() {
+          that.$bus.$emit("import");
+        },
+        onCancel() {},
+        class: "test",
+      });
+    });
+    // 匹配阀门风口
+    this.handlerInstance.addEventHandler("click", () => {
+      that.$bus.$emit("handler");
+    });
+    // 数据导出
+    this.exportInstance.addEventHandler('click',()=>{
+      that.$bus.$emit("export");
+    })
+    // // 价格方案选择
+    // this.priceRuleInsatnce.addEventHandler("select", (event) => {
+    //   const rule = event.args.item.label;
+    //   this.$bus.$emit('selectPriceRule',rule)
+    // });
+    // // 拆分方案选择
+    // this.splitRuleInsatnce.addEventHandler("select", (event) => {
+    //   const rule = event.args.item.label;
+    //   this.$bus.$emit('selectSplitRule',rule)
+    // });
+  },
   methods: {
     initTools: function (type, index, tool, menuToolIninitialization) {
       if (index != this.toolsIndex) {
+        const that = this;
         switch (index) {
           case 0:
             let container = document.createElement("div");
@@ -37,12 +89,28 @@ export default {
               "overflow: hidden; position: relative;margin-top:1px";
             tool[0].appendChild(container);
             let uploaderComponent = Vue.extend(CustomUploader);
-            let uploaderInstance = new uploaderComponent({
+            that.uploaderInstance = new uploaderComponent({
               propsData: {
                 width: 190,
                 height: 25,
                 type: "jqxInput",
                 showUploadButton: true,
+                fieldsCofig: {
+                  fields: {
+                    serialNumber: "A",
+                    productName: "B",
+                    specModel: "C",
+                    unit: "D",
+                    quantity: "E",
+                    unitPrice: "F",
+                    totalPrice: "G",
+                    remark: "H",
+                    selection: "I",
+                    transfer: "J",
+                    formula: "K",
+                    designateType: "L",
+                  },
+                },
               },
             }).$mount("#container");
             break;
@@ -67,23 +135,31 @@ export default {
             buttonGroup.appendChild(proccessButton);
             buttonGroup.appendChild(exportButton);
 
-            jqwidgets.createInstance("#importButton", "jqxButton", {
-              imgSrc: require("@/assets/iconfont/custom/import.svg"),
-            });
+            that.importInstance = jqwidgets.createInstance(
+              "#importButton",
+              "jqxButton",
+              {
+                imgSrc: require("@/assets/iconfont/custom/import.svg"),
+              }
+            );
             jqwidgets.createInstance("#importButton", "jqxTooltip", {
               content: "导入数据",
               position: "mouse",
             });
 
-            jqwidgets.createInstance("#proccessButton", "jqxButton", {
-              imgSrc: require("@/assets/iconfont/custom/process.svg"),
-            });
+            that.handlerInstance = jqwidgets.createInstance(
+              "#proccessButton",
+              "jqxButton",
+              {
+                imgSrc: require("@/assets/iconfont/custom/process.svg"),
+              }
+            );
             jqwidgets.createInstance("#proccessButton", "jqxTooltip", {
               content: "匹配价格",
               position: "mouse",
             });
 
-            jqwidgets.createInstance("#exportButton", "jqxButton", {
+            that.exportInstance = jqwidgets.createInstance("#exportButton", "jqxButton", {
               imgSrc: require("@/assets/iconfont/custom/export.svg"),
             });
             jqwidgets.createInstance("#exportButton", "jqxTooltip", {
@@ -108,7 +184,7 @@ export default {
             });
             break;
           case 3:
-            tool[0].style.cssText = "margin-left:5%;";
+            tool[0].style.cssText = "margin-left:10%;";
             container = document.createElement("div");
             container.style.cssText =
               "overflow: hidden; position: relative;display:flex";
@@ -154,7 +230,8 @@ export default {
 
             // 加点按钮
             const addPointBtnContainer = document.createElement("div");
-            addPointBtnContainer.style.cssText = "margin-right:5px;cursor: pointer;";
+            addPointBtnContainer.style.cssText =
+              "margin-right:5px;cursor: pointer;";
             addPointBtnContainer.id = "addPointBtn";
             container.appendChild(addPointBtnContainer);
             jqwidgets.createInstance("#addPointBtn", "jqxButton", {
@@ -181,15 +258,29 @@ export default {
             planContainer.appendChild(pricePlanSelector);
             planContainer.appendChild(splitPlanSelector);
 
-            jqwidgets.createInstance("#pricePlan", "jqxComboBox", {
-              source: ["价格1", "价格2"],
-              width: 100,
-            });
+            that.priceRuleInsatnce = jqwidgets.createInstance(
+              "#pricePlan",
+              "jqxComboBox",
+              {
+                source: that.$store.state.pricePlan,
+                width: 150,
+                selectedIndex: 0,
+                displayMember: "rule",
+                valueMember: "rule",
+              }
+            );
 
-            jqwidgets.createInstance("#splitPlan", "jqxComboBox", {
-              source: ["拆分1", "拆分2"],
-              width: 100,
-            });
+            that.splitRuleInstance = jqwidgets.createInstance(
+              "#splitPlan",
+              "jqxComboBox",
+              {
+                source: that.$store.state.pricePlan,
+                width: 150,
+                selectedIndex: 0,
+                displayMember: "rule",
+                valueMember: "rule",
+              }
+            );
             break;
         }
         this.toolsIndex = index;

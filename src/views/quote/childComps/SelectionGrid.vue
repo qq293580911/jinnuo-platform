@@ -1,6 +1,7 @@
 <template>
   <div>
     <JqxGrid
+      ref="myGrid"
       :source="dataAdapter"
       :columns="columns"
       :localization="localization"
@@ -26,95 +27,30 @@ export default {
     JqxGrid,
   },
   props: {
-    fieldsCofig: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+    selectionType: {
+      type: String,
+      default: null,
+    },
+    columnGroupName: {
+      type: String,
+      default: "",
     },
   },
   beforeCreate() {
     this.source = {
-      datafields: [
-        {
-          name: "machineName",
-          map: "pm_name",
-          type: "string",
-        },
-        {
-          name: "minAirVolume",
-          map: "min_air_volume",
-          type: "number",
-        },
-        {
-          name: "maxAirVolume",
-          map: "max_air_volume",
-          type: "number",
-        },
-        {
-          name: "priceNonCcc",
-          map: "price_non_ccc",
-          type: "number",
-        },
-        { name: "power", map: "power", type: "string" },
-        { name: "remark", map: "remark", type: "string" },
-      ],
+      datafields: [],
       localdata: [],
     };
   },
-  created() {},
   data() {
+    const that = this;
     return {
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source),
-      columns: [
-        {
-          text: "型号",
-          columngroup: "SelectionDetails",
-          datafield: "machineName",
-          align: "center",
-          cellsalign: "center",
-        },
-        {
-          text: "风量",
-          columngroup: "SelectionDetails",
-          datafield: "minAirVolume",
-          align: "center",
-          cellsalign: "center",
-        },
-        {
-          text: "风量",
-          columngroup: "SelectionDetails",
-          datafield: "maxAirVolume",
-          align: "center",
-          cellsalign: "center",
-        },
-        {
-          text: "功率",
-          columngroup: "SelectionDetails",
-          datafield: "power",
-          align: "center",
-          cellsalign: "center",
-        },
-        {
-          text: "单价",
-          columngroup: "SelectionDetails",
-          datafield: "priceCcc",
-          align: "center",
-          cellsalign: "center",
-        },
-        {
-          text: "备注",
-          columngroup: "SelectionDetails",
-          datafield: "remark",
-          align: "center",
-          cellsalign: "center",
-          hidden: true,
-        },
-      ],
+      columns: [],
       columngroups: [
         {
-          text: "非3C",
+          text: that.columnGroupName,
           align: "center",
           name: "SelectionDetails",
           align: "left",
@@ -122,8 +58,273 @@ export default {
       ],
     };
   },
+  watch: {
+    selectionType() {
+      console.log(this.selectionType);
+    },
+  },
+  mounted() {
+    const that = this;
+    // this.$bus.$on("changeSelectionType", (val) => {
+    //   console.log(val);
+    // });
 
-  mounted() {},
+    switch (that.selectionType) {
+      case "常规风机":
+        that.source.datafields.push({
+          name: "pm_name",
+          type: "string",
+        });
+
+        that.source.datafields.push({
+          name: "min_air_volume",
+          type: "number",
+        });
+        that.source.datafields.push({
+          name: "max_air_volume",
+          type: "number",
+        });
+        if (that.columnGroupName == "非3C") {
+          that.source.datafields.push({
+            name: "price_non_ccc",
+            type: "number",
+          });
+        } else {
+          that.source.datafields.push({
+            name: "price_ccc",
+            type: "number",
+          });
+        }
+        that.source.datafields.push({ name: "power", type: "string" });
+        that.source.datafields.push({ name: "remark", type: "string" });
+
+        that.columns.push({
+          text: "名称",
+          columngroup: "SelectionDetails",
+          datafield: "pm_name",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "最低风量",
+          columngroup: "SelectionDetails",
+          datafield: "min_air_volume",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "最高风量",
+          columngroup: "SelectionDetails",
+          datafield: "max_air_volume",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "功率",
+          columngroup: "SelectionDetails",
+          datafield: "power",
+          align: "center",
+          cellsalign: "center",
+        });
+        if (that.columnGroupName == "非3C") {
+          that.columns.push({
+            text: "单价",
+            columngroup: "SelectionDetails",
+            datafield: "price_non_ccc",
+            align: "center",
+            cellsalign: "center",
+          });
+        } else {
+          that.columns.push({
+            text: "单价",
+            columngroup: "SelectionDetails",
+            datafield: "price_ccc",
+            align: "center",
+            cellsalign: "center",
+          });
+        }
+
+        that.columns.push({
+          text: "备注",
+          columngroup: "SelectionDetails",
+          datafield: "remark",
+          align: "center",
+          cellsalign: "center",
+          hidden: true,
+        });
+        break;
+      case "控制箱":
+        that.source.datafields.push({ name: "pm_name", type: "string" });
+        if (that.columnGroupName == "非3C") {
+          that.source.datafields.push({
+            name: "price_non_ccc",
+            type: "number",
+          });
+        } else {
+          that.source.datafields.push({ name: "price_ccc", type: "number" });
+        }
+        that.source.datafields.push({ name: "power", type: "string" });
+
+        that.columns.push({
+          text: "型号",
+          columngroup: "SelectionDetails",
+          datafield: "pm_name",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "功率",
+          columngroup: "SelectionDetails",
+          datafield: "power",
+          align: "center",
+          cellsalign: "center",
+        });
+        if (that.columnGroupName == "非3C") {
+          that.columns.push({
+            text: "单价",
+            columngroup: "SelectionDetails",
+            datafield: "price_non_ccc",
+            align: "center",
+            cellsalign: "center",
+          });
+        } else {
+          that.columns.push({
+            text: "单价",
+            columngroup: "SelectionDetails",
+            datafield: "price_ccc",
+            align: "center",
+            cellsalign: "center",
+          });
+        }
+        break;
+      case "换气扇":
+        that.source.datafields.push({ name: "name", type: "string" });
+        that.source.datafields.push({ name: "air_volume", type: "string" });
+        that.source.datafields.push({ name: "price", type: "number" });
+        that.source.datafields.push({ name: "specification", type: "string" });
+        that.source.datafields.push({ name: "panel_material", type: "string" });
+
+        that.columns.push({
+          text: "名称",
+          datafield: "name",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "风量",
+          datafield: "air_volume",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "单价",
+          datafield: "price",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "规格",
+          datafield: "specification",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "材质",
+          datafield: "panel_material",
+          align: "center",
+          cellsalign: "center",
+        });
+        break;
+      case "方形壁式风机":
+        that.source.datafields.push({ name: "pm_name", type: "string" });
+        that.source.datafields.push({ name: "min_air_volume", type: "number" });
+        that.source.datafields.push({ name: "max_air_volume", type: "number" });
+        that.source.datafields.push({ name: "power", type: "string" });
+        that.source.datafields.push({ name: "price_non_ccc", type: "number" });
+
+        that.columns.push({
+          text: "名称",
+          datafield: "pm_name",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "最低风量",
+          datafield: "min_air_volume",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "最高风量",
+          datafield: "max_air_volume",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "功率",
+          datafield: "power",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "单价",
+          datafield: "price_non_ccc",
+          align: "center",
+          cellsalign: "center",
+        });
+        break;
+      default:
+        // GDF
+        // 超静音
+        // 边墙
+        // 边墙（防爆）
+        that.source.datafields.push({ name: "pm_name", type: "string" });
+        that.source.datafields.push({ name: "min_air_volume", type: "number" });
+        that.source.datafields.push({ name: "max_air_volume", type: "number" });
+        that.source.datafields.push({ name: "power", type: "string" });
+        that.source.datafields.push({ name: "price_non_ccc", type: "number" });
+        that.source.datafields.push({ name: "model", type: "string" });
+
+        that.columns.push({
+          text: "名称",
+          datafield: "pm_name",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "最低风量",
+          datafield: "min_air_volume",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "最高风量",
+          datafield: "max_air_volume",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "功率",
+          datafield: "power",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "单价",
+          datafield: "price_non_ccc",
+          align: "center",
+          cellsalign: "center",
+        });
+        that.columns.push({
+          text: "型号",
+          datafield: "model",
+          align: "center",
+          cellsalign: "center",
+        });
+        break;
+    }
+    that.$refs.myGrid.updatebounddata();
+  },
   methods: {},
 };
 </script>

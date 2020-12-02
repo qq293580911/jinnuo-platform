@@ -7,20 +7,19 @@
       :showUploadButton="true"
       refs="uploader"
     ></CustomUploader>
-    <selection-tool
-      ref="selectionTool"
-      :selection-type="'换气扇选型'"
-    ></selection-tool>
+    <selection-grid ref="selectionGrid" :selection-type="'常规风机'"></selection-grid>
   </div>
 </template>
 
 <script>
 import CustomUploader from "@/components/common/CustomUploader";
 import SelectionTool from "@/views/quote/childComps/SelectionTool";
+import SelectionGrid from "@/views/quote/childComps/SelectionGrid"
 export default {
   components: {
     CustomUploader,
     SelectionTool,
+    SelectionGrid,
   },
   created() {},
   methods: {

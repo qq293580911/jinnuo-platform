@@ -11,8 +11,12 @@ export function getToolsCompsSource(params) {
   })
 }
 
-export function importFileContent(param) {
-
+export function filterData(params) {  
+  return request({
+    url:'/qtnProc/getFilterData.do',
+    method:'Post',
+    data:params
+  })
 }
 
 // 报价单管理

@@ -8,15 +8,16 @@ import getters from './getters';
 Vue.use(Vuex)
 
 const state = {
-
+  currentQuote: {},
+  todayQuote: []
 }
 
 //2、创建对象
 const store = new Vuex.Store({
-    state,
-    mutations,
-    actions,
-    getters
+  state,
+  mutations,
+  actions,
+  getters
 })
 
 //3、导出

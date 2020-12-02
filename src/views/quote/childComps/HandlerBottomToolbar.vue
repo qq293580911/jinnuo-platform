@@ -26,7 +26,7 @@ export default {
     return {
       toolsIndex: -1,
       tools: "custom | custom | custom | custom | custom | custom",
-      comps: {}
+      comps: {},
     };
   },
   created() {
@@ -152,7 +152,7 @@ export default {
                   "边墙风机",
                   "边墙风机（防爆）",
                 ],
-                width: 150,
+                width: 130,
                 height: 25,
                 selectedIndex: 0,
               }
@@ -160,14 +160,16 @@ export default {
             selectionType.addEventHandler("select", (event) => {
               const value = event.args.item.value;
               that.selectionToolInstance.selectionType = value;
+              this.$parent.selectRibbon(value)
+              that.$bus.$emit("changeSelectionType", value);
             });
             break;
 
           default:
             break;
         }
-        this.toolsIndex = index;
       }
+      this.toolsIndex = index;
     },
   },
 };

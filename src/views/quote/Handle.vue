@@ -2,10 +2,15 @@
   <div class="base-tab-content-element">
     <top-toolbar ref="topToolbar"></top-toolbar>
     <bottom-toolbar ref="bottomToolbar"></bottom-toolbar>
-    <JqxLayout :width="'100%'" class="layout" :layout="layout">
+    <JqxLayout
+      :width="'100%'"
+      class="layout"
+      :layout="layout"
+      :resizable="false"
+    >
       <!-- 左 -->
       <div data-container="LeftPanel">
-        <div id="todayQuote" style="height:600px"></div>
+        <div id="todayQuote"></div>
       </div>
       <!-- 中 -->
       <div data-container="CenterPanel">
@@ -127,9 +132,10 @@ export default {
                   contentContainer: "CenterPanel",
                   initContent: function () {
                     let maiGridComponent = Vue.extend(MainGrid);
-                    new maiGridComponent({
+                    let instance = new maiGridComponent({
                       store,
                     }).$mount("#mainGrid");
+                    that.$refs.mainGrid = instance;
                   },
                 },
               ],
@@ -273,17 +279,22 @@ export default {
       ],
     };
   },
-  created() {},
+  created() {
+    
+  },
   mounted() {
+    const that = this;
     this.todayQuoteInstance = jqwidgets.createInstance(
       "#todayQuote",
       "jqxListBox",
       {
         source: this.$store.state.todayQuote,
-        width: 150,
-        height: (function(){
-          return document.body.clientHeight - 210
-        }()),
+        width: 148,
+        height: (function () {
+          return document.body.clientHeight - 208;
+        })(),
+        allowDrop: true,
+        allowDrag: true,
         displayMember: "name",
         valueMember: "content",
       }
@@ -295,9 +306,24 @@ export default {
       this.todayQuoteInstance.refresh();
     });
     // 今日报价绑定选择事件
-    this.todayQuoteInstance.addEventHandler('select',(event)=>{
-      console.log(event)
-    })
+    this.todayQuoteInstance.addEventHandler("dragEnd", (event) => {
+      this.$confirm({
+        title: `记录移除`,
+        okText: "确认",
+        cancelText: "取消",
+        centered: true,
+        content: (h) => (
+          <div style="color:red;">确认要移除这个报价记录吗？</div>
+        ),
+        onOk() {
+          const index = event.args.index;
+          that.$store.dispatch("removeTodayQuote", index);
+          that.todayQuoteInstance.removeAt(index);
+        },
+        onCancel() {},
+        class: "test",
+      });
+    });
   },
   methods: {
     selectRibbon(val) {
@@ -342,10 +368,10 @@ export default {
   height: calc(100vh - 170px);
 }
 ::v-deep .jqx-widget-content {
-  overflow: unset;
+  overflow:unset
 }
 ::v-deep .jqx-layout-group-auto-hide-content-vertical,
 .jqx-layout-group-auto-hide-content-horizontal {
-  overflow: hidden;
+  overflow: inherit;
 }
 </style>

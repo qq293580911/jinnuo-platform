@@ -38,7 +38,7 @@ export default {
     });
     // 导入
     this.importInstance.addEventHandler("click", () => {
-      const priceRule = this.priceRuleInsatnce.getSelectedItem().value;
+      const priceRule = this.priceRuleInstance.getSelectedItem().value;
       this.$confirm({
         title: `导入内容`,
         okText: "确认",
@@ -66,16 +66,18 @@ export default {
     this.exportInstance.addEventHandler('click',()=>{
       that.$bus.$emit("export");
     })
-    // // 价格方案选择
-    // this.priceRuleInsatnce.addEventHandler("select", (event) => {
-    //   const rule = event.args.item.label;
-    //   this.$bus.$emit('selectPriceRule',rule)
-    // });
-    // // 拆分方案选择
-    // this.splitRuleInsatnce.addEventHandler("select", (event) => {
-    //   const rule = event.args.item.label;
-    //   this.$bus.$emit('selectSplitRule',rule)
-    // });
+    // 价格方案选择
+    this.priceRuleInstance.addEventHandler("select", (event) => {
+      const rule = event.args.item.label;
+      this.$store.dispatch('saveCurrentQuotePricePlan',rule)
+    });
+    this.priceRuleInstance.selectIndex(0)
+    // 拆分方案选择
+    this.splitRuleInstance.addEventHandler("select", (event) => {
+      const rule = event.args.item.label;
+      this.$store.dispatch('saveCurrentQuoteSplitPlan',rule)
+    });
+    this.splitRuleInstance.selectIndex(0)
   },
   methods: {
     initTools: function (type, index, tool, menuToolIninitialization) {
@@ -223,7 +225,6 @@ export default {
             container.appendChild(addPointNumberContainer);
             jqwidgets.createInstance("#addPointNumber", "jqxNumberInput", {
               width: 80,
-              height: 25,
               inputMode: "simple",
               spinButtons: true,
             });
@@ -258,13 +259,12 @@ export default {
             planContainer.appendChild(pricePlanSelector);
             planContainer.appendChild(splitPlanSelector);
 
-            that.priceRuleInsatnce = jqwidgets.createInstance(
+            that.priceRuleInstance = jqwidgets.createInstance(
               "#pricePlan",
               "jqxComboBox",
               {
                 source: that.$store.state.pricePlan,
                 width: 150,
-                selectedIndex: 0,
                 displayMember: "rule",
                 valueMember: "rule",
               }
@@ -274,9 +274,8 @@ export default {
               "#splitPlan",
               "jqxComboBox",
               {
-                source: that.$store.state.pricePlan,
+                source: that.$store.state.splitPlan,
                 width: 150,
-                selectedIndex: 0,
                 displayMember: "rule",
                 valueMember: "rule",
               }
@@ -290,5 +289,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+::v-deep .jqx-widget-content {
+  overflow:hidden;
+}
 </style>

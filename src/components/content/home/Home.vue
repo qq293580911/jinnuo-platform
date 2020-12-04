@@ -38,8 +38,9 @@ import HomeNavBar from "./childComps/HomeNavBar";
 import HomeAside from "./childComps/HomeAside";
 import HomeMain from "./childComps/HomeMain";
 import { getPermissions } from "@/network/home.js";
-import { getSalesman,getQuoter } from "@/network/employee.js"
-import { getPricePlan } from "@/network/product.js"
+import { getSalesman, getQuoter } from "@/network/employee.js";
+import { getPricePlan, getAssignType } from "@/network/product.js";
+import { getSplitPlan } from "@/network/quote.js";
 jqx.theme = "ui-smoothness";
 export default {
   name: "Home",
@@ -53,14 +54,36 @@ export default {
       collapsed: false,
     };
   },
-  created() {
-
-  },
+  created() {},
   mounted() {
+    const that = this;
+    // 全局监听，页面刷新的时候将store里state的值存到sessionStorage中，然后从sessionStorage中获取，再赋值给store。
+    // 然后再把session里面存的删除即可，相当于中间件的作用。
+    // 在页面加载时读取sessionStorage里的状态信息
+    if (sessionStorage.getItem("store")) {
+      this.$store.replaceState(
+        Object.assign(
+          {},
+          this.$store.state,
+          JSON.parse(sessionStorage.getItem("store"))
+        )
+      );
+      sessionStorage.removeItem("store");
+    }
+
+    //在页面刷新时将vuex里的信息保存到sessionStorage里
+    window.onbeforeunload = function (e) {
+      // TODO
+      sessionStorage.setItem("store", JSON.stringify(that.$store.state));
+    };
+
     this.getPermissions();
     this.getSlasmans();
     this.getQuoters();
+    this.getAssignTypes();
     this.getPricePlans();
+    this.getSplitPlans();
+
   },
   methods: {
     getPermissions() {
@@ -73,15 +96,15 @@ export default {
           }),
         };
         getPermissions(params).then((responese) => {
-          this.$store.dispatch("savePermissions", responese).then((res) => {});
+          this.$store.dispatch("savePermissions", responese);
         });
       }
     },
     getQuoters() {
-      const quotors = this.$store.state.quotors;
-      if (quotors == null) {
+      const quoters = this.$store.state.quoters;
+      if (quoters == null) {
         getQuoter().then((responese) => {
-          this.$store.dispatch("saveQuoters", responese).then((res) => {});
+          this.$store.dispatch("saveQuoters", responese);
         });
       }
     },
@@ -89,18 +112,57 @@ export default {
       const salesmans = this.$store.state.salesmans;
       if (salesmans == null) {
         getSalesman().then((responese) => {
-          this.$store.dispatch("saveSalesmans", responese).then((res) => {});
+          this.$store.dispatch("saveSalesmans", responese);
         });
       }
     },
-    getPricePlans(){
-      const pricePlans = this.$store.state.pricePlans;
-      if(pricePlans==null){
+    getAssignTypes() {
+      const that = this;
+      const assignTypes = this.$store.state.assignType;
+      if (assignTypes == null) {
+        const source = {
+          datatype: "json",
+          datafields: [
+            { name: "id", map: "at_id", type: "number" },
+            { name: "parentid", map: "at_pid", type: "number" },
+            { name: "text", map: "at_name", type: "string" },
+            { name: "value", map: "at_id", type: "string" },
+          ],
+          id: "id",
+          type: "json",
+          url: "/productCateg/getAssignTypeData.do",
+        };
+        const dataAdapter = new jqx.dataAdapter(source, {
+          loadServerData(serverdata, source, callback) {
+            getAssignType(source.url, source, serverdata).then((res) => {
+              callback({
+                records: res.records,
+              });
+            });
+          },
+          loadComplete(records) {
+            that.$store.state.assignType = records;
+          },
+        });
+        dataAdapter.dataBind();
+      }
+    },
+    getPricePlans() {
+      const pricePlans = this.$store.state.pricePlan;
+      if (pricePlans == null) {
         getPricePlan().then((responese) => {
-          this.$store.dispatch("savePricePlan", responese).then((res) => {});
+          this.$store.dispatch("savePricePlan", responese);
         });
       }
-    }
+    },
+    getSplitPlans() {
+      const splitPlans = this.$store.state.splitPlan;
+      if (splitPlans == null) {
+        getSplitPlan().then((responese) => {
+          this.$store.dispatch("saveSplitPlan", responese);
+        });
+      }
+    },
   },
 };
 </script>

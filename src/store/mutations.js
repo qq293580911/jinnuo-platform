@@ -3,10 +3,16 @@ import {
   SAVE_SALESMANS,
   SAVE_QUOTERS,
   SAVE_PRICE_PLAN,
+  SAVE_SPLIT_PLAN,
   // 报价处理
+  SAVE_CURRENT_QUOTE_PRICE_PLAN,
+  SAVE_CURRENT_QUOTE_SPLIT_PLAN,
   SAVE_CURRENT_QUOTE_NAME,
   SAVE_CURRENT_QUOTE_CONTENT,
-  SAVE_TODAY_QUOTE
+  UPDATE_CURRENT_QUOTE_CONTENT,
+  // 今日报价
+  SAVE_TODAY_QUOTE,
+  REMOVE_TODAY_QUOTE
   
 } from './mutation-types'
 
@@ -25,13 +31,33 @@ export default {
   [SAVE_PRICE_PLAN](state, payload) {
     state.pricePlan = payload
   },
+  [SAVE_SPLIT_PLAN](state, payload){
+    state.splitPlan = payload
+  },
+  // 当前报价
+  [SAVE_CURRENT_QUOTE_PRICE_PLAN](state, payload){
+    state.currentQuote.pricePlan = payload
+  },
+  [SAVE_CURRENT_QUOTE_SPLIT_PLAN](state, payload){
+    state.currentQuote.splitPlan = payload
+  },
   [SAVE_CURRENT_QUOTE_NAME](state, payload) {
     state.currentQuote.name = payload
   },
   [SAVE_CURRENT_QUOTE_CONTENT](state, payload) {
     state.currentQuote.content = payload
   },
+  [UPDATE_CURRENT_QUOTE_CONTENT](state, payload){
+    console.log(payload)
+    payload.forEach(item=>{
+      state.currentQuote.content[item['uid']] = item
+    })
+  },
+  // 今日报价
   [SAVE_TODAY_QUOTE](state, payload){
     state.todayQuote.push(payload)
+  },
+  [REMOVE_TODAY_QUOTE](state, payload){
+    state.todayQuote.splice(payload,1)
   }
 }

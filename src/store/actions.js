@@ -3,11 +3,16 @@ import {
   SAVE_SALESMANS,
   SAVE_QUOTERS,
   SAVE_PRICE_PLAN,
+  SAVE_SPLIT_PLAN,
   // 报价处理
+  SAVE_CURRENT_QUOTE_PRICE_PLAN,
+  SAVE_CURRENT_QUOTE_SPLIT_PLAN,
   SAVE_CURRENT_QUOTE_NAME,
   SAVE_CURRENT_QUOTE_CONTENT,
   FILTER_QUOTE_CONTENT,
-  SAVE_TODAY_QUOTE
+  UPDATE_CURRENT_QUOTE_CONTENT,
+  SAVE_TODAY_QUOTE,
+  REMOVE_TODAY_QUOTE
 } from './mutation-types'
 
 export default {
@@ -29,6 +34,22 @@ export default {
   savePricePlan(context, payload) {
     return new Promise((resolve, reject) => {
       context.commit(SAVE_PRICE_PLAN, payload)
+    })
+  },
+  saveSplitPlan(context, payload){
+    return new Promise((resolve, reject) => {
+      context.commit(SAVE_SPLIT_PLAN, payload)
+    })
+  },
+  // 当前报价
+  saveCurrentQuotePricePlan(context, payload){
+    return new Promise((resolve, reject) => {
+      context.commit(SAVE_CURRENT_QUOTE_PRICE_PLAN, payload)
+    })
+  },
+  saveCurrentQuoteSplitPlan(context, payload){
+    return new Promise((resolve, reject) => {
+      context.commit(SAVE_CURRENT_QUOTE_SPLIT_PLAN, payload)
     })
   },
   saveCurrentQuoteName(context, payload){
@@ -64,9 +85,20 @@ export default {
       resolve(payload)
     })
   },
+  updateCurrentQuoteContent(context, payload){
+    return new Promise((resolve, reject) => {
+      context.commit(UPDATE_CURRENT_QUOTE_CONTENT, payload)
+    })
+  },
+  // 今日报价
   saveTodayQuote(context, payload){
     return new Promise((resolve, reject) => {
       context.commit(SAVE_TODAY_QUOTE, payload)
+    })
+  },
+  removeTodayQuote(context, payload){
+    return new Promise((resolve, reject) => {
+      context.commit(REMOVE_TODAY_QUOTE, payload)
     })
   }
 }

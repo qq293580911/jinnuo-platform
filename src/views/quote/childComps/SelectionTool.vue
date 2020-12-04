@@ -9,65 +9,71 @@
       :offLabel="'关'"
       :thumbSize="'50%'"
       :checked="true"
-      v-if="showSwitchButton"
+      v-show="showSwitchButton"
       :style="{
         marginRight: '5px',
       }"
     >
     </JqxSwitchButton>
     <JqxInput
+      ref="machineNumber"
       :width="50"
       :height="25"
       :minLength="1"
       :placeHolder="'型号#'"
-      v-if="showMachineNumber"
+      v-show="showMachineNumber"
       :style="{
         marginRight: '5px',
       }"
     >
     </JqxInput>
     <JqxComboBox
+      ref="machineType"
       :width="70"
       :height="25"
       :source="types"
-      v-if="showMachineType"
+      v-show="showMachineType"
       :style="{
         marginRight: '5px',
       }"
     >
     </JqxComboBox>
     <JqxComboBox
+      ref="speedType"
       :width="70"
       :height="25"
       :source="speeds"
-      v-if="showSpeedType"
+      v-show="showSpeedType"
       :style="{
         marginRight: '5px',
       }"
     >
     </JqxComboBox>
     <JqxInput
+      ref="airVolume"
       :width="80"
       :height="25"
       :minLength="1"
       :placeHolder="'风量：m³/h'"
-      v-if="showAirVolume"
+      v-show="showAirVolume"
       :style="{
         marginRight: '5px',
       }"
     >
     </JqxInput>
     <JqxComboBox
+      ref="powerSupply"
       :width="70"
       :height="25"
       :source="powerSupply"
-      v-if="showPowerSupply"
+      v-show="showPowerSupply"
       :style="{
         marginRight: '5px',
       }"
     >
     </JqxComboBox>
     <JqxInput
+      ref="power"
       :width="80"
       :height="25"
       :minLength="1"
@@ -79,9 +85,18 @@
     >
     </JqxInput>
     <JqxButton
-      ref="myButton"
+      ref="normalButton"
       :imgSrc="imgSrc"
-      @click="buttonClick"
+      @click="normalButtonClick"
+      :style="{
+        cursor: 'pointer',
+      }"
+    >
+    </JqxButton>
+    <JqxButton
+      ref="outsideButton"
+      :imgSrc="imgSrc"
+      @click="outsideButtonClick"
       :style="{
         cursor: 'pointer',
       }"
@@ -96,6 +111,8 @@ import JqxInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxinput.vue";
 import JqxComboBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxcombobox.vue";
 import JqxNumberInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxnumberinput.vue";
 import JqxButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue";
+
+import { filterSelectionParams } from "@/network/quote.js";
 export default {
   components: {
     JqxSwitchButton,
@@ -207,8 +224,40 @@ export default {
       }
     },
   },
+  mounted() {
+    const that = this;
+    this.$bus
+      .$off("setSelectionParams")
+      .$on("setSelectionParams", (rowData) => {
+        // 先清理工具栏
+        this.$refs.machineNumber.val("");
+        this.$refs.machineType.clearSelection();
+        this.$refs.speedType.clearSelection();
+        this.$refs.airVolume.val("");
+        this.$refs.powerSupply.clearSelection();
+        this.$refs.power.val("");
+        // 获得梳理的后的选型参数
+        const params = {
+          jsonParams: JSON.stringify(rowData),
+        };
+        filterSelectionParams(params).then((res) => {
+          console.log(res);
+          this.$refs.machineType.selectItem(res["machineType"]);
+          this.$refs.speedType.selectItem(res["speedType"]);
+          this.$refs.airVolume.val(res["airVolume"]);
+          this.$refs.power.val(res["power"]);
+        });
+      });
+  },
   methods: {
-    buttonClick() {},
+    // 获得选型结果
+    normalButtonClick() {
+      
+    },
+    // 获得外购选型结果
+    outsideButtonClick(){
+
+    }
   },
 };
 </script>

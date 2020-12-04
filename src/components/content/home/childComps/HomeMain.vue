@@ -102,7 +102,7 @@ export default {
 
   },
   mounted() {
-    this.$bus.$on("addTab", (obj) => {
+    this.$bus.$off('addTab').$on("addTab", (obj) => {
       const length = this.$refs.myTabs.length();
       let has = false;
       for (let i = 0; i < length + 1; i++) {
@@ -197,7 +197,7 @@ export default {
       new component({
         store,
       }).$mount(`#${obj.content}`);
-    },
+    }
   },
 };
 </script>

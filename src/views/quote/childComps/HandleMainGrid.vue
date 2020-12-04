@@ -12,6 +12,7 @@
       :columnsresize="true"
       :columnsautoresize="true"
       :selectionmode="'multiplerowsextended'"
+      @rowselect="myGridOnRowSelect($event)"
       :showtoolbar="true"
       :rendertoolbar="rendertoolbar"
       :showstatusbar="true"
@@ -19,19 +20,38 @@
       :showaggregates="true"
     >
     </JqxGrid>
+    <JqxLoader
+      ref="myLoader"
+      :text="'计算中...'"
+      :imagePosition="'top'"
+      :width="100"
+      :height="60"
+    >
+    </JqxLoader>
+    <show-more-window
+      @showColumn="showColumn"
+      @hiddenColumn="hiddenColumn"
+      ref="showMoreWindow"
+    ></show-more-window>
   </div>
 </template>
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
+import JqxLoader from "jqwidgets-scripts/jqwidgets-vue/vue_jqxloader.vue";
+import ShowMoreWindow from "./ShowMoreWindow";
 import { getLocalization } from "@/common/localization.js";
 import { dataExport } from "@/common/util.js";
-import { filterData } from "@/network/quote.js";
+import { filterData, handle } from "@/network/quote.js";
 export default {
+  name: "MainGrid",
   components: {
     JqxGrid,
+    JqxLoader,
+    ShowMoreWindow,
   },
   beforeCreate: function () {
+    const that = this;
     this.source = {
       datafields: [
         { name: "serialNumber", type: "number" },
@@ -58,6 +78,7 @@ export default {
     const that = this;
     return {
       firstHandle: true,
+      showMore: false,
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
         beforeLoadComplete: function (records) {
@@ -237,7 +258,7 @@ export default {
                 </div>`;
             }
             return `<div style='margin: 6px;' class='jqx-center-align'>
-              ${this.dataAdapter.formatNumber(rowdata.unitPrice, "d0")}
+              ${that.dataAdapter.formatNumber(unitPrice, "d0")}
               </div>`;
           },
         },
@@ -264,7 +285,7 @@ export default {
             } else {
               let total = unitPrice * quantity;
               return `<div style='margin: 6px;' class='jqx-center-align'>
-                ${dataAdapter.formatNumber(total, "d0")}</div>`;
+                ${that.dataAdapter.formatNumber(total, "d0")}</div>`;
             }
           },
           aggregatesrenderer: that.aggregatesrenderer,
@@ -327,10 +348,32 @@ export default {
       ],
     };
   },
+  watch: {
+    showMore() {
+      if (this.showMore) {
+        const offset = $("#showMore").offset();
+        const clientX = offset.left + 12;
+        const clientY = offset.top + 14;
+        this.$refs.showMoreWindow.open(clientX, clientY);
+        $("#showMore").jqxButton({
+          imgSrc: require(`@/assets/iconfont/custom/hidden.svg`),
+        });
+      } else {
+        $("#showMore").jqxButton({
+          imgSrc: require(`@/assets/iconfont/custom/show.svg`),
+        });
+        this.$refs.showMoreWindow.close();
+      }
+    },
+  },
   mounted() {
     const that = this;
+    // 显示更多绑定事件
+    this.showMoreButtonInstance.addEventHandler("click", () => {
+      this.showMore = !this.showMore;
+    });
     // 接收到导入的请求，获取文本内容并筛选渲染
-    this.$bus.$on("import", () => {
+    this.$bus.$off("import").$on("import", () => {
       let content = this.$store.state.currentQuote.content;
       this.$store.dispatch("filterQuoteContent", content).then((response) => {
         const params = {
@@ -340,22 +383,102 @@ export default {
         };
         filterData(params).then((res) => {
           this.$store.dispatch("saveCurrentQuoteContent", res["content"]);
-          this.source.localdata = res["content"];
-          this.$refs.myGrid.updatebounddata();
+          this.refresh()
+          // this.source.localdata = res["content"];
+          // this.$refs.myGrid.updatebounddata();
         });
       });
     });
     // 接收到处理的请求，对阀门风口进行匹配价格
-    this.$bus.$on("handler", () => {
+    this.$bus.$off("handler").$on("handler", () => {
       const gridContent = this.$refs.myGrid.getrows();
       if (gridContent.length < 1) {
         this.$message.warning("未发现待操作的数据");
         return false;
       }
-      let content = this.$store.state.currentQuote.content;
+      let content = [];
+      const rows = this.$refs.myGrid.getrows();
+      if (this.firstHandle) {
+        // 如果是第一次处理，取网格全部数据
+        content = rows;
+      } else {
+        // 取选中的数据
+        const selectedIndexes = this.$refs.myGrid.getselectedrowindexes();
+        selectedIndexes.forEach((selectedIndex) => {
+          const rowData = this.$refs.myGrid.getrowdata(selectedIndex);
+          content.push(rowData);
+        });
+      }
+      if (content.length == 0) {
+        return false;
+      }
+      const pricePlan = this.$store.state.currentQuote.pricePlan;
+      const splitPlan = this.$store.state.currentQuote.splitPlan;
+      const params = {
+        jsonParams: JSON.stringify({
+          dataSource: content,
+          priceRule: pricePlan,
+          splitRule: splitPlan,
+        }),
+      };
+      this.$refs.myLoader.open();
+      handle(params).then((res) => {
+        that.firstHandle = false;
+        this.$refs.myLoader.close();
+        this.$store.dispatch("updateCurrentQuoteContent", res);
+        this.refresh()
+        // this.source.localdata = this.$store.state.currentQuote.content;
+        // this.$refs.myGrid.updatebounddata();
+      });
+    });
+    // 接收到指派类型的请求，对产品类型进行鉴别
+    this.$bus.$off("assign").$on("assign", (val) => {
+      const rowIndexes = this.$refs.myGrid.getselectedrowindexes();
+      rowIndexes.forEach((rowIndex) => {
+        this.$refs.myGrid.setcellvalue(rowIndex, "designateType", val);
+      });
+      this.$message.success(`指派了${rowIndexes.length}条`);
+    });
+
+    // 接收到筛选的请求，对数据进行筛选
+    this.$bus.$off("filter").$on("filter", () => {
+      const rows = this.$refs.myGrid.getrows();
+      if (rows.length == 0) {
+        this.$message.warning("未发现待操作的数据");
+        return false;
+      }
+      const selectedIndexes = this.$refs.myGrid.getselectedrowindexes();
+      if (selectedIndexes.length == 0) {
+        this.$message.warning("筛选条件太少了");
+        return false;
+      }
+      const firstProductName = this.$refs.myGrid.getcellvalue(
+        selectedIndexes[0],
+        "productName"
+      );
+      if (selectedIndexes.length > 1) {
+        const allEqual = selectedIndexes.every((selectedIndex, index) => {
+          const productName = that.$refs.myGrid.getcellvalue(
+            selectedIndex,
+            "productName"
+          );
+          return productName == firstProductName;
+        });
+        if (allEqual == false) {
+          this.$message.warning("筛选条件太多了");
+          return false;
+        }
+      }
+      const filterRows = rows
+        .filter((rowdata) => {
+          return rowdata["productName"] == firstProductName;
+        })
+        .forEach((item) => {
+          that.$refs.myGrid.selectrow(item["uid"]);
+        });
     });
     // 接收到导出的请求，导出到excel
-    this.$bus.$on("export", () => {
+    this.$bus.$off("export").$on("export", () => {
       const name = `done_${this.$store.state.currentQuote.name}`;
       const columns = this.$refs.myGrid.columns;
       const content = this.$store.state.currentQuote.content;
@@ -372,7 +495,7 @@ export default {
             content,
           };
           that.$store.dispatch("saveTodayQuote", payload);
-          that.$bus.$emit('refreshTodayQuote')
+          that.$bus.$emit("refreshTodayQuote");
         },
         onCancel() {},
         class: "test",
@@ -391,9 +514,14 @@ export default {
       showMoreContainer.style.cssText = "float: right;cursor: pointer;";
       buttonsContainer.appendChild(showMoreContainer);
       //创建按钮
-      let showMoreButton = jqwidgets.createInstance("#showMore", "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/show-more.svg`),
-      });
+      this.showMoreButtonInstance = jqwidgets.createInstance(
+        "#showMore",
+        "jqxButton",
+        {
+          imgSrc: require(`@/assets/iconfont/custom/show-more.svg`),
+        }
+      );
+
       jqwidgets.createInstance("#showMore", "jqxTooltip", {
         content: "显示更多",
         position: "mouse",
@@ -407,6 +535,28 @@ export default {
       });
       return renderString;
     },
+    refresh(){
+      this.source.localdata = this.$store.state.currentQuote.content
+      this.$refs.myGrid.updatebounddata()
+    },
+    myGridOnRowSelect(event) {
+      const rowData = event.args.row;
+      const unit = rowData["unit"];
+      if ("台" === unit) {
+        // 初始化选型参数
+        this.$bus.$emit('setSelectionParams',rowData)
+      }
+    },
+    showColumn(field) {
+      this.$refs.myGrid.beginupdate();
+      this.$refs.myGrid.showcolumn(field);
+      this.$refs.myGrid.endupdate();
+    },
+    hiddenColumn(field) {
+      this.$refs.myGrid.beginupdate();
+      this.$refs.myGrid.hidecolumn(field);
+      this.$refs.myGrid.endupdate();
+    },
   },
 };
 </script>
@@ -414,6 +564,6 @@ export default {
 <style scoped>
 .mainGrid {
   height: calc(100vh - 200px);
-  /* overflow: hidden; */
+  overflow: unset;
 }
 </style>

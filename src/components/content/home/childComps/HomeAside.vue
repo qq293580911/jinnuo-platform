@@ -39,9 +39,6 @@ export default {
     this.user = JSON.parse(window.sessionStorage.getItem('user'))
     this.initMenu();
   },
-  mounted() {
-    
-  },  
   methods: {
     collapsed() {},
     changeMode(checked) {

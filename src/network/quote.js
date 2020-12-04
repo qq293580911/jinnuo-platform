@@ -3,9 +3,9 @@ import {
 } from "@/network/request";
 
 // 报价处理
-export function getToolsCompsSource(params) {  
+export function getSplitPlan(params) {  
   return request({
-    url:'/qtnProc/getToolbarComponentResource.do',
+    url:'/qtnProc/getSplitPlan.do',
     method:'Get',
     params
   })
@@ -14,6 +14,22 @@ export function getToolsCompsSource(params) {
 export function filterData(params) {  
   return request({
     url:'/qtnProc/getFilterData.do',
+    method:'Post',
+    data:params
+  })
+}
+
+export function handle(params) {  
+  return request({
+    url:'/qtnProc/doNonMachineProcess.do',
+    method:'Post',
+    data:params
+  })
+}
+
+export function filterSelectionParams(params) {  
+  return request({
+    url:'/qtnProc/getModelSelectionParams.do',
     method:'Post',
     data:params
   })

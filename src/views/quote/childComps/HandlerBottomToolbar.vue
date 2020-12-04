@@ -14,10 +14,9 @@
 <script>
 import Vue from "vue";
 import JqxToolbar from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtoolbar.vue";
-
 import SelectionTool from "./SelectionTool";
 
-import { getToolsCompsSource } from "@/network/quote.js";
+import { Message } from "@/common/const.js";
 export default {
   components: {
     JqxToolbar,
@@ -29,12 +28,33 @@ export default {
       comps: {},
     };
   },
-  created() {
-    getToolsCompsSource().then((res) => {
-      this.comps = res;
+  created() {},
+  mounted() {
+    const that = this;
+    // 指派类型树绑定选择事件
+    this.treeInstance.addEventHandler("select", (e) => {
+      const args = event.args;
+      const item = that.treeInstance.getSelectedItem();
+      if (item["hasItems"]) {
+        that.$message.warning(Message.UNSELECTABLE_NODE);
+        return false;
+      }
+      const dropDownContent = `<div style="position: relative; margin: 5px;">
+        ${item.label}</div>`;
+      that.dropdownButtonInstance.setContent(dropDownContent);
     });
+    // 筛选绑定点击事件
+    this.filterInstance.addEventHandler('click',()=>{
+      this.$bus.$emit('filter')
+    })
+    // 指派类型绑定的点击事件
+    this.assignButtonInstance.addEventHandler('click',()=>{
+      const dropdownButtonCotent = this.dropdownButtonInstance.getContent()
+      let assignType = dropdownButtonCotent[0]['textContent'];
+      assignType = assignType.replace(/(^\s*)|(\s*$)/g, ""); 
+      this.$bus.$emit('assign',assignType)
+    })
   },
-  mounted() {},
   methods: {
     initTools: function (type, index, tool, menuToolIninitialization) {
       const that = this;
@@ -42,6 +62,7 @@ export default {
         switch (index) {
           case 0:
             const dropDownButton = document.createElement("div");
+            dropDownButton.id = "dropDownButton";
             tool[0].appendChild(dropDownButton);
 
             const tree = document.createElement("div");
@@ -49,46 +70,47 @@ export default {
             tree.id = "assignTypeTree";
             dropDownButton.appendChild(tree);
 
-            jqwidgets.createInstance(dropDownButton, "jqxDropDownButton", {
-              width: 161,
-            });
-
-            setTimeout(() => {
-              const source = {
-                datatype: "json",
-                datafields: [
-                  { name: "id" },
-                  { name: "parentid", map: "pId" },
-                  { name: "text", map: "name" },
-                  { name: "value", map: "id" },
-                ],
-                id: "id",
-                localdata: that.comps["assign_type"],
-              };
-              const dataAdapter = new jqx.dataAdapter(source);
-              dataAdapter.dataBind();
-              const records = dataAdapter.getRecordsHierarchy(
-                "id",
-                "parentid",
-                "items",
-                [
-                  {
-                    name: "text",
-                    map: "label",
-                  },
-                ]
-              );
-              that.treeInstance = jqwidgets.createInstance(
-                "#assignTypeTree",
-                "jqxTree",
+            that.dropdownButtonInstance = jqwidgets.createInstance(
+              "#dropDownButton",
+              "jqxDropDownButton",
+              {
+                width: 161,
+              }
+            );
+            // 树
+            const source = {
+              datatype: "json",
+              datafields: [
+                { name: "id" },
+                { name: "parentid" },
+                { name: "text" },
+                { name: "value" },
+              ],
+              id: "id",
+              localdata: that.$store.state.assignType,
+            };
+            const dataAdapter = new jqx.dataAdapter(source);
+            dataAdapter.dataBind();
+            const records = dataAdapter.getRecordsHierarchy(
+              "id",
+              "parentid",
+              "items",
+              [
                 {
-                  source: records,
-                  width: 158,
-                  height: 300,
-                }
-              );
-            }, 1000);
-
+                  name: "text",
+                  map: "label",
+                },
+              ]
+            );
+            that.treeInstance = jqwidgets.createInstance(
+              "#assignTypeTree",
+              "jqxTree",
+              {
+                source: records,
+                width: 158,
+                height: 300,
+              }
+            );
             break;
           case 1:
             const assignContainer = document.createElement("div");
@@ -98,7 +120,7 @@ export default {
             jqwidgets.createInstance("#assign", "jqxButton", {
               imgSrc: require("@/assets/iconfont/custom/specify.svg"),
             });
-            jqwidgets.createInstance("#assign", "jqxTooltip", {
+            that.assignButtonInstance = jqwidgets.createInstance("#assign", "jqxTooltip", {
               content: "指派类型",
               position: "mouse",
             });
@@ -111,7 +133,7 @@ export default {
             jqwidgets.createInstance("#filter", "jqxButton", {
               imgSrc: require("@/assets/iconfont/custom/filter.svg"),
             });
-            jqwidgets.createInstance("#filter", "jqxTooltip", {
+            that.filterInstance = jqwidgets.createInstance("#filter", "jqxTooltip", {
               content: "筛选",
               position: "mouse",
             });
@@ -160,7 +182,7 @@ export default {
             selectionType.addEventHandler("select", (event) => {
               const value = event.args.item.value;
               that.selectionToolInstance.selectionType = value;
-              this.$parent.selectRibbon(value)
+              this.$parent.selectRibbon(value);
               that.$bus.$emit("changeSelectionType", value);
             });
             break;

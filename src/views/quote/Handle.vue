@@ -3,6 +3,7 @@
     <top-toolbar ref="topToolbar"></top-toolbar>
     <bottom-toolbar ref="bottomToolbar"></bottom-toolbar>
     <JqxLayout
+      ref="myLayout"
       :width="'100%'"
       class="layout"
       :layout="layout"
@@ -25,6 +26,12 @@
           </JqxPanel>
           <JqxPanel :width="'100%'" :height="'50%'" style="border-style: none">
             <div id="blowerSelectionGridBottom"></div>
+          </JqxPanel>
+        </div>
+        <!-- 外购风机选型 -->
+        <div data-container="outsideSelectionPanel">
+          <JqxPanel :width="'100%'" :height="'50%'" style="border-style: none">
+            <div id="outsideSelectionGridTop"></div>
           </JqxPanel>
         </div>
         <!-- 控制箱选型 -->
@@ -87,7 +94,17 @@ import TopToolbar from "./childComps/HandlerTopToolbar";
 import BottomToolbar from "./childComps/HandlerBottomToolbar";
 import MainGrid from "./childComps/HandleMainGrid";
 import SelectionGrid from "./childComps/SelectionGrid";
-
+import {
+  GENERAL_BLOWER,
+  OUTSIDE_BUY,
+  VENTILATOR,
+  CONTROL_BOX,
+  WALL_BLOWER,
+  DUCT_BLOWER,
+  MUTE_BLOWER,
+  SIDE_WALL_BLOWER,
+  SIDE_WALL_BLOWER_EP,
+} from "@/common/const.js";
 import { debounce } from "@/common/util.js";
 export default {
   name: "QuoteHandle",
@@ -98,6 +115,7 @@ export default {
     TopToolbar,
     BottomToolbar,
   },
+  beforeCreate() {},
   data() {
     const that = this;
     return {
@@ -156,18 +174,38 @@ export default {
                       initContent: function (div, a, b, c) {
                         that.ribbon = div[0].parentElement.parentElement;
                         let SelectionGridComponent = Vue.extend(SelectionGrid);
-                        new SelectionGridComponent({
-                          propsData: {
-                            selectionType: "常规风机",
-                            columnGroupName: "非3C",
-                          },
-                        }).$mount("#blowerSelectionGridTop");
-                        new SelectionGridComponent({
-                          propsData: {
-                            selectionType: "常规风机",
-                            columnGroupName: "3C",
-                          },
-                        }).$mount("#blowerSelectionGridBottom");
+                        that.generalBlowerTopInstance = new SelectionGridComponent(
+                          {
+                            propsData: {
+                              selectionType: "常规风机",
+                              columnGroupName: "非3C",
+                            },
+                          }
+                        ).$mount("#blowerSelectionGridTop");
+                        that.generalBlowerBottomInstance = new SelectionGridComponent(
+                          {
+                            propsData: {
+                              selectionType: "常规风机",
+                              columnGroupName: "3C",
+                            },
+                          }
+                        ).$mount("#blowerSelectionGridBottom");
+                      },
+                    },
+                    {
+                      type: "layoutPanel",
+                      title: "外购风机",
+                      contentContainer: "outsideSelectionPanel",
+                      initContent: function (div, a, b, c) {
+                        let SelectionGridComponent = Vue.extend(SelectionGrid);
+                        that.outsideBuyBlowerInstance = new SelectionGridComponent(
+                          {
+                            propsData: {
+                              selectionType: "外购风机",
+                              columnGroupName: "非3C",
+                            },
+                          }
+                        ).$mount("#outsideSelectionGridTop");
                       },
                     },
                     {
@@ -176,18 +214,22 @@ export default {
                       contentContainer: "controlBoxSelectionPanel",
                       initContent: function () {
                         let SelectionGridComponent = Vue.extend(SelectionGrid);
-                        new SelectionGridComponent({
-                          propsData: {
-                            selectionType: "控制箱",
-                            columnGroupName: "非3C",
-                          },
-                        }).$mount("#controlBoxSelectionGridTop");
-                        new SelectionGridComponent({
-                          propsData: {
-                            selectionType: "控制箱",
-                            columnGroupName: "3C",
-                          },
-                        }).$mount("#controlBoxSelectionGridBottom");
+                        that.controlBoxTopInstance = new SelectionGridComponent(
+                          {
+                            propsData: {
+                              selectionType: "控制箱",
+                              columnGroupName: "非3C",
+                            },
+                          }
+                        ).$mount("#controlBoxSelectionGridTop");
+                        that.controlBoxBottomInstance = new SelectionGridComponent(
+                          {
+                            propsData: {
+                              selectionType: "控制箱",
+                              columnGroupName: "3C",
+                            },
+                          }
+                        ).$mount("#controlBoxSelectionGridBottom");
                       },
                     },
                     {
@@ -196,7 +238,7 @@ export default {
                       contentContainer: "ventilatorSelectionPanel",
                       initContent: function () {
                         let SelectionGridComponent = Vue.extend(SelectionGrid);
-                        new SelectionGridComponent({
+                        that.ventilatorInstance = new SelectionGridComponent({
                           propsData: {
                             selectionType: "换气扇",
                             columnGroupName: "非3C",
@@ -210,7 +252,7 @@ export default {
                       contentContainer: "wallSelectionPanel",
                       initContent: function () {
                         let SelectionGridComponent = Vue.extend(SelectionGrid);
-                        new SelectionGridComponent({
+                        that.wallBlowerInsatnce = new SelectionGridComponent({
                           propsData: {
                             selectionType: "方形壁式风机",
                             columnGroupName: "非3C",
@@ -224,7 +266,7 @@ export default {
                       contentContainer: "ductSelectionPanel",
                       initContent: function () {
                         let SelectionGridComponent = Vue.extend(SelectionGrid);
-                        new SelectionGridComponent({
+                        that.ductBlowerInsatnce = new SelectionGridComponent({
                           propsData: {
                             columnGroupName: "非3C",
                           },
@@ -237,7 +279,7 @@ export default {
                       contentContainer: "muteSelectionPanel",
                       initContent: function () {
                         let SelectionGridComponent = Vue.extend(SelectionGrid);
-                        new SelectionGridComponent({
+                        that.muteBlowerInstance = new SelectionGridComponent({
                           propsData: {
                             columnGroupName: "非3C",
                           },
@@ -250,11 +292,13 @@ export default {
                       contentContainer: "sideWallSelectionPanel",
                       initContent: function () {
                         let SelectionGridComponent = Vue.extend(SelectionGrid);
-                        new SelectionGridComponent({
-                          propsData: {
-                            columnGroupName: "非3C",
-                          },
-                        }).$mount("#sideWallSelectionGridTop");
+                        that.sideWallBlowerInsatnce = new SelectionGridComponent(
+                          {
+                            propsData: {
+                              columnGroupName: "非3C",
+                            },
+                          }
+                        ).$mount("#sideWallSelectionGridTop");
                       },
                     },
                     {
@@ -263,11 +307,13 @@ export default {
                       contentContainer: "sideWallEPSelectionPanel",
                       initContent: function () {
                         let SelectionGridComponent = Vue.extend(SelectionGrid);
-                        new SelectionGridComponent({
-                          propsData: {
-                            columnGroupName: "非3C",
-                          },
-                        }).$mount("#sideWallEPSelectionGridTop");
+                        that.sideWallBlowerEPInstance = new SelectionGridComponent(
+                          {
+                            propsData: {
+                              columnGroupName: "非3C",
+                            },
+                          }
+                        ).$mount("#sideWallEPSelectionGridTop");
                       },
                     },
                   ],
@@ -279,11 +325,11 @@ export default {
       ],
     };
   },
-  created() {
-    
-  },
+  beforeCreate() {},
+  created() {},
   mounted() {
     const that = this;
+    // 今日报价
     this.todayQuoteInstance = jqwidgets.createInstance(
       "#todayQuote",
       "jqxListBox",
@@ -324,41 +370,143 @@ export default {
         class: "test",
       });
     });
+
+    // 渲染选型网格
+    this.$bus.$on("renderSelectionList", (...params) => {
+      const selectionType = params[0];
+      const list = params[1];
+      switch (selectionType) {
+        case GENERAL_BLOWER:
+          that.generalBlowerTopInstance.source.localdata = list;
+          that.generalBlowerBottomInstance.source.localdata = list;
+          that.generalBlowerTopInstance.refresh();
+          that.generalBlowerBottomInstance.refresh();
+          break;
+        case OUTSIDE_BUY:
+          that.outsideBuyBlowerInstance.source.localdata = list;
+          that.outsideBuyBlowerInstance.refresh();
+          break;
+        case VENTILATOR:
+          that.ventilatorInstance.source.localdata = list;
+          that.ventilatorInstance.refresh();
+          break;
+        case CONTROL_BOX:
+          that.controlBoxTopInstance.source.localdata = list;
+          that.controlBoxBottomInstance.source.localdata = list;
+          that.controlBoxTopInstance.refresh();
+          that.controlBoxBottomInstance.refresh();
+          break;
+        case WALL_BLOWER:
+          that.wallBlowerInsatnce.source.localdata = list;
+          that.wallBlowerInsatnce.refresh();
+          break;
+        case DUCT_BLOWER:
+          that.ductBlowerInsatnce.source.localdata = list;
+          that.ductBlowerInsatnce.refresh();
+          break;
+        case MUTE_BLOWER:
+          that.muteBlowerInstance.source.localdata = list;
+          that.muteBlowerInstance.refresh();
+          break;
+        case SIDE_WALL_BLOWER:
+          that.sideWallBlowerInsatnce.source.localdata = list;
+          that.sideWallBlowerInsatnce.refresh();
+          break;
+        case SIDE_WALL_BLOWER_EP:
+          that.sideWallBlowerEPInstance.source.localdata = list;
+          that.sideWallBlowerEPInstance.refresh();
+          break;
+        default:
+          break;
+      }
+    });
+
+    // 卡片集
+    this.$bus.$off("selectRibbon").$on("selectRibbon", (val) => {
+      let ribbonIndex = 0;
+      switch (val) {
+        case GENERAL_BLOWER:
+          ribbonIndex = 0;
+          break;
+        case OUTSIDE_BUY:
+          ribbonIndex = 1;
+          break;
+        case CONTROL_BOX:
+          ribbonIndex = 2;
+          break;
+        case VENTILATOR:
+          ribbonIndex = 3;
+          break;
+        case WALL_BLOWER:
+          ribbonIndex = 4;
+          break;
+        case DUCT_BLOWER:
+          ribbonIndex = 5;
+          break;
+        case MUTE_BLOWER:
+          ribbonIndex = 6;
+          break;
+        case SIDE_WALL_BLOWER:
+          ribbonIndex = 7;
+          break;
+        case SIDE_WALL_BLOWER_EP:
+          ribbonIndex = 8;
+          break;
+        default:
+          break;
+      }
+      $(this.ribbon).jqxRibbon("selectAt", ribbonIndex);
+    });
   },
   methods: {
     selectRibbon(val) {
       const that = this;
       let ribbonIndex = 0;
       switch (val) {
-        case "常规风机":
+        case GENERAL_BLOWER:
           ribbonIndex = 0;
           break;
-        case "控制箱":
+        case OUTSIDE_BUY:
           ribbonIndex = 1;
           break;
-        case "换气扇":
+        case CONTROL_BOX:
           ribbonIndex = 2;
           break;
-        case "方形壁式风机":
+        case VENTILATOR:
           ribbonIndex = 3;
           break;
-        case "GDF管道离心风机":
+        case WALL_BLOWER:
           ribbonIndex = 4;
           break;
-        case "超静音送风机":
+        case DUCT_BLOWER:
           ribbonIndex = 5;
           break;
-        case "边墙风机":
+        case MUTE_BLOWER:
           ribbonIndex = 6;
           break;
-        case "边墙风机（防爆）":
+        case SIDE_WALL_BLOWER:
           ribbonIndex = 7;
+          break;
+        case SIDE_WALL_BLOWER_EP:
+          ribbonIndex = 8;
           break;
         default:
           break;
       }
-      $(that.ribbon).jqxRibbon("selectAt", ribbonIndex);
+      // $(this.ribbon).jqxRibbon("selectAt", ribbonIndex);
     },
+  },
+  beforeDestroy() {
+    $(this.ribbon).jqxRibbon("destroy");
+    // console.log(document.getElementsByClassName("jqx-ribbon"));
+    // const gridElement = document.getElementsByClassName("jqx-ribbon")[0];
+    // gridElement.parentNode.removeChild(gridElement);
+  },
+  destroyed() {
+    this.$bus.$off("renderSelectionList");
+    this.$bus.$off("refreshTodayQuote");
+    this.$refs.mainGrid.$destroy();
+    // this.generalBlowerTopInstance.$destroy();
   },
 };
 </script>
@@ -368,7 +516,7 @@ export default {
   height: calc(100vh - 170px);
 }
 ::v-deep .jqx-widget-content {
-  overflow:unset
+  overflow: unset;
 }
 ::v-deep .jqx-layout-group-auto-hide-content-vertical,
 .jqx-layout-group-auto-hide-content-horizontal {

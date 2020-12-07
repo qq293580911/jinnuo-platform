@@ -10,7 +10,7 @@
       :showCloseButton="true"
       :showCollapseButton="false"
       :position="position"
-      @close="closed($event)"
+      @closed="closed($event)"
     >
       <div>显示更多列</div>
       <div>
@@ -52,13 +52,13 @@ export default {
   },
   methods: {
     checkChange(event) {
-      const that = this
-      console.log(that)
-      const field = event.args.value
-      if(event.args.checked){
-        that.$emit('showColumn',field)
-      }else{
-        that.$emit('hiddenColumn',field)
+      const that = this;
+      console.log(that);
+      const field = event.args.value;
+      if (event.args.checked) {
+        that.$emit("showColumn", field);
+      } else {
+        that.$emit("hiddenColumn", field);
       }
     },
     open(...params) {
@@ -74,6 +74,9 @@ export default {
     closed(event) {
       this.$parent.showMore = false;
     },
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.destroy();
   },
 };
 </script>

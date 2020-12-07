@@ -10,6 +10,7 @@ import {
   SAVE_CURRENT_QUOTE_NAME,
   SAVE_CURRENT_QUOTE_CONTENT,
   UPDATE_CURRENT_QUOTE_CONTENT,
+  APPEND_CURRENT_QUOTE_CONTENT,
   // 今日报价
   SAVE_TODAY_QUOTE,
   REMOVE_TODAY_QUOTE
@@ -48,10 +49,14 @@ export default {
     state.currentQuote.content = payload
   },
   [UPDATE_CURRENT_QUOTE_CONTENT](state, payload){
-    console.log(payload)
     payload.forEach(item=>{
       state.currentQuote.content[item['uid']] = item
     })
+  },
+  [APPEND_CURRENT_QUOTE_CONTENT](state, payload){
+    let content = state.currentQuote.content
+    content = content.concat(payload)
+    state.currentQuote.content = content
   },
   // 今日报价
   [SAVE_TODAY_QUOTE](state, payload){

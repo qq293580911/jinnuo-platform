@@ -15,8 +15,19 @@
 import Vue from "vue";
 import JqxToolbar from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtoolbar.vue";
 import SelectionTool from "./SelectionTool";
-
-import { Message } from "@/common/const.js";
+import store from "@/store";
+import {
+  Message,
+  GENERAL_BLOWER,
+  OUTSIDE_BUY,
+  VENTILATOR,
+  CONTROL_BOX,
+  WALL_BLOWER,
+  DUCT_BLOWER,
+  MUTE_BLOWER,
+  SIDE_WALL_BLOWER,
+  SIDE_WALL_BLOWER_EP,
+} from "@/common/const.js";
 export default {
   components: {
     JqxToolbar,
@@ -44,16 +55,16 @@ export default {
       that.dropdownButtonInstance.setContent(dropDownContent);
     });
     // 筛选绑定点击事件
-    this.filterInstance.addEventHandler('click',()=>{
-      this.$bus.$emit('filter')
-    })
+    this.filterInstance.addEventHandler("click", () => {
+      this.$bus.$emit("filter");
+    });
     // 指派类型绑定的点击事件
-    this.assignButtonInstance.addEventHandler('click',()=>{
-      const dropdownButtonCotent = this.dropdownButtonInstance.getContent()
-      let assignType = dropdownButtonCotent[0]['textContent'];
-      assignType = assignType.replace(/(^\s*)|(\s*$)/g, ""); 
-      this.$bus.$emit('assign',assignType)
-    })
+    this.assignButtonInstance.addEventHandler("click", () => {
+      const dropdownButtonCotent = this.dropdownButtonInstance.getContent();
+      let assignType = dropdownButtonCotent[0]["textContent"];
+      assignType = assignType.replace(/(^\s*)|(\s*$)/g, "");
+      this.$bus.$emit("assign", assignType);
+    });
   },
   methods: {
     initTools: function (type, index, tool, menuToolIninitialization) {
@@ -120,10 +131,14 @@ export default {
             jqwidgets.createInstance("#assign", "jqxButton", {
               imgSrc: require("@/assets/iconfont/custom/specify.svg"),
             });
-            that.assignButtonInstance = jqwidgets.createInstance("#assign", "jqxTooltip", {
-              content: "指派类型",
-              position: "mouse",
-            });
+            that.assignButtonInstance = jqwidgets.createInstance(
+              "#assign",
+              "jqxTooltip",
+              {
+                content: "指派类型",
+                position: "mouse",
+              }
+            );
             break;
           case 2:
             const filterContainer = document.createElement("div");
@@ -133,10 +148,14 @@ export default {
             jqwidgets.createInstance("#filter", "jqxButton", {
               imgSrc: require("@/assets/iconfont/custom/filter.svg"),
             });
-            that.filterInstance = jqwidgets.createInstance("#filter", "jqxTooltip", {
-              content: "筛选",
-              position: "mouse",
-            });
+            that.filterInstance = jqwidgets.createInstance(
+              "#filter",
+              "jqxTooltip",
+              {
+                content: "筛选",
+                position: "mouse",
+              }
+            );
             break;
           case 3:
             tool[0].style.cssText = "float:right;";
@@ -149,8 +168,9 @@ export default {
 
             const SelectionToolComponent = Vue.extend(SelectionTool);
             that.selectionToolInstance = new SelectionToolComponent({
+              store,
               propsData: {
-                selectionType: "风机选型",
+                selectionType: "常规风机",
               },
             }).$mount("#container");
             break;
@@ -165,14 +185,15 @@ export default {
               "jqxDropDownList",
               {
                 source: [
-                  "常规风机",
-                  "换气扇",
-                  "控制箱",
-                  "方形壁式风机",
-                  "GDF管道离心风机",
-                  "超静音送风机",
-                  "边墙风机",
-                  "边墙风机（防爆）",
+                  GENERAL_BLOWER,
+                  OUTSIDE_BUY,
+                  CONTROL_BOX,
+                  VENTILATOR,
+                  WALL_BLOWER,
+                  DUCT_BLOWER,
+                  MUTE_BLOWER,
+                  SIDE_WALL_BLOWER,
+                  SIDE_WALL_BLOWER_EP,
                 ],
                 width: 130,
                 height: 25,
@@ -182,8 +203,8 @@ export default {
             selectionType.addEventHandler("select", (event) => {
               const value = event.args.item.value;
               that.selectionToolInstance.selectionType = value;
-              this.$parent.selectRibbon(value);
-              that.$bus.$emit("changeSelectionType", value);
+              this.$bus.$emit('selectRibbon',value)
+              // this.$parent.selectRibbon(value);
             });
             break;
 
@@ -193,6 +214,9 @@ export default {
       }
       this.toolsIndex = index;
     },
+  },
+  destroyed() {
+    // console.log('工具栏销毁了')
   },
 };
 </script>

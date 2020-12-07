@@ -11,6 +11,7 @@ import {
   SAVE_CURRENT_QUOTE_CONTENT,
   FILTER_QUOTE_CONTENT,
   UPDATE_CURRENT_QUOTE_CONTENT,
+  APPEND_CURRENT_QUOTE_CONTENT,
   SAVE_TODAY_QUOTE,
   REMOVE_TODAY_QUOTE
 } from './mutation-types'
@@ -88,6 +89,11 @@ export default {
   updateCurrentQuoteContent(context, payload){
     return new Promise((resolve, reject) => {
       context.commit(UPDATE_CURRENT_QUOTE_CONTENT, payload)
+    })
+  },
+  appendCurrentQuoteContent(context, payload){
+    return new Promise((resolve, reject) => {
+      context.commit(APPEND_CURRENT_QUOTE_CONTENT, payload)
     })
   },
   // 今日报价

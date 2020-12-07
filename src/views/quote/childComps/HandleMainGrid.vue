@@ -42,6 +42,17 @@ import JqxLoader from "jqwidgets-scripts/jqwidgets-vue/vue_jqxloader.vue";
 import ShowMoreWindow from "./ShowMoreWindow";
 import { getLocalization } from "@/common/localization.js";
 import { dataExport } from "@/common/util.js";
+import {
+  GENERAL_BLOWER,
+  OUTSIDE_BUY,
+  VENTILATOR,
+  CONTROL_BOX,
+  WALL_BLOWER,
+  DUCT_BLOWER,
+  MUTE_BLOWER,
+  SIDE_WALL_BLOWER,
+  SIDE_WALL_BLOWER_EP,
+} from "@/common/const.js";
 import { filterData, handle } from "@/network/quote.js";
 export default {
   name: "MainGrid",
@@ -373,7 +384,8 @@ export default {
       this.showMore = !this.showMore;
     });
     // 接收到导入的请求，获取文本内容并筛选渲染
-    this.$bus.$off("import").$on("import", () => {
+    this.$bus.$on("import", () => {
+      this.firstHandle = true;
       let content = this.$store.state.currentQuote.content;
       this.$store.dispatch("filterQuoteContent", content).then((response) => {
         const params = {
@@ -383,14 +395,12 @@ export default {
         };
         filterData(params).then((res) => {
           this.$store.dispatch("saveCurrentQuoteContent", res["content"]);
-          this.refresh()
-          // this.source.localdata = res["content"];
-          // this.$refs.myGrid.updatebounddata();
+          this.refresh();
         });
       });
     });
     // 接收到处理的请求，对阀门风口进行匹配价格
-    this.$bus.$off("handler").$on("handler", () => {
+    this.$bus.$on("handler", () => {
       const gridContent = this.$refs.myGrid.getrows();
       if (gridContent.length < 1) {
         this.$message.warning("未发现待操作的数据");
@@ -426,13 +436,11 @@ export default {
         that.firstHandle = false;
         this.$refs.myLoader.close();
         this.$store.dispatch("updateCurrentQuoteContent", res);
-        this.refresh()
-        // this.source.localdata = this.$store.state.currentQuote.content;
-        // this.$refs.myGrid.updatebounddata();
+        this.refresh();
       });
     });
     // 接收到指派类型的请求，对产品类型进行鉴别
-    this.$bus.$off("assign").$on("assign", (val) => {
+    this.$bus.$on("assign", (val) => {
       const rowIndexes = this.$refs.myGrid.getselectedrowindexes();
       rowIndexes.forEach((rowIndex) => {
         this.$refs.myGrid.setcellvalue(rowIndex, "designateType", val);
@@ -478,7 +486,7 @@ export default {
         });
     });
     // 接收到导出的请求，导出到excel
-    this.$bus.$off("export").$on("export", () => {
+    this.$bus.$on("export", () => {
       const name = `done_${this.$store.state.currentQuote.name}`;
       const columns = this.$refs.myGrid.columns;
       const content = this.$store.state.currentQuote.content;
@@ -500,6 +508,33 @@ export default {
         onCancel() {},
         class: "test",
       });
+    });
+
+    // 接收到选型网格发过来的请求，对主网格进行数据更新
+    this.$bus.$on("selectModel", (data) => {
+      const selectedIndexes = this.$refs.myGrid.getselectedrowindexes();
+      if (selectedIndexes.length < 1) {
+        return false;
+      }
+      const arr = selectedIndexes.map((rowIndex) => {
+        const rowData = this.$refs.myGrid.getrowdata(rowIndex);
+        rowData["unitPrice"] = data["price"];
+        rowData["remark"] = data["remark"];
+        rowData["selection"] = data["selection"];
+        rowData["addControlBox"] = data["addControlBox"];
+        return rowData;
+      });
+      this.$store.dispatch("updateCurrentQuoteContent", arr);
+      this.refresh();
+    });
+
+    // 接收到批量添加控制箱的请求
+    // this.$bus.$on("addControlBox", (params) => {
+
+    // });
+
+    this.$bus.$on("refresh", () => {
+      this.refresh();
     });
   },
   methods: {
@@ -535,16 +570,16 @@ export default {
       });
       return renderString;
     },
-    refresh(){
-      this.source.localdata = this.$store.state.currentQuote.content
-      this.$refs.myGrid.updatebounddata()
+    refresh() {
+      this.source.localdata = this.$store.state.currentQuote.content;
+      this.$refs.myGrid.updatebounddata();
     },
     myGridOnRowSelect(event) {
       const rowData = event.args.row;
       const unit = rowData["unit"];
       if ("台" === unit) {
         // 初始化选型参数
-        this.$bus.$emit('setSelectionParams',rowData)
+        this.$bus.$emit("setSelectionParams", rowData);
       }
     },
     showColumn(field) {
@@ -557,6 +592,15 @@ export default {
       this.$refs.myGrid.hidecolumn(field);
       this.$refs.myGrid.endupdate();
     },
+  },
+  destroyed() {
+    this.$bus.$off("import");
+    this.$bus.$off("handler");
+    this.$bus.$off("export");
+    this.$bus.$off("assign");
+    this.$bus.$off("refresh");
+    this.$bus.$off("selectModel");
+    this.$bus.$off("addControlBox");
   },
 };
 </script>

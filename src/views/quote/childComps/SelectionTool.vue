@@ -78,25 +78,17 @@
       :height="25"
       :minLength="1"
       :placeHolder="'功率：kw'"
-      v-if="showPower"
+      v-show="showPower"
       :style="{
         marginRight: '5px',
       }"
     >
     </JqxInput>
     <JqxButton
-      ref="normalButton"
+      ref="confirmButton"
       :imgSrc="imgSrc"
-      @click="normalButtonClick"
-      :style="{
-        cursor: 'pointer',
-      }"
-    >
-    </JqxButton>
-    <JqxButton
-      ref="outsideButton"
-      :imgSrc="imgSrc"
-      @click="outsideButtonClick"
+      @click="buttonClick"
+      v-show="showConfirm"
       :style="{
         cursor: 'pointer',
       }"
@@ -111,8 +103,25 @@ import JqxInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxinput.vue";
 import JqxComboBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxcombobox.vue";
 import JqxNumberInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxnumberinput.vue";
 import JqxButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue";
-
-import { filterSelectionParams } from "@/network/quote.js";
+import {
+  GENERAL_BLOWER,
+  OUTSIDE_BUY,
+  VENTILATOR,
+  CONTROL_BOX,
+  WALL_BLOWER,
+  DUCT_BLOWER,
+  MUTE_BLOWER,
+  SIDE_WALL_BLOWER,
+  SIDE_WALL_BLOWER_EP,
+} from "@/common/const.js";
+import {
+  filterSelectionParams,
+  getGeneralBlowerList,
+  getOutsideBuyList,
+  getVentilatorList,
+  getControlBoxList,
+  getSmallBlowerList,
+} from "@/network/quote.js";
 export default {
   components: {
     JqxSwitchButton,
@@ -141,13 +150,14 @@ export default {
       showAirVolume: true,
       showPowerSupply: false,
       showPower: true,
+      showConfirm: true,
     };
   },
   watch: {
     selectionType() {
       const that = this;
       switch (that.selectionType) {
-        case "常规风机":
+        case GENERAL_BLOWER:
           that.showSwitchButton = true;
           that.showMachineNumber = true;
           that.showMachineType = true;
@@ -155,8 +165,21 @@ export default {
           that.showAirVolume = true;
           that.showPowerSupply = false;
           that.showPower = true;
+          that.showConfirm = true;
+          that.$refs.confirmButton.imgSrc = require("@/assets/iconfont/custom/confirm.svg");
           break;
-        case "控制箱":
+        case OUTSIDE_BUY:
+          that.showSwitchButton = false;
+          that.showMachineNumber = true;
+          that.showMachineType = true;
+          that.showSpeedType = true;
+          that.showAirVolume = true;
+          that.showPowerSupply = false;
+          that.showPower = true;
+          that.showConfirm = false;
+          that.$refs.confirmButton.imgSrc = require("@/assets/iconfont/custom/outside.svg");
+          break;
+        case CONTROL_BOX:
           that.showSwitchButton = false;
           that.showMachineNumber = false;
           that.showMachineType = false;
@@ -164,8 +187,10 @@ export default {
           that.showAirVolume = false;
           that.showPowerSupply = true;
           that.showPower = true;
+          that.showConfirm = true;
+          that.$refs.confirmButton.imgSrc = require("@/assets/iconfont/custom/confirm.svg");
           break;
-        case "换气扇":
+        case VENTILATOR:
           that.showSwitchButton = false;
           that.showMachineNumber = false;
           that.showMachineType = false;
@@ -173,8 +198,10 @@ export default {
           that.showAirVolume = true;
           that.showPowerSupply = false;
           that.showPower = false;
+          that.showConfirm = true;
+          that.$refs.confirmButton.imgSrc = require("@/assets/iconfont/custom/confirm.svg");
           break;
-        case "方形壁式风机":
+        case WALL_BLOWER:
           that.showSwitchButton = false;
           that.showMachineNumber = false;
           that.showMachineType = false;
@@ -182,8 +209,10 @@ export default {
           that.showAirVolume = true;
           that.showPowerSupply = false;
           that.showPower = true;
+          that.showConfirm = true;
+          that.$refs.confirmButton.imgSrc = require("@/assets/iconfont/custom/confirm.svg");
           break;
-        case "GDF管道离心风机":
+        case DUCT_BLOWER:
           that.showSwitchButton = false;
           that.showMachineNumber = false;
           that.showMachineType = false;
@@ -191,8 +220,10 @@ export default {
           that.showAirVolume = true;
           that.showPowerSupply = false;
           that.showPower = true;
+          that.showConfirm = true;
+          that.$refs.confirmButton.imgSrc = require("@/assets/iconfont/custom/confirm.svg");
           break;
-        case "超静音送风机":
+        case MUTE_BLOWER:
           that.showSwitchButton = false;
           that.showMachineNumber = false;
           that.showMachineType = false;
@@ -200,8 +231,10 @@ export default {
           that.showAirVolume = true;
           that.showPowerSupply = false;
           that.showPower = true;
+          that.showConfirm = true;
+          that.$refs.confirmButton.imgSrc = require("@/assets/iconfont/custom/confirm.svg");
           break;
-        case "边墙风机":
+        case SIDE_WALL_BLOWER:
           that.showSwitchButton = false;
           that.showMachineNumber = false;
           that.showMachineType = false;
@@ -209,8 +242,10 @@ export default {
           that.showAirVolume = true;
           that.showPowerSupply = false;
           that.showPower = true;
+          that.showConfirm = true;
+          that.$refs.confirmButton.imgSrc = require("@/assets/iconfont/custom/confirm.svg");
           break;
-        case "边墙风机（防爆）":
+        case SIDE_WALL_BLOWER_EP:
           that.showSwitchButton = false;
           that.showMachineNumber = false;
           that.showMachineType = false;
@@ -218,10 +253,13 @@ export default {
           that.showAirVolume = true;
           that.showPowerSupply = false;
           that.showPower = true;
+          that.showConfirm = true;
+          that.$refs.confirmButton.imgSrc = require("@/assets/iconfont/custom/confirm.svg");
           break;
         default:
           break;
       }
+      that.$refs.confirmButton.render();
     },
   },
   mounted() {
@@ -229,6 +267,7 @@ export default {
     this.$bus
       .$off("setSelectionParams")
       .$on("setSelectionParams", (rowData) => {
+        this.rowData = rowData;
         // 先清理工具栏
         this.$refs.machineNumber.val("");
         this.$refs.machineType.clearSelection();
@@ -241,7 +280,6 @@ export default {
           jsonParams: JSON.stringify(rowData),
         };
         filterSelectionParams(params).then((res) => {
-          console.log(res);
           this.$refs.machineType.selectItem(res["machineType"]);
           this.$refs.speedType.selectItem(res["speedType"]);
           this.$refs.airVolume.val(res["airVolume"]);
@@ -251,14 +289,79 @@ export default {
   },
   methods: {
     // 获得选型结果
-    normalButtonClick() {
-      
+    buttonClick() {
+      const rowData = this.rowData;
+      const jsonParams = {};
+      jsonParams["priceSchemeId"] = this.$store.state.currentQuote.pricePlan.id;
+      switch (this.selectionType) {
+        case "常规风机":
+          jsonParams["isOutsideBuy"] = false;
+          jsonParams["isStandard"] = this.$refs.mySwitchButton.val();
+          jsonParams["productName"] = rowData["productName"];
+          jsonParams["machineNumber"] = this.$refs.machineNumber.val();
+          jsonParams["machineType"] = this.$refs.machineType.val();
+          jsonParams["speedType"] = this.$refs.speedType.val();
+          jsonParams["airVolume"] = this.$refs.airVolume.val();
+          jsonParams["machinePower"] = this.$refs.power.val();
+          getGeneralBlowerList({ jsonParams: JSON.stringify(jsonParams) }).then(
+            (res) => {
+              this.$bus.$emit("renderSelectionList", this.selectionType, res);
+            }
+          );
+          break;
+        case "外购风机":
+          jsonParams["isOutsideBuy"] = true;
+          jsonParams["productName"] = rowData["productName"];
+          jsonParams["machineNumber"] = this.$refs.machineNumber.val();
+          jsonParams["machineType"] = this.$refs.machineType.val();
+          jsonParams["speedType"] = this.$refs.speedType.val();
+          jsonParams["airVolume"] = this.$refs.airVolume.val();
+          jsonParams["machinePower"] = this.$refs.power.val();
+          getOutsideBuyList({ jsonParams: JSON.stringify(jsonParams) }).then(
+            (res) => {
+              this.$bus.$emit("renderSelectionList", this.selectionType, res);
+            }
+          );
+          break;
+        case "控制箱":
+          jsonParams["machineSupply"] = this.$refs.powerSupply.val();
+          jsonParams["machinePower"] = this.$refs.power.val();
+          getControlBoxList({ jsonParams: JSON.stringify(jsonParams) }).then(
+            (res) => {
+              this.$bus.$emit("renderSelectionList", this.selectionType, res);
+            }
+          );
+          break;
+        case "换气扇":
+          jsonParams["airVolume"] = this.$refs.airVolume.val();
+          jsonParams[
+            "pricePlan"
+          ] = this.$store.state.currentQuote.pricePlan.rule;
+          getVentilatorList({
+            jsonParams: JSON.stringify(jsonParams),
+          }).then((res) => {
+            this.$bus.$emit("renderSelectionList", this.selectionType, res);
+          });
+          break;
+        default:
+          jsonParams["isOutsideBuy"] = false;
+          jsonParams["isStandard"] = this.$refs.mySwitchButton.val();
+          jsonParams["productName"] = rowData["productName"];
+          jsonParams["machineNumber"] = this.$refs.machineNumber.val();
+          jsonParams["machineType"] = this.$refs.machineType.val();
+          jsonParams["speedType"] = this.$refs.speedType.val();
+          jsonParams["airVolume"] = this.$refs.airVolume.val();
+          jsonParams["machinePower"] = this.$refs.power.val();
+          getSmallBlowerList({ jsonParams: JSON.stringify(jsonParams) }).then(
+            (res) => {
+              this.$bus.$emit("renderSelectionList", this.selectionType, res);
+            }
+          );
+          break;
+      }
     },
-    // 获得外购选型结果
-    outsideButtonClick(){
-
-    }
   },
+  destroyed() {},
 };
 </script>
 

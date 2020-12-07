@@ -71,12 +71,28 @@ export const EDIT_MACHINE_PRICE = '修改设备价格';
 export const ADD_EMPLOYEE = '添加员工';
 export const EDIT_EMPLOYEE = '修改员工';
 export const ASSIGN_POSITION = "分配职位"
-export const ADD_QUOTATION = "添加报价信息"
+
+// 下单部分
 export const ADD_ORDER = "添加下单信息"
 export const EDIT_ORDER = "编辑下单信息"
 export const IMPORT_ORDER = "导入下单信息"
+// 送货部分
 export const ADD_DELIVERY = "添加送货信息"
 export const EDIT_DELIVERY = "修改送货信息"
+// 合同信息部分
 export const ADD_CONTRACT = '添加合同信息'
 export const EDIT_CONTRACT = '修改合同信息'
 export const FILE_UPLOAD = '文件上传'
+// 报价处理部分
+export const GENERAL_BLOWER = '常规风机'
+export const OUTSIDE_BUY = '外购风机'
+export const VENTILATOR = '换气扇'
+export const CONTROL_BOX = '控制箱'
+export const WALL_BLOWER = '方形壁式风机'
+export const DUCT_BLOWER = 'GDF管道风机'
+export const MUTE_BLOWER = '超静音送风机'
+export const SIDE_WALL_BLOWER = '边墙风机'
+export const SIDE_WALL_BLOWER_EP = '边墙风机（防爆）'
+// 报价单管理部分
+export const ADD_QUOTATION = "添加报价信息"
+

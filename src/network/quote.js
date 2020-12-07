@@ -3,34 +3,82 @@ import {
 } from "@/network/request";
 
 // 报价处理
-export function getSplitPlan(params) {  
+export function getSplitPlan(params) {
   return request({
-    url:'/qtnProc/getSplitPlan.do',
-    method:'Get',
+    url: '/qtnProc/getSplitPlan.do',
+    method: 'Get',
     params
   })
 }
 
-export function filterData(params) {  
+export function filterData(params) {
   return request({
-    url:'/qtnProc/getFilterData.do',
-    method:'Post',
-    data:params
+    url: '/qtnProc/getFilterData.do',
+    method: 'Post',
+    data: params
   })
 }
 
-export function handle(params) {  
+export function handle(params) {
   return request({
-    url:'/qtnProc/doNonMachineProcess.do',
-    method:'Post',
-    data:params
+    url: '/qtnProc/doNonMachineProcess.do',
+    method: 'Post',
+    data: params
   })
 }
 
-export function filterSelectionParams(params) {  
+export function filterSelectionParams(params) {
   return request({
-    url:'/qtnProc/getModelSelectionParams.do',
-    method:'Post',
+    url: '/qtnProc/getModelSelectionParams.do',
+    method: 'Post',
+    data: params
+  })
+}
+
+export function getGeneralBlowerList(params) {
+  return request({
+    url: '/qtnProc/getFanModelSelectionList.do',
+    method: 'Get',
+    params
+  })
+}
+
+export function getOutsideBuyList(params) {
+  return request({
+    url: '/qtnProc/getOutsideBuyModelSelectionList.do',
+    method: 'Get',
+    params
+  })
+}
+
+export function getVentilatorList(params) {
+  return request({
+    url: '/qtnProc/getVentilatorSelectionList.do',
+    method: 'Get',
+    params
+  })
+}
+
+export function getControlBoxList(params) {
+  return request({
+    url: '/qtnProc/getControlBoxModelSelectionList.do',
+    method: 'Get',
+    params
+  })
+}
+
+export function getSmallBlowerList(params) {
+  return request({
+    url: '/qtnProc/getFanModelSelectionList.do',
+    method: 'Get',
+    params
+  })
+}
+
+export function getAddControlBoxList(params) {  
+  return request({
+    url: '/qtnProc/getBatchAddControlBoxList.do',
+    method: 'Post',
     data:params
   })
 }

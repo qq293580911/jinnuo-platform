@@ -8,6 +8,7 @@
       :animationType="'none'"
       :selectionTracker="false"
       :showCloseButtons="true"
+      @removed="removed($event)"
     >
       <ul>
         <li style="margin-left: 30px" hasclosebutton="false">首页</li>
@@ -98,11 +99,9 @@ export default {
   data() {
     return {};
   },
-  computed: {
-
-  },
+  computed: {},
   mounted() {
-    this.$bus.$off('addTab').$on("addTab", (obj) => {
+    this.$bus.$off("addTab").$on("addTab", (obj) => {
       const length = this.$refs.myTabs.length();
       let has = false;
       for (let i = 0; i < length + 1; i++) {
@@ -194,10 +193,13 @@ export default {
           component = Vue.extend(Test);
           break;
       }
-      new component({
+      this.vm = new component({
         store,
       }).$mount(`#${obj.content}`);
-    }
+    },
+    removed(event) {
+      this.vm.$destroy();
+    },
   },
 };
 </script>
@@ -208,7 +210,7 @@ export default {
   overflow: hidden;
 }
 ::v-deep .jqx-tabs-content-element {
-    height: 100%;
-    overflow: hidden;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

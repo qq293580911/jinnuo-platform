@@ -383,6 +383,7 @@ export default {
     this.showMoreButtonInstance.addEventHandler("click", () => {
       this.showMore = !this.showMore;
     });
+
     // 接收到导入的请求，获取文本内容并筛选渲染
     this.$bus.$off("import").$on("import", () => {
       this.firstHandle = true;
@@ -399,8 +400,9 @@ export default {
         });
       });
     });
+
     // 接收到处理的请求，对阀门风口进行匹配价格
-    this.$bus.$on("handler", () => {
+    this.$bus.$off("handler").$on("handler", () => {
       const gridContent = this.$refs.myGrid.getrows();
       if (gridContent.length < 1) {
         this.$message.warning("未发现待操作的数据");
@@ -439,8 +441,9 @@ export default {
         this.refresh();
       });
     });
+
     // 接收到指派类型的请求，对产品类型进行鉴别
-    this.$bus.$on("assign", (val) => {
+    this.$bus.$off("assign").$on("assign", (val) => {
       const rowIndexes = this.$refs.myGrid.getselectedrowindexes();
       rowIndexes.forEach((rowIndex) => {
         this.$refs.myGrid.setcellvalue(rowIndex, "designateType", val);
@@ -486,11 +489,38 @@ export default {
         });
     });
     // 接收到导出的请求，导出到excel
-    this.$bus.$on("export", () => {
+    this.$bus.$off("export").$on("export", () => {
       const name = `done_${this.$store.state.currentQuote.name}`;
       const columns = this.$refs.myGrid.columns;
-      const content = this.$store.state.currentQuote.content;
-      // dataExport(quoteName, columns, content);
+      const content = this.$refs.myGrid.getrows();
+      content.forEach(rowData=>{
+        const totalPrice = rowData['totalPrice']
+        if(/\d+\.?\d+/.test(totalPrice)==false){
+          rowData['totalPrice']=0
+        }
+      })
+      dataExport(name, columns, content, {
+        rowConfig: {
+          start: 30,
+          end: 30,
+          other: 30,
+        },
+        colConfig: {
+          A: 40,
+          B: 120,
+          C: 120,
+          D: 40,
+          E: 40,
+          F: 80,
+          G: 80,
+          H: 80,
+          I: 100,
+          J: 40,
+          k: 120,
+          L: 100,
+        },
+        numberCol:['序号','数量','单价','总价']
+      });
       this.$confirm({
         title: `要记录到今日报价吗？`,
         okText: "确认",
@@ -511,7 +541,7 @@ export default {
     });
 
     // 接收到选型网格发过来的请求，对主网格进行数据更新
-    this.$bus.$on("selectModel", (data) => {
+    this.$bus.$off("selectModel").$on("selectModel", (data) => {
       const selectedIndexes = this.$refs.myGrid.getselectedrowindexes();
       if (selectedIndexes.length < 1) {
         return false;
@@ -528,12 +558,7 @@ export default {
       this.refresh();
     });
 
-    // 接收到批量添加控制箱的请求
-    // this.$bus.$on("addControlBox", (params) => {
-
-    // });
-
-    this.$bus.$on("refresh", () => {
+    this.$bus.$off("refresh").$on("refresh", () => {
       this.refresh();
     });
   },
@@ -563,9 +588,9 @@ export default {
       });
     },
     aggregatesrenderer(aggregates, column, element) {
-      var renderString = "";
+      let renderString = "";
       $.each(aggregates, function (key, value) {
-        renderString += `<div style="position: relative; margin-top:8px; text-align: center; overflow: hidden;">合计: 
+        renderString += `<div class="jqx-center-align">合计: 
           ${value}</div>`;
       });
       return renderString;
@@ -593,15 +618,7 @@ export default {
       this.$refs.myGrid.endupdate();
     },
   },
-  destroyed() {
-    this.$bus.$off("import");
-    this.$bus.$off("handler");
-    this.$bus.$off("export");
-    this.$bus.$off("assign");
-    this.$bus.$off("refresh");
-    this.$bus.$off("selectModel");
-    this.$bus.$off("addControlBox");
-  },
+  destroyed() {},
 };
 </script>
 
@@ -611,6 +628,6 @@ export default {
   overflow: unset;
 }
 ::v-deep .jqx-center-align {
-line-height: 30px;
+  line-height: 30px;
 }
 </style>

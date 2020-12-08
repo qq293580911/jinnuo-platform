@@ -123,7 +123,7 @@ export function calc_misc_tax(...params) {
   if (typeof rate == 'string' && rate.indexOf('%') > -1) {
     rate = rate.replace('%', '') / 100;
   }
-  let result = (amount - installFee) / (1 + rate)*rate;
+  let result = (amount - installFee) / (1 + rate) * rate;
   result = Math.round(result);
   return isNaN(result) ? 0 : result
 }
@@ -142,13 +142,13 @@ export function calc_misc_log_manage_fee(...params) {
   if (typeof rate == 'string' && rate.indexOf('%') > -1) {
     rate = rate.replace('%', '') / 100;
   }
-  let result = (amount - installFee)*rate;
+  let result = (amount - installFee) * rate;
   result = Math.round(result);
   return isNaN(result) ? 0 : result
 }
 
 // 计算杂项质保金
-export function calc_misc_warranty(...params) {  
+export function calc_misc_warranty(...params) {
   const amount = params[0]
   const installFee = params[1]
   let rate = params[2]
@@ -161,7 +161,7 @@ export function calc_misc_warranty(...params) {
   if (typeof rate == 'string' && rate.indexOf('%') > -1) {
     rate = rate.replace('%', '') / 100;
   }
-  let result = (amount - installFee)*rate;
+  let result = (amount - installFee) * rate;
   result = Math.round(result);
   return isNaN(result) ? 0 : result
 }
@@ -180,7 +180,7 @@ export function calc_misc_freight(...params) {
   if (rate % 1 === 0) {
     return rate
   }
-  let result = (amount - installFee - tax - logManageFee - warranty)*rate;
+  let result = (amount - installFee - tax - logManageFee - warranty) * rate;
   result = Math.round(result);
   return isNaN(result) ? 0 : result
 }
@@ -194,11 +194,12 @@ export function calc_rsv_p(...param) {
   return isNaN(result) ? 0 : result
 }
 
-// 导出函数
+// 导出
 export function dataExport(...params) {
   const fileName = params[0]
   const columns = params[1]
   const rowsData = params[2]
+  const customConfig = params[3]
   // 列下标转换列号
   let createCellPos = function (n) {
     let ordA = 'A'.charCodeAt(0);
@@ -227,13 +228,17 @@ export function dataExport(...params) {
     columnWidths[`${String.fromCharCode(64 + index + 1)}`] = item['width'];
     filterCofig[dataField] = dataField
     aggregatesRow[dataField] = ''
-    if (item['aggregates'] != null) {
+    // 判断数字列
+    if (customConfig['numberCol'].includes(item['text'])) {
       filterCofig[dataField] = function (value, line, data, lineIndex, newField) {
         return {
           v: value,
           t: 'n'
         }
       }
+    }
+    // 判断聚合列
+    if (item['aggregates'] != null) {
       aggregatesRow[dataField] = {
         t: 'n',
         //第2行开始是因为后面会加标题头，结尾行也响应加1
@@ -261,7 +266,7 @@ export function dataExport(...params) {
     s: {
       font: {
         name: '宋体',
-        sz: 10
+        sz: 12
       },
       border: {
         top: {
@@ -284,21 +289,56 @@ export function dataExport(...params) {
       }
     }
   }, function (cell, newCell, row, config, currentRow, currentCol, fieldKey) {
-    if (currentRow === 0) {
-      newCell['s']['fill'] = {
-        fgColor: {
-          rgb: "BABABA"
-        }
-      }
-    }
     return newCell;
   });
-  const colConfig = LAY_EXCEL.makeColConfig(columnWidths, 80);
+
+  LAY_EXCEL.setExportCellStyle(data, `A1:${createCellPos(Object.keys(data[0]).length - 1)}1`, {
+    s: {
+      font: {
+        name: '宋体',
+        sz: 12,
+        bold: true
+      },
+      border: {
+        top: {
+          style: 'thin'
+        },
+        bottom: {
+          style: 'thin'
+        },
+        left: {
+          style: 'thin'
+        },
+        right: {
+          style: 'thin'
+        }
+      },
+      alignment: {
+        horizontal: 'center',
+        vertical: 'center',
+        wrapText: true
+      }
+    }
+  });
+
+  let colConfig = LAY_EXCEL.makeColConfig(columnWidths, 80);
+  if (customConfig.colConfig) {
+    colConfig = LAY_EXCEL.makeColConfig(customConfig.colConfig, 80);
+  }
+
   const end = data.length;
-  const rowConfig = LAY_EXCEL.makeRowConfig({
+  let rowConfig = LAY_EXCEL.makeRowConfig({
     1: 25,
     [end]: 25
   }, 25);
+
+  // 若果有自定义配置
+  if (customConfig.rowConfig) {
+    rowConfig = LAY_EXCEL.makeRowConfig({
+      1: customConfig['rowConfig']['start'],
+      [end]: customConfig['rowConfig']['end']
+    }, customConfig['rowConfig']['other']);
+  }
 
   LAY_EXCEL.exportExcel(data, fileName, 'xlsx', {
     extend: {

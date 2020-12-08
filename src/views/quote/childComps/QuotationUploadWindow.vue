@@ -224,7 +224,7 @@ export default {
             /(?<=(客户姓名|客户名称)：).*?(?=(客户电话|客户联系电话|客户联系方式))/
           );
           if (customerName) {
-            that.detailFormData["customerName"] = customerName[0];
+            that.detailFormData["customer"] = customerName[0];
           }
           // 客户电话
           const customerPhone = cellData.match(
@@ -261,7 +261,7 @@ export default {
             }
           }
           // 控制箱底价
-          if (/(风机)?控制[箱,柜]+.?合计/.test(cellData)) {
+          if (/(风机)?控制[箱,柜]?合计/.test(cellData)) {
             that.detailFormData["controlBoxReservePrice"] = row["G"];
           }
         }
@@ -278,7 +278,7 @@ export default {
           if (/([合,总,共]计)+([(,（]?合同价?[)）]?)?/.test(cellData)) {
             that.detailFormData["quotePrice"] = row["G"];
           }
-          if (/(风机)?控制[箱,柜]+.?合计/.test(cellData)) {
+          if (/(风机)?控制[箱,柜]?合计/.test(cellData)) {
             that.detailFormData["controlBoxQuotePrice"] = row["G"];
           }
         }
@@ -301,6 +301,9 @@ export default {
       );
       this.$refs.myWindow.close();
     },
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.close()
   },
 };
 </script>

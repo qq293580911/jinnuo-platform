@@ -27,7 +27,7 @@ import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 import { debounce, getProvince, getCity, getArea } from "@/common/util.js";
 
 import { ADD_QUOTATION } from "@/common/const.js";
-import { queryDuplicate,addQuotationAndDetail } from "@/network/quote.js";
+import { queryDuplicate, addQuotationAndDetail } from "@/network/quote.js";
 export default {
   name: "QuotationDetailWindow",
   components: {
@@ -636,7 +636,7 @@ export default {
       this.$refs.myValidator.validate(document.getElementById("myForm"));
     });
 
-    this.$bus.$on("openDetailWindow", (...params) => {
+    this.$bus.$off('openDetailWindow').$on("openDetailWindow", (...params) => {
       this.$refs.myWindow.setTitle(ADD_QUOTATION);
       const data = params[0];
       $projectName.val(data["projectName"]);
@@ -650,6 +650,8 @@ export default {
       $reservePrice.jqxNumberInput("setDecimal", data["reservePrice"]);
       $quotePrice.jqxNumberInput("setDecimal", data["quotePrice"]);
       $quoteDate.jqxDateTimeInput("setDate", new Date(data["quoteDate"]));
+      $controlBoxReservePrice.jqxNumberInput("setDecimal", data["controlBoxReservePrice"]);
+      $controlBoxQuotePrice.jqxNumberInput("setDecimal", data["controlBoxQuotePrice"]);
       // 文件
       this.reservePriceFile = params[1];
       this.quotePriceFile = params[2];
@@ -696,38 +698,38 @@ export default {
       form.append("files", that.reservePriceFile);
       form.append("files", that.quotePriceFile);
       // 执行添加
-      this.add(form)
+      this.add(form);
     },
-    add(form){    
-      addQuotationAndDetail(form).then(res=>{
-        this.$refs.myWindow.close()
-        this.$parent.render()
-        this.clearForm()
-      })
+    add(form) {
+      addQuotationAndDetail(form).then((res) => {
+        this.$refs.myWindow.close();
+        this.$parent.render();
+        this.clearForm();
+      });
     },
-    clearForm(){
-      this.projectNameInstance.val('')
-      this.projectAddressInstance.val('')
-      this.quoterInstance.jqxComboBox('clearSelection')
-      this.salesmanInstance.jqxComboBox('clearSelection')
-      this.provinceInstance.jqxComboBox('clearSelection')
-      this.cityInstance.jqxComboBox('clearSelection')
-      this.countyInstance.jqxComboBox('clearSelection')
-      this.customerInstance.val('')
-      this.customerPhoneInstance.val('')
-      this.customerCompanyInstance.val('')
-      this.priceModelInstance.jqxComboBox('clearSelection')
-      this.isRepeatInstance.jqxComboBox('clearSelection')
-      this.regionTaxInstance.val('')
-      this.brokerageInstance.val('')
-      this.freightInstance.val('')
-      this.taxInstance.val('')
-      this.reservePriceInstance.jqxNumberInput('setDecimal',0)
-      this.quotePriceInstance.jqxNumberInput('setDecimal',0)
-      this.remarkInstance.val('')
-      this.quoteDateInstance.jqxDateTimeInput('setDate',new Date())
-      this.controlBoxReservePriceInstance.jqxNumberInput('setDecimal',0)
-      this.controlBoxQuotePriceInstance.jqxNumberInput('setDecimal',0)
+    clearForm() {
+      this.projectNameInstance.val("");
+      this.projectAddressInstance.val("");
+      this.quoterInstance.jqxComboBox("clearSelection");
+      this.salesmanInstance.jqxComboBox("clearSelection");
+      this.provinceInstance.jqxComboBox("clearSelection");
+      this.cityInstance.jqxComboBox("clearSelection");
+      this.countyInstance.jqxComboBox("clearSelection");
+      this.customerInstance.val("");
+      this.customerPhoneInstance.val("");
+      this.customerCompanyInstance.val("");
+      this.priceModelInstance.jqxComboBox("clearSelection");
+      this.isRepeatInstance.jqxComboBox("clearSelection");
+      this.regionTaxInstance.val("");
+      this.brokerageInstance.val("");
+      this.freightInstance.val("");
+      this.taxInstance.val("");
+      this.reservePriceInstance.jqxNumberInput("setDecimal", 0);
+      this.quotePriceInstance.jqxNumberInput("setDecimal", 0);
+      this.remarkInstance.val("");
+      this.quoteDateInstance.jqxDateTimeInput("setDate", new Date());
+      this.controlBoxReservePriceInstance.jqxNumberInput("setDecimal", 0);
+      this.controlBoxQuotePriceInstance.jqxNumberInput("setDecimal", 0);
     },
     queryDuplicate() {
       const projectName = this.projectNameInstance.val();
@@ -742,6 +744,9 @@ export default {
         this.isRepeatInstance.jqxDropDownList("selectItem", res["repeat"]);
       });
     },
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.close();
   },
 };
 </script>

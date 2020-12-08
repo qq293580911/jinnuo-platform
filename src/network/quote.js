@@ -216,7 +216,7 @@ export function addQuotationAndDetail(form) {
     method: 'Post',
     data: form,
     headers: {
-      'Content-Type': 'multipart/form-data'
+      'Content-Type': 'multipart/form-data;charset=UTF-8'
     }
   })
 }

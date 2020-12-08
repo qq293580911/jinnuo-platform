@@ -84,14 +84,6 @@
       }"
     >
     </JqxInput>
-    <!-- <JqxCheckBox
-      ref="certificate"
-      :width="25"
-      :height="25"
-      :checked="false"
-      v-show="false"
-    >
-    </JqxCheckBox> -->
     <JqxButton
       ref="confirmButton"
       :imgSrc="imgSrc"

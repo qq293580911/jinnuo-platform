@@ -262,7 +262,7 @@ export default {
   mounted() {
     const that = this;
     // 上传器绑定值改变事件
-    this.uploaderInstance.$on("changed", (data) => {
+    this.uploaderInstance.$off('changed').$on("changed", (data) => {
       let sheetName = Object.keys(data[0])[0];
       const fileContent = data[0][sheetName];
       fileContent.forEach(function (value, index) {

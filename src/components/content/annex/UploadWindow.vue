@@ -61,7 +61,6 @@ export default {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
       this.boundId = params[1];
-      console.log(this.uploadUrl);
       this.$refs.myWindow.open();
     },
     onSelect(event) {

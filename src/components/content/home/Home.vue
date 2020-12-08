@@ -83,7 +83,6 @@ export default {
     this.getAssignTypes();
     this.getPricePlans();
     this.getSplitPlans();
-
   },
   methods: {
     getPermissions() {
@@ -149,17 +148,21 @@ export default {
     },
     getPricePlans() {
       const pricePlans = this.$store.state.pricePlan;
-      if (pricePlans == null) {
+      if (Array.isArray(pricePlans) == false) {
         getPricePlan().then((responese) => {
-          this.$store.dispatch("savePricePlan", responese);
+          if (Array.isArray(responese)) {
+            this.$store.dispatch("savePricePlan", responese);
+          }
         });
       }
     },
     getSplitPlans() {
       const splitPlans = this.$store.state.splitPlan;
-      if (splitPlans == null) {
+      if (Array.isArray(splitPlans) == false) {
         getSplitPlan().then((responese) => {
-          this.$store.dispatch("saveSplitPlan", responese);
+          if (Array.isArray(responese)) {
+            this.$store.dispatch("saveSplitPlan", responese);
+          }
         });
       }
     },

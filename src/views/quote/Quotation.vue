@@ -450,7 +450,7 @@ export default {
         this.render();
       });
     },
-  },
+  }
 };
 </script>
 

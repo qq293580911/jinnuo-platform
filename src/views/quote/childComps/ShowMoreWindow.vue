@@ -55,7 +55,6 @@ export default {
   methods: {
     checkChange(event) {
       const that = this;
-      console.log(that);
       const field = event.args.value;
       if (event.args.checked) {
         that.$emit("showColumn", field);

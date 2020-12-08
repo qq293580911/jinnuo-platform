@@ -182,7 +182,7 @@ export default {
     },
   },
   beforeDestroy() {
-    this.$refs.myWindow.destroy();
+    this.$refs.myWindow.close();
   },
 };
 </script>

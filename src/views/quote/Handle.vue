@@ -190,6 +190,17 @@ export default {
                             },
                           }
                         ).$mount("#blowerSelectionGridBottom");
+
+                        that.generalBlowerTopInstance.$on("rowselect", () => {
+                          that.generalBlowerBottomInstance.clearselection();
+                        });
+
+                        that.generalBlowerBottomInstance.$on(
+                          "rowselect",
+                          () => {
+                            that.generalBlowerTopInstance.clearselection();
+                          }
+                        );
                       },
                     },
                     {
@@ -230,6 +241,14 @@ export default {
                             },
                           }
                         ).$mount("#controlBoxSelectionGridBottom");
+
+                        that.controlBoxTopInstance.$on("rowselect", () => {
+                          that.controlBoxBottomInstance.clearselection();
+                        });
+
+                        that.controlBoxBottomInstance.$on("rowselect", () => {
+                          that.controlBoxTopInstance.clearselection();
+                        });
                       },
                     },
                     {
@@ -347,7 +366,7 @@ export default {
     );
 
     // 刷新今日报价
-    this.$bus.$on("refreshTodayQuote", () => {
+    this.$bus.$off("refreshTodayQuote").$on("refreshTodayQuote", () => {
       this.todayQuoteInstance.source = this.$store.state.todayQuote;
       this.todayQuoteInstance.refresh();
     });
@@ -372,54 +391,74 @@ export default {
     });
 
     // 渲染选型网格
-    this.$bus.$on("renderSelectionList", (...params) => {
-      const selectionType = params[0];
-      const list = params[1];
-      switch (selectionType) {
-        case GENERAL_BLOWER:
-          that.generalBlowerTopInstance.source.localdata = list;
-          that.generalBlowerBottomInstance.source.localdata = list;
-          that.generalBlowerTopInstance.refresh();
-          that.generalBlowerBottomInstance.refresh();
-          break;
-        case OUTSIDE_BUY:
-          that.outsideBuyBlowerInstance.source.localdata = list;
-          that.outsideBuyBlowerInstance.refresh();
-          break;
-        case VENTILATOR:
-          that.ventilatorInstance.source.localdata = list;
-          that.ventilatorInstance.refresh();
-          break;
-        case CONTROL_BOX:
-          that.controlBoxTopInstance.source.localdata = list;
-          that.controlBoxBottomInstance.source.localdata = list;
-          that.controlBoxTopInstance.refresh();
-          that.controlBoxBottomInstance.refresh();
-          break;
-        case WALL_BLOWER:
-          that.wallBlowerInsatnce.source.localdata = list;
-          that.wallBlowerInsatnce.refresh();
-          break;
-        case DUCT_BLOWER:
-          that.ductBlowerInsatnce.source.localdata = list;
-          that.ductBlowerInsatnce.refresh();
-          break;
-        case MUTE_BLOWER:
-          that.muteBlowerInstance.source.localdata = list;
-          that.muteBlowerInstance.refresh();
-          break;
-        case SIDE_WALL_BLOWER:
-          that.sideWallBlowerInsatnce.source.localdata = list;
-          that.sideWallBlowerInsatnce.refresh();
-          break;
-        case SIDE_WALL_BLOWER_EP:
-          that.sideWallBlowerEPInstance.source.localdata = list;
-          that.sideWallBlowerEPInstance.refresh();
-          break;
-        default:
-          break;
-      }
-    });
+    this.$bus
+      .$off("renderSelectionList")
+      .$on("renderSelectionList", (...params) => {
+        const selectionType = params[0]["selectionType"];
+        const list = params[1];
+        const certificate = params[0]["certificate"];
+        switch (selectionType) {
+          case GENERAL_BLOWER:
+            that.generalBlowerTopInstance.source.localdata = list;
+            that.generalBlowerBottomInstance.source.localdata = list;
+            that.generalBlowerTopInstance.refresh();
+            that.generalBlowerBottomInstance.refresh();
+            if (certificate) {
+              that.generalBlowerBottomInstance.selectrow(0);
+            } else {
+              that.generalBlowerTopInstance.selectrow(0);
+            }
+            break;
+          case OUTSIDE_BUY:
+            that.outsideBuyBlowerInstance.source.localdata = list;
+            that.outsideBuyBlowerInstance.refresh();
+            that.outsideBuyBlowerInstance.selectrow(0);
+            break;
+          case VENTILATOR:
+            that.ventilatorInstance.source.localdata = list;
+            that.ventilatorInstance.refresh();
+            that.ventilatorInstance.selectrow(0);
+            break;
+          case CONTROL_BOX:
+            that.controlBoxTopInstance.source.localdata = list;
+            that.controlBoxBottomInstance.source.localdata = list;
+            that.controlBoxTopInstance.refresh();
+            that.controlBoxBottomInstance.refresh();
+            if (certificate) {
+              that.controlBoxBottomInstance.selectrow(0);
+            } else {
+              that.controlBoxTopInstance.selectrow(0);
+            }
+            break;
+          case WALL_BLOWER:
+            that.wallBlowerInsatnce.source.localdata = list;
+            that.wallBlowerInsatnce.refresh();
+            that.wallBlowerInsatnce.selectrow(0);
+            break;
+          case DUCT_BLOWER:
+            that.ductBlowerInsatnce.source.localdata = list;
+            that.ductBlowerInsatnce.refresh();
+            that.ductBlowerInsatnce.selectrow(0);
+            break;
+          case MUTE_BLOWER:
+            that.muteBlowerInstance.source.localdata = list;
+            that.muteBlowerInstance.refresh();
+            that.muteBlowerInstance.selectrow(0);
+            break;
+          case SIDE_WALL_BLOWER:
+            that.sideWallBlowerInsatnce.source.localdata = list;
+            that.sideWallBlowerInsatnce.refresh();
+            that.sideWallBlowerInsatnce.selectrow(0);
+            break;
+          case SIDE_WALL_BLOWER_EP:
+            that.sideWallBlowerEPInstance.source.localdata = list;
+            that.sideWallBlowerEPInstance.refresh();
+            that.sideWallBlowerEPInstance.selectrow(0);
+            break;
+          default:
+            break;
+        }
+      });
 
     // 卡片集
     this.$bus.$off("selectRibbon").$on("selectRibbon", (val) => {
@@ -498,15 +537,9 @@ export default {
   },
   beforeDestroy() {
     $(this.ribbon).jqxRibbon("destroy");
-    // console.log(document.getElementsByClassName("jqx-ribbon"));
-    // const gridElement = document.getElementsByClassName("jqx-ribbon")[0];
-    // gridElement.parentNode.removeChild(gridElement);
   },
   destroyed() {
-    this.$bus.$off("renderSelectionList");
-    this.$bus.$off("refreshTodayQuote");
     this.$refs.mainGrid.$destroy();
-    // this.generalBlowerTopInstance.$destroy();
   },
 };
 </script>

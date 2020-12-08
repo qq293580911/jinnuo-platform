@@ -5,6 +5,7 @@
       :width="180"
       :height="165"
       :maxHeight="500"
+      :animationType="'none'"
       :autoOpen="false"
       :resizable="false"
       :draggable="false"

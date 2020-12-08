@@ -161,7 +161,7 @@ export default {
             column,
             rowdata
           ) {
-            let cellElement = `<div style='margin: 8px;' class='jqx-center-align'>${rowdata["specModel"]}</div>`;
+            let cellElement = `<div class='jqx-center-align'>${rowdata["specModel"]}</div>`;
             if (rowdata["specErrorDesc"]) {
               cellElement += `<div style='display: none'>${rowdata["specErrorDesc"]} </div>`;
             }
@@ -251,24 +251,24 @@ export default {
           ) {
             const unitPrice = rowdata["unitPrice"];
             if (unitPrice == "" || unitPrice == null) {
-              return `<div style='margin: 6px;' class='jqx-center-align'></div>`;
+              return `<div class='jqx-center-align'></div>`;
             }
             if (unitPrice == "需选型产品") {
-              return `<div style='margin: 6px;color: #008800;cursor: pointer;' class='jqx-center-align'>
+              return `<div style='color: #008800;cursor: pointer;' class='jqx-center-align'>
                 ${unitPrice}
                 </div>`;
             }
             if (unitPrice == "无公式产品") {
-              return `<div style='margin: 6px;color: #F37223;' class='jqx-center-align'>
+              return `<div style='color: #F37223;' class='jqx-center-align'>
                 ${unitPrice}
                 </div>`;
             }
             if (rowdata.unitPrice == "规格参数不规范") {
-              return `<div style='margin: 6px;color: #f30507;' class='jqx-center-align'>
+              return `<div style='color: #f30507;' class='jqx-center-align'>
                ${unitPrice}
                 </div>`;
             }
-            return `<div style='margin: 6px;' class='jqx-center-align'>
+            return `<div class='jqx-center-align'>
               ${that.dataAdapter.formatNumber(unitPrice, "d0")}
               </div>`;
           },
@@ -295,7 +295,7 @@ export default {
               return defaultvalue;
             } else {
               let total = unitPrice * quantity;
-              return `<div style='margin: 6px;' class='jqx-center-align'>
+              return `<div class='jqx-center-align'>
                 ${that.dataAdapter.formatNumber(total, "d0")}</div>`;
             }
           },
@@ -317,9 +317,9 @@ export default {
             rowdata
           ) {
             if (rowdata["processStatus"] == "SELECTION_PRODUCT") {
-              return `<div style='margin: 6px;' class='jqx-center-align'>${value} </div>`;
+              return `<div class='jqx-center-align'>${value} </div>`;
             }
-            return `<div style='margin: 6px;' class='jqx-center-align'> ${value} </div>`;
+            return `<div class='jqx-center-align'> ${value} </div>`;
           },
         },
         {
@@ -384,7 +384,7 @@ export default {
       this.showMore = !this.showMore;
     });
     // 接收到导入的请求，获取文本内容并筛选渲染
-    this.$bus.$on("import", () => {
+    this.$bus.$off("import").$on("import", () => {
       this.firstHandle = true;
       let content = this.$store.state.currentQuote.content;
       this.$store.dispatch("filterQuoteContent", content).then((response) => {
@@ -422,7 +422,7 @@ export default {
       if (content.length == 0) {
         return false;
       }
-      const pricePlan = this.$store.state.currentQuote.pricePlan;
+      const pricePlan = this.$store.state.currentQuote.pricePlan.rule;
       const splitPlan = this.$store.state.currentQuote.splitPlan;
       const params = {
         jsonParams: JSON.stringify({
@@ -609,5 +609,8 @@ export default {
 .mainGrid {
   height: calc(100vh - 200px);
   overflow: unset;
+}
+::v-deep .jqx-center-align {
+line-height: 30px;
 }
 </style>

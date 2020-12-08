@@ -13,7 +13,8 @@
       :toolbarheight="33"
       :selectionmode="'singlerow'"
       :columngroups="columngroups"
-      @rowclick="rowClick($event)"
+      @rowselect="onRowselect($event)"
+      @rowclick="onRowClick($event)"
     >
     </JqxGrid>
   </div>
@@ -383,13 +384,19 @@ export default {
     refresh() {
       this.$refs.myGrid.updatebounddata();
     },
-    rowSelect(event) {
+    onRowselect(event) {
       const rowData = event.args.row;
-      this.$bus.$emit("selectModel", this.selectionType, rowData);
+      const params = this.getSelectionRarams(rowData);
+      this.$bus.$emit("selectModel", params);
+      this.$emit('rowselect')
     },
-    rowClick(event) {
+    onRowClick(event) {
       const rowData = event.args.row.bounddata;
-      // 选型
+      const params = this.getSelectionRarams(rowData);
+      this.$bus.$emit("selectModel", params);
+      this.$emit('rowselect')
+    },
+    getSelectionRarams(rowData) {
       let machineName = rowData["pm_name"];
       let power = "";
       let price = 0;
@@ -490,8 +497,14 @@ export default {
         remark,
         selection,
       };
-      this.$bus.$emit("selectModel", map);
+      return map
     },
+    selectrow(rowIndex) {
+      this.$refs.myGrid.selectrow(rowIndex);
+    },
+    clearselection(){
+      this.$refs.myGrid.clearselection()
+    }
   },
 };
 </script>

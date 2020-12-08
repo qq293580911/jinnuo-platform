@@ -51,7 +51,7 @@
     </JqxComboBox>
     <JqxInput
       ref="airVolume"
-      :width="80"
+      :width="120"
       :height="25"
       :minLength="1"
       :placeHolder="'风量：m³/h'"
@@ -74,7 +74,7 @@
     </JqxComboBox>
     <JqxInput
       ref="power"
-      :width="80"
+      :width="100"
       :height="25"
       :minLength="1"
       :placeHolder="'功率：kw'"
@@ -84,6 +84,14 @@
       }"
     >
     </JqxInput>
+    <!-- <JqxCheckBox
+      ref="certificate"
+      :width="25"
+      :height="25"
+      :checked="false"
+      v-show="false"
+    >
+    </JqxCheckBox> -->
     <JqxButton
       ref="confirmButton"
       :imgSrc="imgSrc"
@@ -143,6 +151,7 @@ export default {
       speeds: ["单速", "双速"],
       powerSupply: ["单电源", "双电源"],
       imgSrc: require("@/assets/iconfont/custom/confirm.svg"),
+      certificate:false,
       showSwitchButton: true,
       showMachineNumber: true,
       showMachineType: true,
@@ -276,15 +285,12 @@ export default {
         this.$refs.powerSupply.clearSelection();
         this.$refs.power.val("");
         // 获得梳理的后的选型参数
-        const params = {
-          jsonParams: JSON.stringify(rowData),
-        };
-        filterSelectionParams(params).then((res) => {
-          this.$refs.machineType.selectItem(res["machineType"]);
-          this.$refs.speedType.selectItem(res["speedType"]);
-          this.$refs.airVolume.val(res["airVolume"]);
-          this.$refs.power.val(res["power"]);
-        });
+        const res = filterSelectionParams(rowData);
+        this.certificate = res['certificate']
+        this.$refs.machineType.selectItem(res["machineType"]);
+        this.$refs.speedType.selectItem(res["speedType"]);
+        this.$refs.airVolume.val(res["airVolume"]);
+        this.$refs.power.val(res["power"]);
       });
   },
   methods: {
@@ -293,6 +299,10 @@ export default {
       const rowData = this.rowData;
       const jsonParams = {};
       jsonParams["priceSchemeId"] = this.$store.state.currentQuote.pricePlan.id;
+      const existParams = {
+        selectionType:this.selectionType,
+        certificate:this.certificate
+      }
       switch (this.selectionType) {
         case "常规风机":
           jsonParams["isOutsideBuy"] = false;
@@ -305,7 +315,7 @@ export default {
           jsonParams["machinePower"] = this.$refs.power.val();
           getGeneralBlowerList({ jsonParams: JSON.stringify(jsonParams) }).then(
             (res) => {
-              this.$bus.$emit("renderSelectionList", this.selectionType, res);
+              this.$bus.$emit("renderSelectionList", existParams, res);
             }
           );
           break;
@@ -319,7 +329,7 @@ export default {
           jsonParams["machinePower"] = this.$refs.power.val();
           getOutsideBuyList({ jsonParams: JSON.stringify(jsonParams) }).then(
             (res) => {
-              this.$bus.$emit("renderSelectionList", this.selectionType, res);
+              this.$bus.$emit("renderSelectionList", existParams, res);
             }
           );
           break;
@@ -328,7 +338,7 @@ export default {
           jsonParams["machinePower"] = this.$refs.power.val();
           getControlBoxList({ jsonParams: JSON.stringify(jsonParams) }).then(
             (res) => {
-              this.$bus.$emit("renderSelectionList", this.selectionType, res);
+              this.$bus.$emit("renderSelectionList", existParams, res);
             }
           );
           break;
@@ -340,7 +350,7 @@ export default {
           getVentilatorList({
             jsonParams: JSON.stringify(jsonParams),
           }).then((res) => {
-            this.$bus.$emit("renderSelectionList", this.selectionType, res);
+            this.$bus.$emit("renderSelectionList", existParams, res);
           });
           break;
         default:
@@ -354,7 +364,7 @@ export default {
           jsonParams["machinePower"] = this.$refs.power.val();
           getSmallBlowerList({ jsonParams: JSON.stringify(jsonParams) }).then(
             (res) => {
-              this.$bus.$emit("renderSelectionList", this.selectionType, res);
+              this.$bus.$emit("renderSelectionList", existParams, res);
             }
           );
           break;

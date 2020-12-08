@@ -51,7 +51,6 @@ export default {
       this.$store.dispatch("saveCurrentQuoteName", fileName);
       this.$store.dispatch("saveCurrentQuoteContent", fileContent);
     });
-
     // 导入
     this.importInstance.addEventHandler("click", () => {
       const priceRule = that.$store.state.currentQuote.pricePlan.rule;
@@ -86,6 +85,48 @@ export default {
     // 批量添加控制箱
     this.addControlBoxInstance.addEventHandler("click", () => {
       this.showAddControlBox = !this.showAddControlBox;
+    });
+    // 加点
+    this.addPointInstance.addEventHandler("click", () => {
+      const point = this.addPointNumberInsatnce.val();
+      const rowsData = this.$store.state.currentQuote.content;
+      rowsData.forEach((rowData) => {
+        let unitPrice = rowData["unitPrice"];
+        const unit = rowData["unit"];
+        if (isNaN(unitPrice) || unitPrice == 0) {
+          rowData["transfer"] = "";
+        } else if (point < 0) {
+          //如果是降点
+          unitPrice = unitPrice * (1 + point / 100);
+        } else {
+          //如果是加点
+          unitPrice = unitPrice / (1 - point / 100);
+        }
+        switch (unit) {
+          case "个":
+            unitPrice = Math.ceil(unitPrice);
+            break;
+          case "台":
+            let _unit = unitPrice % 10;
+            if (_unit > 0 && _unit < 5) {
+              _unit = 5;
+            }
+            if (_unit > 5 && _unit < 10) {
+              _unit = 10;
+            }
+            unitPrice = unitPrice - (unitPrice % 10) + _unit;
+            break;
+          default:
+            break;
+        }
+        if (unitPrice) {
+          rowData["unitPrice"] = unitPrice;
+          rowData["transfer"] = point;
+        }
+      });
+      this.$store.dispatch('saveCurrentQuoteContent',rowsData)
+      this.$bus.$emit('refresh')
+      this.$message.success('加点完成')
     });
     // 价格方案选择
     this.priceRuleInstance.addEventHandler("select", (event) => {
@@ -224,42 +265,46 @@ export default {
               "overflow: hidden; position: relative;display:flex";
             tool[0].appendChild(container);
             // 固定金额浮动
-            const fixedFloatContainer = document.createElement("input");
-            fixedFloatContainer.style.cssText = "margin-right:5px;";
-            fixedFloatContainer.id = "fixedFloat";
-            container.appendChild(fixedFloatContainer);
-            jqwidgets.createInstance("#fixedFloat", "jqxInput", {
-              width: 80,
-              height: 25,
-              placeHolder: "输入金额",
-            });
+            // const fixedFloatContainer = document.createElement("input");
+            // fixedFloatContainer.style.cssText = "margin-right:5px;";
+            // fixedFloatContainer.id = "fixedFloat";
+            // container.appendChild(fixedFloatContainer);
+            // jqwidgets.createInstance("#fixedFloat", "jqxInput", {
+            //   width: 80,
+            //   height: 25,
+            //   placeHolder: "输入金额",
+            // });
             // 固定金额浮动按钮
-            const fixedFloatBtnContainer = document.createElement("div");
-            fixedFloatBtnContainer.style.cssText =
-              "cursor: pointer;margin-right:5px;";
-            fixedFloatBtnContainer.id = "fixedFloatBtn";
-            container.appendChild(fixedFloatBtnContainer);
+            // const fixedFloatBtnContainer = document.createElement("div");
+            // fixedFloatBtnContainer.style.cssText =
+            //   "cursor: pointer;margin-right:5px;";
+            // fixedFloatBtnContainer.id = "fixedFloatBtn";
+            // container.appendChild(fixedFloatBtnContainer);
 
-            jqwidgets.createInstance("#fixedFloatBtn", "jqxButton", {
-              width: 25,
-              height: 25,
-              imgSrc: require("@/assets/iconfont/custom/digital.svg"),
-            });
+            // jqwidgets.createInstance("#fixedFloatBtn", "jqxButton", {
+            //   width: 25,
+            //   height: 25,
+            //   imgSrc: require("@/assets/iconfont/custom/digital.svg"),
+            // });
 
-            jqwidgets.createInstance("#fixedFloatBtn", "jqxTooltip", {
-              content: "固定金额比例浮动",
-              position: "mouse",
-            });
+            // jqwidgets.createInstance("#fixedFloatBtn", "jqxTooltip", {
+            //   content: "固定金额比例浮动",
+            //   position: "mouse",
+            // });
             // 加点
             const addPointNumberContainer = document.createElement("div");
             addPointNumberContainer.style.cssText = "margin-right:5px;";
             addPointNumberContainer.id = "addPointNumber";
             container.appendChild(addPointNumberContainer);
-            jqwidgets.createInstance("#addPointNumber", "jqxNumberInput", {
-              width: 80,
-              inputMode: "simple",
-              spinButtons: true,
-            });
+            that.addPointNumberInsatnce = jqwidgets.createInstance(
+              "#addPointNumber",
+              "jqxNumberInput",
+              {
+                width: 80,
+                inputMode: "simple",
+                spinButtons: true,
+              }
+            );
 
             // 加点按钮
             const addPointBtnContainer = document.createElement("div");
@@ -267,11 +312,15 @@ export default {
               "margin-right:5px;cursor: pointer;";
             addPointBtnContainer.id = "addPointBtn";
             container.appendChild(addPointBtnContainer);
-            jqwidgets.createInstance("#addPointBtn", "jqxButton", {
-              width: 25,
-              height: 25,
-              imgSrc: require("@/assets/iconfont/custom/rate.svg"),
-            });
+            that.addPointInstance = jqwidgets.createInstance(
+              "#addPointBtn",
+              "jqxButton",
+              {
+                width: 25,
+                height: 25,
+                imgSrc: require("@/assets/iconfont/custom/rate.svg"),
+              }
+            );
             break;
           case 4:
             tool[0].style.cssText = "float:right;";
@@ -327,7 +376,7 @@ export default {
         this.toolsIndex = index;
       }
     },
-  }
+  },
 };
 </script>
 

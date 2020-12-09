@@ -134,6 +134,9 @@ export default {
       this.$refs.myWindow.close()
     }
   },
+  beforeDestroy() {
+    this.$refs.myWindow.close()
+  },
 };
 </script>
 

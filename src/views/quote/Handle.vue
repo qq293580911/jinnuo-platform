@@ -105,7 +105,6 @@ import {
   SIDE_WALL_BLOWER,
   SIDE_WALL_BLOWER_EP,
 } from "@/common/const.js";
-import { debounce } from "@/common/util.js";
 export default {
   name: "QuoteHandle",
   components: {

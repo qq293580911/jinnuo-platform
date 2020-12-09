@@ -747,11 +747,83 @@ export default {
     });
 
     const cancelButton = this.$refs.myForm.getComponentByName("cancelButton");
-    cancelButton[0].addEventListener('click',()=>{
+    cancelButton[0].addEventListener("click", () => {
       this.$refs.myWindow.close();
-    })
+    });
   },
   methods: {
+    open(...params) {
+      this.clearForm()
+      this.$refs.myWindow.setTitle(params[0]);
+      if (params[0] == EDIT_CONTRACT) {
+        const that = this;
+        const data = params[1];
+        this.createDateInstance.jqxDateTimeInput(
+          "setDate",
+          data["create_date"]
+        );
+        this.projectNameInstance.val(data["project_name"]);
+        this.isRepeatInstance.jqxDropDownList(
+          "selectItem",
+          data["is_repeat"] == "常规" ? 0 : 1
+        );
+        this.salesmanInstance.jqxComboBox("selectItem", data["salesman"]);
+        this.contractNumberInstance.val(data["contract_number"]);
+        this.customerCompanyInstance.val(data["customer_company"]);
+        this.provinceInstance.jqxComboBox("selectItem", data["province"]);
+        this.cityInstance.jqxComboBox("selectItem", data["city"]);
+        this.countyInstance.jqxComboBox("selectItem", data["county"]);
+        this.originalPriceInstance.jqxNumberInput(
+          "setDecimal",
+          data["original_price"]
+        );
+        this.discountPriceInstance.jqxNumberInput(
+          "setDecimal",
+          data["discount_price"]
+        );
+        this.finalPriceInstance.jqxNumberInput(
+          "setDecimal",
+          data["final_price"]
+        );
+        this.reservePriceInstance.jqxNumberInput(
+          "setDecimal",
+          data["reserve_price"]
+        );
+        this.logisticsManagementFeeInstance.val(
+          data["logistics_management_fee"]
+        );
+        this.freightInstance.val(data["freight"]);
+        this.taxInstance.val(data["tax"]);
+        this.warrantyInstance.val(data["warranty"]);
+        this.installFeeInstance.jqxNumberInput(
+          "setDecimal",
+          data["install_fee"] == null ? 0 : data["install_fee"]
+        );
+        this.signStateInstance.jqxDropDownList(
+          "selectItem",
+          data["sign_status"]
+        );
+        this.signDateInstance.val(data["sign_date"]);
+        this.signBackDateInstance.val(data["sign_back_date"]);
+        this.deductionBonusAmountInstance.val("");
+        const formulaModel = data["formula_model"];
+        that.formulaModelInstance.jqxComboBox("clearSelection");
+        setTimeout(() => {
+          if (formulaModel.split(",").length > 1) {
+            formulaModel.split(",").forEach(function (value) {
+              that.formulaModelInstance.jqxComboBox("selectItem", value);
+            });
+          } else {
+            that.formulaModelInstance.jqxComboBox("selectItem", formulaModel);
+          }
+        }, 100);
+
+        this.riseDropPointInstance.val(data["rise_drop_point"]);
+        this.overBudgetBearInstance.val(data["over_budget_bear"]);
+        $("#contrDtlId").val(data["id"]);
+      }
+      this.$refs.myWindow.open();
+    },
     onValidationSuccess(event) {
       const that = this;
       const formData = {};
@@ -857,77 +929,9 @@ export default {
       this.overBudgetBearInstance.val("");
       $("#contrDtlId").val("");
     },
-    open(...params) {
-      this.$refs.myWindow.setTitle(params[0]);
-      if (params[0] == EDIT_CONTRACT) {
-        const that = this;
-        const data = params[1];
-        this.createDateInstance.jqxDateTimeInput(
-          "setDate",
-          data["create_date"]
-        );
-        this.projectNameInstance.val(data["project_name"]);
-        this.isRepeatInstance.jqxDropDownList(
-          "selectItem",
-          data["is_repeat"] == "常规" ? 0 : 1
-        );
-        this.salesmanInstance.jqxComboBox("selectItem", data["salesman"]);
-        this.contractNumberInstance.val(data["contract_number"]);
-        this.customerCompanyInstance.val(data["customer_company"]);
-        this.provinceInstance.jqxComboBox("selectItem", data["province"]);
-        this.cityInstance.jqxComboBox("selectItem", data["city"]);
-        this.countyInstance.jqxComboBox("selectItem", data["county"]);
-        this.originalPriceInstance.jqxNumberInput(
-          "setDecimal",
-          data["original_price"]
-        );
-        this.discountPriceInstance.jqxNumberInput(
-          "setDecimal",
-          data["discount_price"]
-        );
-        this.finalPriceInstance.jqxNumberInput(
-          "setDecimal",
-          data["final_price"]
-        );
-        this.reservePriceInstance.jqxNumberInput(
-          "setDecimal",
-          data["reserve_price"]
-        );
-        this.logisticsManagementFeeInstance.val(
-          data["logistics_management_fee"]
-        );
-        this.freightInstance.val(data["freight"]);
-        this.taxInstance.val(data["tax"]);
-        this.warrantyInstance.val(data["warranty"]);
-        this.installFeeInstance.jqxNumberInput(
-          "setDecimal",
-          data["install_fee"]==null?0:data["install_fee"]
-        );
-        this.signStateInstance.jqxDropDownList(
-          "selectItem",
-          data["sign_status"]
-        );
-        this.signDateInstance.val(data["sign_date"]);
-        this.signBackDateInstance.val(data["sign_back_date"]);
-        this.deductionBonusAmountInstance.val("");
-        const formulaModel = data["formula_model"];
-        that.formulaModelInstance.jqxComboBox("clearSelection");
-        setTimeout(() => {
-          if (formulaModel.split(",").length > 1) {
-            formulaModel.split(",").forEach(function (value) {
-              that.formulaModelInstance.jqxComboBox("selectItem", value);
-            });
-          } else {
-            that.formulaModelInstance.jqxComboBox("selectItem", formulaModel);
-          }
-        }, 100);
-
-        this.riseDropPointInstance.val(data["rise_drop_point"]);
-        this.overBudgetBearInstance.val(data["over_budget_bear"]);
-        $("#contrDtlId").val(data['id']);
-      }
-      this.$refs.myWindow.open();
-    },
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.close();
   },
 };
 </script>

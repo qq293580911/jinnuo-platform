@@ -83,7 +83,7 @@ import {
 } from "@/network/contract.js";
 import { getAnnexUrl, downloadAnnex,deleteAnnex } from "@/network/annex.js";
 export default {
-  name: "Detail",
+  name: "ContractDetail",
   components: {
     JqxGrid,
     JqxMenu,

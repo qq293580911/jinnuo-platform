@@ -83,6 +83,9 @@ export const EDIT_DELIVERY = "修改送货信息"
 export const ADD_CONTRACT = '添加合同信息'
 export const EDIT_CONTRACT = '修改合同信息'
 export const FILE_UPLOAD = '文件上传'
+// 发票部分
+export const ADD_CONTRACT_INVOICE = '添加合同发票'
+export const EDIT_CONTRACT_INVOICE = '编辑合同发票'
 // 报价处理部分
 export const GENERAL_BLOWER = '常规风机'
 export const OUTSIDE_BUY = '外购风机'

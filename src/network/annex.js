@@ -1,5 +1,14 @@
 import { request } from "@/network/request";
 
+export function getContractInvoiceAnnexList(source,params) {
+  return request({
+    url: source.url,
+    method: source.type,
+    source,
+    params
+  })
+}
+
 // 附件
 export function getAnnexUrl(params) {  
   return request({

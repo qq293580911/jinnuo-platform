@@ -11,9 +11,11 @@
           <my-icon :type="item.type" /><span>{{ item.name }}</span>
         </span>
 
-        <a-menu-item v-for="(child, index) in item.children" 
+        <a-menu-item
+          v-for="(child, index) in item.children"
           @click="menuItemClick(child)"
-          :key="index">
+          :key="index"
+        >
           {{ child.name }}
         </a-menu-item>
       </a-sub-menu>
@@ -22,49 +24,48 @@
 </template>
 
 <script>
-import { getMenus,Menu } from '@/network/home.js'
-import { formatToTree } from '@/common/util.js'
-import axios from 'axios'
+import { getMenus, Menu } from "@/network/home.js";
+import { formatToTree } from "@/common/util.js";
 export default {
   name: "HomeAside",
   components: {},
   data() {
     return {
-      mode: 'vertical',
+      mode: "inline",
       menus: [],
-      user:{}
+      user: {},
     };
   },
   created() {
-    this.user = JSON.parse(window.sessionStorage.getItem('user'))
+    this.user = JSON.parse(window.sessionStorage.getItem("user"));
     this.initMenu();
   },
   methods: {
     collapsed() {},
     changeMode(checked) {
-      this.mode = checked ? 'vertical' : 'inline';
+      this.mode = checked ? "vertical" : "inline";
     },
-    menuItemClick(menu){
+    menuItemClick(menu) {
       const params = {
-        title:menu.name,
-        content:menu.component,
-        component:menu.component
-      }
-      this.$bus.$emit('addTab',params)
+        title: menu.name,
+        content: menu.component,
+        component: menu.component,
+      };
+      this.$bus.$emit("addTab", params);
     },
     initMenu() {
       const params = {
-        userId:this.user.id
-      }
+        userId: this.user.id,
+      };
 
-      getMenus(params).then(res=>{
-        let menus = []
-        for(let element of res){
-          menus.push(new Menu(element))
+      getMenus(params).then((res) => {
+        let menus = [];
+        for (let element of res) {
+          menus.push(new Menu(element));
         }
-        menus = formatToTree(menus)
-        this.menus = menus
-      })
+        menus = formatToTree(menus);
+        this.menus = menus;
+      });
     },
   },
 };

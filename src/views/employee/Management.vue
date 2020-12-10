@@ -315,6 +315,7 @@ export default {
           okText: "确认",
           cancelText: "取消",
           centered: true,
+          okType: "danger",
           content: (h) => <div style="color:red;"></div>,
           onOk() {
             const selectedIndexes = that.$refs.myGrid.getselectedrowindexes();

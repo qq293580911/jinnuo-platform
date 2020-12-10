@@ -219,6 +219,7 @@ export default {
         okType: "danger",
         cancelText: "取消",
         centered: true,
+        okType: "danger",
         content: (h) => <div style="color:red;">将连关联文件一并删除</div>,
         onOk() {
           that.deleteCard(that.selectCardId);

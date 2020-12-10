@@ -48,10 +48,7 @@
     </JqxMenu>
     <preview-window ref="previewWindow" :src="previewUrl"></preview-window>
     <contract-window ref="contractWindow"></contract-window>
-    <upload-window
-      ref="uploadWindow"
-      :annex-type="annexType"
-    ></upload-window>
+    <upload-window ref="uploadWindow" :annex-type="annexType"></upload-window>
     <set-customer-window
       ref="setCustomerWindow"
       @sendCustomer="sendCustomer"
@@ -80,10 +77,10 @@ import { getLocalization } from "@/common/localization.js";
 import {
   showContractDetails,
   getContractAnnexList,
+  deleteContract,
 } from "@/network/contract.js";
-import { getAnnexUrl, downloadAnnex,deleteAnnex } from "@/network/annex.js";
+import { getAnnexUrl, downloadAnnex, deleteAnnex } from "@/network/annex.js";
 export default {
-  name: "ContractDetail",
   components: {
     JqxGrid,
     JqxMenu,
@@ -163,7 +160,7 @@ export default {
     const that = this;
     return {
       editable: false,
-      annexType:'合同附件',
+      annexType: "合同附件",
       //数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
@@ -646,21 +643,22 @@ export default {
       // 创建添加按钮
       if (this.hasAuthority(this, "contrDtl:add")) {
         let addButtonContainer = document.createElement("div");
-        addButtonContainer.id = "addButton";
-        addButtonContainer.style.cssText = "float: left; margin-left: 5px;";
+        let addButtonID = JQXLite.generateID();
+        addButtonContainer.id = addButtonID;
+        addButtonContainer.style.cssText =
+          "float: left; margin-left: 5px;cursor: pointer;";
         buttonsContainer.appendChild(addButtonContainer);
         let addButtonInstance = jqwidgets.createInstance(
-          "#addButton",
+          `#${addButtonID}`,
           "jqxButton",
           {
             imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
           }
         );
-        let addButtonTooltip = jqwidgets.createInstance(
-          "#addButton",
-          "jqxTooltip",
-          { content: "添加", position: "bottom" }
-        );
+        jqwidgets.createInstance(`#${addButtonID}`, "jqxTooltip", {
+          content: "添加",
+          position: "bottom",
+        });
         addButtonInstance.addEventHandler("click", (event) => {
           this.$refs.contractWindow.open(ADD_CONTRACT);
         });
@@ -669,21 +667,22 @@ export default {
       // 创建删除按钮
       if (this.hasAuthority(this, "contrDtl:delete")) {
         let deleteButtonContainer = document.createElement("div");
-        deleteButtonContainer.id = "deleteButton";
-        deleteButtonContainer.style.cssText = "float: left; margin-left: 5px;";
+        let deleteButtonID = JQXLite.generateID();
+        deleteButtonContainer.id = deleteButtonID;
+        deleteButtonContainer.style.cssText =
+          "float: left; margin-left: 5px;cursor: pointer;";
         buttonsContainer.appendChild(deleteButtonContainer);
         let deleteButton = jqwidgets.createInstance(
-          "#deleteButton",
+          `#${deleteButtonID}`,
           "jqxButton",
           {
             imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
           }
         );
-        let deleteButtonTooltip = jqwidgets.createInstance(
-          "#deleteButton",
-          "jqxTooltip",
-          { content: "删除", position: "bottom" }
-        );
+        jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
+          content: "删除",
+          position: "bottom",
+        });
 
         deleteButton.addEventHandler("click", (event) => {
           let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
@@ -692,24 +691,29 @@ export default {
             return false;
           }
           let id = this.$refs.myGrid.getrowid(selectedrowindex);
-          this.$refs.myGrid.deleterow(id);
+          this.delete(id)
         });
       }
 
       // 创建修改按钮
       if (this.hasAuthority(this, "contrDtl:update")) {
         let editButtonContainer = document.createElement("div");
-        editButtonContainer.id = "editButton";
-        editButtonContainer.style.cssText = "float: left; margin-left: 5px;";
+        let editButtonID = JQXLite.generateID();
+        editButtonContainer.id = editButtonID;
+        editButtonContainer.style.cssText =
+          "float: left; margin-left: 5px;cursor: pointer;";
         buttonsContainer.appendChild(editButtonContainer);
-        let editButton = jqwidgets.createInstance("#editButton", "jqxButton", {
-          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
-        });
-        let editButtonTooltip = jqwidgets.createInstance(
-          "#editButton",
-          "jqxTooltip",
-          { content: "编辑", position: "bottom" }
+        let editButton = jqwidgets.createInstance(
+          `#${editButtonID}`,
+          "jqxButton",
+          {
+            imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+          }
         );
+        jqwidgets.createInstance(`#${editButtonID}`, "jqxTooltip", {
+          content: "编辑",
+          position: "bottom",
+        });
         editButton.addEventHandler("click", (event) => {
           const index = this.$refs.myGrid.getselectedrowindex();
           if (index < 0) {
@@ -721,49 +725,25 @@ export default {
         });
       }
 
-      // 创建导出按钮
-      if (this.hasAuthority(this, "contrDtl:export")) {
-        let exportButtonContainer = document.createElement("div");
-        exportButtonContainer.id = "exportButton";
-        exportButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-        buttonsContainer.appendChild(exportButtonContainer);
-        let exportButton = jqwidgets.createInstance(
-          "#exportButton",
-          "jqxButton",
-          {
-            imgSrc: require(`@/assets/iconfont/custom/export.svg`),
-          }
-        );
-        let exportButtonTooltip = jqwidgets.createInstance(
-          "#exportButton",
-          "jqxTooltip",
-          { content: "导出", position: "bottom" }
-        );
-
-        exportButton.addEventHandler("click", () => {
-          const columns = this.$refs.myGrid.columns;
-          const rowsData = this.$refs.myGrid.getrows();
-          dataExport("合同数据汇总.xlsx", columns, rowsData);
-        });
-      }
       // 创建上传按钮
       if (this.hasAuthority(this, "contrAnnex:upload")) {
         let uploadButtonContainer = document.createElement("div");
-        uploadButtonContainer.id = "uploadButton";
-        uploadButtonContainer.style.cssText = "float: left; margin-left: 5px;";
+        let uploadButtonID = JQXLite.generateID();
+        uploadButtonContainer.id = uploadButtonID;
+        uploadButtonContainer.style.cssText =
+          "float: left; margin-left: 5px;cursor: pointer;";
         buttonsContainer.appendChild(uploadButtonContainer);
         let uploadButton = jqwidgets.createInstance(
-          "#uploadButton",
+          `#${uploadButtonID}`,
           "jqxButton",
           {
             imgSrc: require(`@/assets/iconfont/custom/upload.svg`),
           }
         );
-        let uploadButtonTooltip = jqwidgets.createInstance(
-          "#uploadButton",
-          "jqxTooltip",
-          { content: "上传", position: "bottom" }
-        );
+        jqwidgets.createInstance(`#${uploadButtonID}`, "jqxTooltip", {
+          content: "上传",
+          position: "bottom",
+        });
 
         uploadButton.addEventHandler("click", () => {
           const index = this.$refs.myGrid.getselectedrowindex();
@@ -771,23 +751,51 @@ export default {
             this.$message.warning({ content: Message.NO_ROWS_SELECTED });
             return false;
           }
-          const boundId = this.$refs.myGrid.getrowid(index)
-          this.$refs.uploadWindow.open(FILE_UPLOAD,boundId);
+          const boundId = this.$refs.myGrid.getrowid(index);
+          this.$refs.uploadWindow.open(FILE_UPLOAD, boundId);
+        });
+      }
+
+      // 创建导出按钮
+      if (this.hasAuthority(this, "contrDtl:export")) {
+        let exportButtonContainer = document.createElement("div");
+        let exportButtonID = JQXLite.generateID();
+        exportButtonContainer.id = exportButtonID;
+        exportButtonContainer.style.cssText =
+          "float: left; margin-left: 5px;cursor: pointer;";
+        buttonsContainer.appendChild(exportButtonContainer);
+        let exportButton = jqwidgets.createInstance(
+          `#${exportButtonID}`,
+          "jqxButton",
+          {
+            imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+          }
+        );
+        jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
+          content: "导出",
+          position: "bottom",
+        });
+
+        exportButton.addEventHandler("click", () => {
+          const columns = this.$refs.myGrid.columns;
+          const rowsData = this.$refs.myGrid.getrows();
+          dataExport("合同数据汇总.xlsx", columns, rowsData);
         });
       }
 
       // 创建刷新按钮
       let reloadButtonContainer = document.createElement("div");
-      reloadButtonContainer.id = "reloadButton";
+      let reloadButtonID = JQXLite.generateID();
+      reloadButtonContainer.id = reloadButtonID;
       reloadButtonContainer.style.cssText = "float: right; margin-left: 5px;";
       buttonsContainer.appendChild(reloadButtonContainer);
       let reloadButton = jqwidgets.createInstance(
-        "#reloadButton",
+        `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       let reloadButtonTooltip = jqwidgets.createInstance(
-        "#reloadButton",
+        `#${reloadButtonID}`,
         "jqxTooltip",
         { content: "刷新", position: "bottom" }
       );
@@ -885,17 +893,18 @@ export default {
                   okText: "确认",
                   cancelText: "取消",
                   centered: true,
+                  okType: "danger",
                   content: (h) => <div style="color:red;"></div>,
                   onOk() {
                     const annexId = childGridInstance.getrowid(rowindex);
                     const params = {
-                    jsonParams: JSON.stringify({
-                      annexId,
-                    }),
-                  };
-                  deleteAnnex(params).then((res) => {
-                    childGridInstance.updatebounddata()
-                  });
+                      jsonParams: JSON.stringify({
+                        annexId,
+                      }),
+                    };
+                    deleteAnnex(params).then((res) => {
+                      childGridInstance.updatebounddata();
+                    });
                   },
                   onCancel() {},
                   class: "test",
@@ -993,6 +1002,15 @@ export default {
         }
       });
       return renderString;
+    },
+    delete(id){
+      const params = {
+        jsonParams:JSON.stringify({id})
+      }
+      deleteContract(params).then(res=>{
+        this.$message.success(Message.DELETE_SUCCESS)
+        this.refresh()
+      })
     },
     refresh() {
       this.$refs.myGrid.updatebounddata();

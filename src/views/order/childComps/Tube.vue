@@ -429,6 +429,7 @@ export default {
           okText: "确认",
           cancelText: "取消",
           centered: true,
+          okType: "danger",
           content: (h) => <div style="color:red;"></div>,
           onOk() {
             let ids = selectedrowindexes.map((item) => {

@@ -136,14 +136,8 @@ export default {
             },
           ],
         },
-        {
-          name: "contrInvId",
-          type: "custom",
-          init: function (component) {
-            component.append('<input id="contrInvId" type="hidden"/>');
-          },
-        },
       ],
+      id:null
     };
   },
   mounted() {
@@ -187,11 +181,27 @@ export default {
         message: "未找到此合同编号",
         action: "blur",
         rule: function (input) {
+          let isExists = false
           const contractNumber = input.val();
-          if (contractNumber) {
-            // console.log(that.checkContractNumberExist(contractNumber))
-          }
-          return true;
+          const jsonParams = {
+            contractNumber,
+          };
+          let xhr = new XMLHttpRequest();
+          xhr.open(
+            "Get",
+            `/api/contrDtl/checkContractNumberExists.do?jsonParams=${encodeURIComponent(JSON.stringify(jsonParams)) }`,
+            false
+          ); //false表示同步请求
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+              const res = JSON.parse(xhr.responseText);
+              isExists = res
+            } else {
+              console.log(xhr);
+            }
+          };
+          xhr.send(null);
+          return isExists;
         },
       },
       {
@@ -226,6 +236,7 @@ export default {
       this.$refs.myWindow.setTitle(params[0]);
       if (params[0] == EDIT_CONTRACT_INVOICE) {
         const data = params[1];
+        console.log(data)
         this.applyDateInstance.jqxDateTimeInput("setDate", data["apply_date"]);
         this.contractNumberInstance.val(data["contract_number"]);
         this.invoiceAmountInstance.jqxNumberInput(
@@ -236,19 +247,16 @@ export default {
         this.trackNumberInstance.val(data["track_number"]);
         this.sendAddressInstance.val(data["send_address"]);
         this.remarkInstance.val(data["remark"]);
+        this.id = data['id']
       }
       this.$refs.myWindow.open();
     },
-    checkContractNumberExist: debounce((contractNumber) => {
-      let isExists = false;
+    checkNumberExist: async function (contractNumber) {
       const params = {
         jsonParams: JSON.stringify({ contractNumber }),
       };
-      checkContractNumberExist(params).then((res) => {
-        isExists = res;
-      });
-      return isExists;
-    }, 100),
+      await checkContractNumberExist(params).then((res) => {});
+    },
     onValidationSuccess(event) {
       const that = this;
       const formData = {};
@@ -259,7 +267,7 @@ export default {
       formData["trackNumber"] = this.trackNumberInstance.val();
       formData["sendAddress"] = this.sendAddressInstance.val();
       formData["remark"] = this.remarkInstance.val();
-      formData["contrInvId"] = $("#contrInvId").val();
+      formData["contrInvId"] = this.id;
       const title = this.$refs.myWindow.title;
       if (title == EDIT_CONTRACT_INVOICE) {
         this.update(formData);
@@ -303,5 +311,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

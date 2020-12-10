@@ -1071,6 +1071,7 @@ export default {
             okText: "确认",
             cancelText: "取消",
             centered: true,
+            okType: "danger",
             content: (h) => <div style="color:red;"></div>,
             onOk() {
               let id = this.$refs.myGrid.getrowid(selectedrowindex);
@@ -1342,6 +1343,7 @@ export default {
                 okText: "确认",
                 cancelText: "取消",
                 centered: true,
+                okType: "danger",
                 content: (h) => <div style="color:red;"></div>,
                 onOk() {
                   let id = childGridInstance.getrowid(rowindex);

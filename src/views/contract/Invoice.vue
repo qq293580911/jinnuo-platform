@@ -30,23 +30,28 @@
     >
     </JqxGrid>
     <preview-window ref="previewWindow" :src="previewUrl"></preview-window>
-    <invoice-window ref="invoiceWinodw"></invoice-window>
+    <invoice-window ref="invoiceWindow"></invoice-window>
+    <upload-window ref="uploadWindow" :annex-type="annexType"></upload-window>
   </div>
 </template>
 
 <script>
+import axios from "axios"
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
 import PreviewWindow from "@/components/common/PreviewWindow.vue";
 import InvoiceWindow from "./childComps/InvoiceWindow";
+import UploadWindow from "@/components/content/annex/UploadWindow.vue";
 
 import { getLocalization } from "@/common/localization.js";
 import { formatFilter } from "@/common/util.js";
-import { Message, ADD_CONTRACT_INVOICE } from "@/common/const.js";
 import {
-  showContractInvoiceList,
-  deleteContractInvoice,
-} from "@/network/invoice.js";
+  Message,
+  ADD_CONTRACT_INVOICE,
+  EDIT_CONTRACT_INVOICE,
+  FILE_UPLOAD,
+} from "@/common/const.js";
+import { showContractInvoiceList, deleteContractInvoice } from "@/network/invoice.js";
 import {
   getContractInvoiceAnnexList,
   getAnnexUrl,
@@ -54,11 +59,11 @@ import {
   deleteAnnex,
 } from "@/network/annex.js";
 export default {
-  name: "ContractInvoice",
   components: {
     JqxGrid,
     PreviewWindow,
     InvoiceWindow,
+    UploadWindow,
   },
   beforeCreate() {
     this.source = {
@@ -219,6 +224,7 @@ export default {
   },
   methods: {
     createButtonsContainers: function (toolbar) {
+      const that = this
       let buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
@@ -226,42 +232,40 @@ export default {
 
       // 添加
       if (this.hasAuthority(this, "contrInv:add")) {
+        let addButtonID = JQXLite.generateID();
         let addButtonContainer = document.createElement("div");
-        addButtonContainer.id = "addButton";
+        addButtonContainer.id = addButtonID;
         addButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(addButtonContainer);
-        let addButtonInstance = jqwidgets.createInstance(
-          "#addButton",
-          "jqxButton",
-          {
-            imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
-          }
-        );
-        jqwidgets.createInstance("#addButton", "jqxTooltip", {
+        let addButtonInstance = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
+          imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+        });
+        jqwidgets.createInstance(`#${addButtonID}`, "jqxTooltip", {
           content: "添加",
           position: "bottom",
         });
         addButtonInstance.addEventHandler("click", (event) => {
-          this.$refs.invoiceWinodw.open(ADD_CONTRACT_INVOICE);
+          this.$refs.invoiceWindow.open(ADD_CONTRACT_INVOICE);
         });
       }
 
       // 删除
       if (this.hasAuthority(this, "contrInv:delete")) {
+        let deleteButtonID = JQXLite.generateID();
         let deleteButtonContainer = document.createElement("div");
-        deleteButtonContainer.id = "deleteButton";
+        deleteButtonContainer.id = deleteButtonID;
         deleteButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(deleteButtonContainer);
         let deleteButtonInstance = jqwidgets.createInstance(
-          "#deleteButton",
+          `#${deleteButtonID}`,
           "jqxButton",
           {
             imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
           }
         );
-        jqwidgets.createInstance("#deleteButton", "jqxTooltip", {
+        jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
           content: "删除",
           position: "bottom",
         });
@@ -273,82 +277,118 @@ export default {
             return false;
           }
           let id = this.$refs.myGrid.getrowid(selectedrowindex);
-          this.$refs.myGrid.deleterow(id);
+          this.$confirm({
+            title: `${Message.CONFIRM_DELETE}`,
+            okText: "确认",
+            cancelText: "取消",
+            centered: true,
+            okType: "danger",
+            content: (h) => <div style="color:red;"></div>,
+            onOk() {
+              that.deleteInvoice(id);
+            },
+            onCancel() {},
+            class: "test",
+          });
         });
       }
 
       // 修改
       if (this.hasAuthority(this, "contrInv:update")) {
+        let editButtonID = JQXLite.generateID();
         let editButtonContainer = document.createElement("div");
-        editButtonContainer.id = "editButton";
+        editButtonContainer.id = editButtonID;
         editButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(editButtonContainer);
 
         let editButtonInstance = jqwidgets.createInstance(
-          "#editButton",
+          `#${editButtonID}`,
           "jqxButton",
           {
             imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
           }
         );
-        jqwidgets.createInstance("#deleteButton", "jqxTooltip", {
+        jqwidgets.createInstance(`#${editButtonID}`, "jqxTooltip", {
           content: "修改",
           position: "bottom",
+        });
+
+        editButtonInstance.addEventHandler("click", (event) => {
+          let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+          if (selectedrowindex < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED });
+            return false;
+          }
+          const rowData = this.$refs.myGrid.getrowdata(selectedrowindex)
+          this.$refs.invoiceWindow.open(EDIT_CONTRACT_INVOICE,rowData)
         });
       }
 
       // 上传
       if (this.hasAuthority(this, "contrInvAnnex:upload")) {
         let uploadButtonContainer = document.createElement("div");
-        uploadButtonContainer.id = "uploadButton";
+        let uploadButtonID = JQXLite.generateID();
+        uploadButtonContainer.id = uploadButtonID;
         uploadButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(uploadButtonContainer);
         let uploadButtonInstance = jqwidgets.createInstance(
-          "#uploadButton",
+          `#${uploadButtonID}`,
           "jqxButton",
           {
             imgSrc: require(`@/assets/iconfont/custom/upload.svg`),
           }
         );
-        jqwidgets.createInstance("#deleteButton", "jqxTooltip", {
+        jqwidgets.createInstance(`#${uploadButtonID}`, "jqxTooltip", {
           content: "上传",
           position: "bottom",
+        });
+
+        uploadButtonInstance.addEventHandler("click", () => {
+          const index = this.$refs.myGrid.getselectedrowindex();
+          if (index < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED });
+            return false;
+          }
+          const boundId = this.$refs.myGrid.getrowid(index);
+          this.$refs.uploadWindow.open(FILE_UPLOAD, boundId);
         });
       }
 
       // 导出
       if (this.hasAuthority(this, "contrInv:export")) {
         let exportButtonContainer = document.createElement("div");
-        exportButtonContainer.id = "exportButton";
+        let exportButtonID = JQXLite.generateID();
+        exportButtonContainer.id = exportButtonID;
         exportButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(exportButtonContainer);
         let exportButtonInstance = jqwidgets.createInstance(
-          "#exportButton",
+          `#${exportButtonID}`,
           "jqxButton",
           {
             imgSrc: require(`@/assets/iconfont/custom/export.svg`),
           }
         );
-        jqwidgets.createInstance("#exportButton", "jqxTooltip", {
+        jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
           content: "导出",
           position: "bottom",
         });
       }
 
       let reloadButtonContainer = document.createElement("div");
-      reloadButtonContainer.id = "reloadButton";
+      let reloadButtonID = JQXLite.generateID();
+      reloadButtonContainer.id = reloadButtonID;
       reloadButtonContainer.style.cssText =
         "float:right;margin-left: 5px;  cursor: pointer;";
       buttonsContainer.appendChild(reloadButtonContainer);
       let reloadButtonInstance = jqwidgets.createInstance(
-        "#reloadButton",
+        `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
-      jqwidgets.createInstance("#reloadButton", "jqxTooltip", {
+      jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
         position: "bottom",
       });
@@ -446,6 +486,7 @@ export default {
                   okText: "确认",
                   cancelText: "取消",
                   centered: true,
+                  okType: "danger",
                   content: (h) => <div style="color:red;"></div>,
                   onOk() {
                     const annexId = childGridInstance.getrowid(rowindex);
@@ -502,14 +543,8 @@ export default {
                 return "下载";
               },
               buttonclick: function (rowindex) {
-                const annexId = childGridInstance.getcellvalue(
-                  rowindex,
-                  "annex_id"
-                );
-                const fileName = childGridInstance.getcellvalue(
-                  rowindex,
-                  "annex_name"
-                );
+                const annexId = childGridInstance.getcellvalue(rowindex, "annex_id");
+                const fileName = childGridInstance.getcellvalue(rowindex, "annex_name");
                 const params = {
                   annexId,
                 };
@@ -538,6 +573,17 @@ export default {
           return columns;
         })(),
       });
+    },
+    deleteInvoice(id) {
+      const params = {
+        jsonParams: JSON.stringify({ id }),
+      };
+      deleteContractInvoice(params).then((res) => {
+        this.refresh();
+      });
+    },
+    refresh() {
+      this.$refs.myGrid.updatebounddata();
     },
   },
 };

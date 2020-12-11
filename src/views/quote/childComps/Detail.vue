@@ -305,22 +305,22 @@ export default {
       // 创建删除按钮
       if (this.hasAuthority(this, "qtnDtl:delete")) {
         let deleteButtonContainer = document.createElement("div");
-        deleteButtonContainer.id = "deleteButton";
+        let deleteButtonID = JQXLite.generateID();
+        deleteButtonContainer.id = deleteButtonID;
         deleteButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(deleteButtonContainer);
         let deleteButton = jqwidgets.createInstance(
-          "#deleteButton",
+          `#${deleteButtonID}`,
           "jqxButton",
           {
             imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
           }
         );
-        jqwidgets.createInstance("#deleteButton", "jqxTooltip", {
+        jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
           content: "删除",
           position: "bottom",
         });
-        //绑定事件
         deleteButton.addEventHandler("click", (event) => {
           let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
           if (selectedrowindex < 0) {
@@ -334,18 +334,19 @@ export default {
       // 创建导出按钮
       if (this.hasAuthority(this, "qtnDtl:export")) {
         let exportButtonContainer = document.createElement("div");
-        exportButtonContainer.id = "exportButton";
+        let exportButtonID = JQXLite.generateID();
+        exportButtonContainer.id = exportButtonID;
         exportButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(exportButtonContainer);
         let exportButton = jqwidgets.createInstance(
-          "#exportButton",
+          `#${exportButtonID}`,
           "jqxButton",
           {
             imgSrc: require(`@/assets/iconfont/custom/export.svg`),
           }
         );
-        jqwidgets.createInstance("#exportButton", "jqxTooltip", {
+        jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
           content: "导出",
           position: "bottom",
         });
@@ -358,16 +359,17 @@ export default {
 
       // 创建刷新按钮
       let reloadButtonContainer = document.createElement("div");
-      reloadButtonContainer.id = "reloadButton";
+      let reloadButtonID = JQXLite.generateID();
+      reloadButtonContainer.id = reloadButtonID;
       reloadButtonContainer.style.cssText =
         "float:right;margin-left: 5px;  cursor: pointer;";
       buttonsContainer.appendChild(reloadButtonContainer);
       let reloadButton = jqwidgets.createInstance(
-        "#reloadButton",
+        `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
-      jqwidgets.createInstance("#reloadButton", "jqxTooltip", {
+      jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
         position: "bottom",
       });

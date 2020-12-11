@@ -198,14 +198,8 @@ export default {
             },
           ],
         },
-        {
-          name: "id",
-          type: "custom",
-          init: (component) => {
-            component.append('<input id="priceId" type="hidden"/>');
-          },
-        },
       ],
+      id: null,
     };
   },
   mounted() {
@@ -243,59 +237,38 @@ export default {
       this.$refs.myWindow.setTitle(params[0]);
       if (params[0] == EDIT_MACHINE_PRICE) {
         const data = params[1];
-        const $id = this.$refs.myForm.getComponentByName("id");
-
-        // 设置产品
-        this.machineInstance.selectItem(data.pm_id);
-        // 设置价格方案
-        this.pricePlanInstance.selectItem(data.ps_id);
-        // 设置非3C价格
-        this.priceNonCccInstance.val(data.price_non_ccc);
-        // 设置3C价格
-        this.priceCccInstance.val(data.price_ccc);
-        // 设置id
-        $id[0].children[0].value = data.price_id;
+        this.machineInstance.selectItem(data["pm_id"]);
+        this.pricePlanInstance.selectItem(data["ps_id"]);
+        this.priceNonCccInstance.val(data["price_non_ccc"]);
+        this.priceCccInstance.val(data["price_ccc"]);
+        this.id = data["price_id"];
       }
       this.$refs.myWindow.open();
     },
     onValidationSuccess(event) {
-      const title = this.$refs.myWindow.title;
-      const $machine = this.$refs.myForm.getComponentByName("machine");
-      const $pricePlan = this.$refs.myForm.getComponentByName("pricePlan");
-      const $priceCcc = this.$refs.myForm.getComponentByName("priceCcc");
-      const $priceNonCcc = this.$refs.myForm.getComponentByName("priceNonCcc");
-      const $id = this.$refs.myForm.getComponentByName("id");
-
-      this.formValue = {
+      const formData = {
         pmId: this.machineInstance.val(),
         psId: this.pricePlanInstance.val(),
         priceNonCcc: this.priceNonCccInstance.val(),
         priceCcc: this.priceCccInstance.val(),
-        priceId: $id[0].children[0].value,
+        priceId: this.id,
       };
       if (title == EDIT_MACHINE_PRICE) {
-        this.update();
+        this.update(formData);
       } else {
-        this.add();
+        this.add(formData);
       }
     },
     clearForm() {
-      const $machine = this.$refs.myForm.getComponentByName("machine");
-      const $pricePlan = this.$refs.myForm.getComponentByName("pricePlan");
-      const $priceCcc = this.$refs.myForm.getComponentByName("priceCcc");
-      const $priceNonCcc = this.$refs.myForm.getComponentByName("priceNonCcc");
-      const $id = this.$refs.myForm.getComponentByName("id");
-
       // 重置部件设置
       this.machineInstance.clearSelection();
       this.pricePlanInstance.clearSelection();
       this.priceNonCccInstance.val(0);
       this.priceCccInstance.val(0);
-      $id[0].children[0].value = "";
     },
-    add() {
+    add(formData) {
       const params = {
-        jsonParams: JSON.stringify(this.formValue),
+        jsonParams: JSON.stringify(formData),
       };
       addMachinePrice(params).then((res) => {
         this.$refs.myWindow.close();
@@ -304,9 +277,9 @@ export default {
         this.clearForm();
       });
     },
-    update() {
+    update(formData) {
       const params = {
-        jsonParams: JSON.stringify(this.formValue),
+        jsonParams: JSON.stringify(formData),
       };
       updateMachinePrice(params).then((res) => {
         this.$refs.myWindow.close();

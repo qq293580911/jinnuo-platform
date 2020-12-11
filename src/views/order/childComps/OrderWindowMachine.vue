@@ -367,15 +367,9 @@ export default {
               columnWidth: "50%",
             },
           ],
-        },
-        {
-          name: "ordDtlId",
-          type: "custom",
-          init: function (component) {
-            component.append('<input type="hidden" id="ordDtlId"/>');
-          },
-        },
+        }
       ],
+      id:null
     };
   },
   mounted() {
@@ -584,7 +578,7 @@ export default {
       ] = this.notConsiderationCommissionOrderAmountInstance.val();
       formData["actualFreight"] = this.actualFreightInstance.val();
       formData["remark"] = this.remarkInstance.val();
-      formData["id"] = $("#ordDtlId").val();
+      formData["id"] = this.id;
       const title = this.$refs.myWindow.title;
       if (title == EDIT_ORDER) {
         this.update(formData);
@@ -615,7 +609,6 @@ export default {
         0
       );
       this.remarkInstance.val("");
-      $("#ordDtlId").val("");
     },
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
@@ -681,7 +674,7 @@ export default {
           );
           // 备注
           this.remarkInstance.val(rowData["remark"]);
-          $("#ordDtlId").val(rowData["id"]);
+          this.id = rowData["id"]
         });
       }
       this.$refs.myWindow.open();

@@ -170,10 +170,25 @@ export default {
             const warranty = item["warranty"];
             const installFee = item["install_fee"];
             // 计算下单杂费
-            const ordLogManageFee = calc_misc_log_manage_fee(ordAmt,installFee,logManageFee);
-            const ordTax = calc_misc_tax(ordAmt,installFee,tax);
-            const ordWarranty = calc_misc_warranty(ordAmt,installFee,warranty);
-            const ordFreight = calc_misc_freight(ordAmt,installFee,ordLogManageFee,ordTax,ordWarranty,freight);
+            const ordLogManageFee = calc_misc_log_manage_fee(
+              ordAmt,
+              installFee,
+              logManageFee
+            );
+            const ordTax = calc_misc_tax(ordAmt, installFee, tax);
+            const ordWarranty = calc_misc_warranty(
+              ordAmt,
+              installFee,
+              warranty
+            );
+            const ordFreight = calc_misc_freight(
+              ordAmt,
+              installFee,
+              ordLogManageFee,
+              ordTax,
+              ordWarranty,
+              freight
+            );
             // 计算下单底价
             const ordRsvP = calc_rsv_p(
               ordAmt,
@@ -375,7 +390,7 @@ export default {
   mounted() {
     const that = this;
     // 上传器绑定值改变事件
-    this.uploaderInstance.$off('changed').$on("changed", (data) => {
+    this.uploaderInstance.$off("changed").$on("changed", (data) => {
       let sheetName = Object.keys(data[0])[0];
       const fileContent = data[0][sheetName];
       fileContent.forEach(function (value, index) {
@@ -441,7 +456,8 @@ export default {
       uploadContainer.classList.add("tool-item");
       buttonsContainer.appendChild(uploadContainer);
       const uploader = document.createElement("div");
-      uploader.id = "uploader";
+      const uploaderID = JQXLite.generateID();
+      uploader.id = uploaderID;
       uploadContainer.appendChild(uploader);
       let uploaderComponent = Vue.extend(CustomUploader);
       this.uploaderInstance = new uploaderComponent({
@@ -472,18 +488,19 @@ export default {
             },
           },
         },
-      }).$mount("#uploader");
+      }).$mount(`#${uploaderID}`);
       // 开始行
       let spanContainer = document.createElement("span");
       spanContainer.classList.add("tool-item");
       spanContainer.innerHTML = "开始行：";
       const startRowContainer = document.createElement("div");
-      startRowContainer.id = "startRow";
+      const startRowID = JQXLite.generateID();
+      startRowContainer.id = startRowID;
       startRowContainer.classList.add("tool-item");
       buttonsContainer.appendChild(spanContainer);
       buttonsContainer.appendChild(startRowContainer);
       this.startRowInstance = jqwidgets.createInstance(
-        "#startRow",
+        `#${startRowID}`,
         "jqxNumberInput",
         {
           width: 100,
@@ -500,11 +517,12 @@ export default {
       spanContainer.innerHTML = "结束行：";
       buttonsContainer.appendChild(spanContainer);
       const endRowContainer = document.createElement("div");
-      endRowContainer.id = "endRow";
+      const endRowID = JQXLite.generateID();
+      endRowContainer.id = endRowID;
       endRowContainer.classList.add("tool-item");
       buttonsContainer.appendChild(endRowContainer);
       this.endRowInstance = jqwidgets.createInstance(
-        "#endRow",
+        `#${endRowID}`,
         "jqxNumberInput",
         {
           width: 100,
@@ -519,47 +537,42 @@ export default {
       // 确认导入按钮
       let confirmContainer = document.createElement("div");
       confirmContainer.classList.add("tool-item");
-      confirmContainer.id = "confirmImport";
+      let confirmButtonID = JQXLite.generateID();
+      confirmContainer.id = confirmButtonID;
       buttonsContainer.appendChild(confirmContainer);
-      let confirmImportButton = jqwidgets.createInstance(
-        "#confirmImport",
+      this.importInstance = jqwidgets.createInstance(
+        `#${confirmButtonID}`,
         "jqxButton",
         { height: 25, width: 40, value: "确认" }
       );
-      this.importInstance = jqwidgets.createInstance(
-        "#confirmImport",
-        "jqxTooltip",
-        {
-          content: "确认导入",
-          position: "bottom",
-        }
-      );
+      jqwidgets.createInstance(`#${confirmButtonID}`, "jqxTooltip", {
+        content: "确认导入",
+        position: "bottom",
+      });
 
       // 批量修改按钮
       let batchUpdateContainer = document.createElement("div");
       batchUpdateContainer.classList.add("tool-item");
-      batchUpdateContainer.id = "batchUpdateButton";
+      let batchUpdateButtonID = JQXLite.generateID();
+      batchUpdateContainer.id = batchUpdateButtonID;
       buttonsContainer.appendChild(batchUpdateContainer);
-      let batchUpdateButton = jqwidgets.createInstance(
-        "#batchUpdateButton",
+      this.batchUpdateInstance = jqwidgets.createInstance(
+        `#${batchUpdateButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/batch-update.svg`) }
       );
-      this.batchUpdateInstance = jqwidgets.createInstance(
-        "#batchUpdateButton",
-        "jqxTooltip",
-        {
-          content: "批量更新",
-          position: "bottom",
-        }
-      );
+      jqwidgets.createInstance(`#${batchUpdateButtonID}`, "jqxTooltip", {
+        content: "批量更新",
+        position: "bottom",
+      });
       // 字段选择
       let fieldSelection = document.createElement("div");
-      fieldSelection.id = "fieldSelection";
+      let fieldSelectionID = JQXLite.generateID();
+      fieldSelection.id = fieldSelectionID;
       fieldSelection.classList.add("tool-item");
       buttonsContainer.appendChild(fieldSelection);
       this.fieldSelectionInstance = jqwidgets.createInstance(
-        "#fieldSelection",
+        `#${fieldSelectionID}`,
         "jqxDropDownList",
         {
           source: ["实际运费", "计提成状态"],

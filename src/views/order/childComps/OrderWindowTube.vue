@@ -185,15 +185,9 @@ export default {
               columnWidth: "50%",
             },
           ],
-        },
-        {
-          name: "ordDtlId",
-          type: "custom",
-          init: function (component) {
-            component.append('<input type="hidden" id="ordDtlId"/>');
-          },
-        },
+        }
       ],
+      id:null
     };
   },
   mounted() {
@@ -211,8 +205,6 @@ export default {
     const $considerationCommissionStatus = this.$refs.myForm.getComponentByName(
       "considerationCommissionStatus"
     );
-    const $ordDtlId = $("#ordDtlId");
-
     this.productTypeInstance = $productType;
     this.orderDateInstance = $orderDate;
     this.projectNameInstance = $projectName;
@@ -284,7 +276,7 @@ export default {
       formData[
         "considerationCommissionStatus"
       ] = this.considerationCommissionStatusInstance.val();
-      formData["id"] = $("#ordDtlId").val();
+      formData["id"] = this.id
       const title = this.$refs.myWindow.title;
       if (title == EDIT_ORDER) {
         this.update(formData);
@@ -319,7 +311,7 @@ export default {
             "selectItem",
             rowData["consideration_commission_status"]
           );
-          $("#ordDtlId").val(rowData["id"]);
+          this.id = rowData["id"]
         });
       }
       this.$refs.myWindow.open();
@@ -356,7 +348,6 @@ export default {
       this.orderAreaInstance.jqxNumberInput("setDecimal", 0);
       this.considerationCommissionStatus.jqxDropDownList("clearSelection");
       this.remarkInstance.val("");
-      $("#ordDtlId").val("");
     },
   },
 };

@@ -470,49 +470,56 @@ export default {
       let buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
-      let asyncButtonContainer = document.createElement("div");
+      let syncButtonContainer = document.createElement("div");
       let exportButtonContainer = document.createElement("div");
       let reloadButtonContainer = document.createElement("div");
-      asyncButtonContainer.id = "asyncButton";
-      exportButtonContainer.id = "exportButton";
-      reloadButtonContainer.id = "reloadButton";
-      asyncButtonContainer.style.cssText =
+      const syncButtonID = JQXLite.generateID();
+      const exportButtonID = JQXLite.generateID();
+      const reloadButtonID = JQXLite.generateID();
+      syncButtonContainer.id = syncButtonID;
+      exportButtonContainer.id = exportButtonID;
+      reloadButtonContainer.id = reloadButtonID;
+      syncButtonContainer.style.cssText =
         "float: left;margin-left: 5px;  cursor: pointer;";
       exportButtonContainer.style.cssText =
         "float: left;margin-left: 5px;  cursor: pointer;";
       reloadButtonContainer.style.cssText =
         "float:right;margin-left: 5px;  cursor: pointer;";
-      buttonsContainer.appendChild(asyncButtonContainer);
+      buttonsContainer.appendChild(syncButtonContainer);
       buttonsContainer.appendChild(exportButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
       toolbar[0].appendChild(buttonsContainer);
       //创建按钮
-      let asyncButton = jqwidgets.createInstance("#asyncButton", "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/async.svg`),
-      });
-      jqwidgets.createInstance("#asyncButton", "jqxTooltip", {
+      let syncButton = jqwidgets.createInstance(
+        `#${syncButtonID}`,
+        "jqxButton",
+        {
+          imgSrc: require(`@/assets/iconfont/custom/async.svg`),
+        }
+      );
+      jqwidgets.createInstance(`#${syncButtonID}`, "jqxTooltip", {
         content: "同步数据到服务器",
         position: "bottom",
       });
 
       let exportButton = jqwidgets.createInstance(
-        "#exportButton",
+        `#${exportButtonID}`,
         "jqxButton",
         {
           imgSrc: require(`@/assets/iconfont/custom/export.svg`),
         }
       );
-      jqwidgets.createInstance("#exportButton", "jqxTooltip", {
+      jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
         content: "导出",
         position: "bottom",
       });
 
       let reloadButton = jqwidgets.createInstance(
-        "#reloadButton",
+        `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
-      jqwidgets.createInstance("#reloadButton", "jqxTooltip", {
+      jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
         position: "bottom",
       });

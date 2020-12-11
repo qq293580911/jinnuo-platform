@@ -232,8 +232,8 @@ export default {
 
       // 添加
       if (this.hasAuthority(this, "contrInv:add")) {
-        let addButtonID = JQXLite.generateID();
         let addButtonContainer = document.createElement("div");
+        let addButtonID = JQXLite.generateID();
         addButtonContainer.id = addButtonID;
         addButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";

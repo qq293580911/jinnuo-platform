@@ -20,9 +20,9 @@ export const Message = {
   NO_REPEAT_SUBMIT: '不要重复提交',
   CONTAINS_INVALID_SYMBOL: '包含无效字符',
   END_DATE_LESS_THAN_START_DATE: '结束日期不能小于开始日期',
-  END_ROW_LESS_THAN_START_ROW:'结束行不能小于开始行',
-  NOT_FOUND_CONTENT:'未发现内容',
-  NOT_ALLOWED_FORMAT:'不允许的格式'
+  END_ROW_LESS_THAN_START_ROW: '结束行不能小于开始行',
+  NOT_FOUND_CONTENT: '未发现内容',
+  NOT_ALLOWED_FORMAT: '不允许的格式'
 };
 
 export const Module = {
@@ -64,10 +64,24 @@ export const Module = {
   TEST: 'Test'
 }
 
+// 用户部分
+export const ADD_USER = '添加用户'
+export const EDIT_USER = '修改用户'
+
+// 角色部分
+export const ADD_ROLE = '添加角色'
+export const EDIT_ROLE = '修改角色'
+
 export const ADD_MACHINE_PRODUCT = '添加设备产品';
 export const EDIT_MACHINE_PRODUCT = '修改设备产品';
 export const ADD_MACHINE_PRICE = '添加设备价格';
 export const EDIT_MACHINE_PRICE = '修改设备价格';
+
+export const ADD_PRODUCT = '添加产品'
+export const EDIT_PRODUCT = '修改产品'
+export const ADD_PRODUCT_PRICE = '添加产品价格'
+export const EDIT_PRODUCT_PRICE = '修改产品价格'
+// 员工部分
 export const ADD_EMPLOYEE = '添加员工';
 export const EDIT_EMPLOYEE = '修改员工';
 export const ASSIGN_POSITION = "分配职位"
@@ -98,4 +112,3 @@ export const SIDE_WALL_BLOWER = '边墙风机'
 export const SIDE_WALL_BLOWER_EP = '边墙风机（防爆）'
 // 报价单管理部分
 export const ADD_QUOTATION = "添加报价信息"
-

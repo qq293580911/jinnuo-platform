@@ -72,16 +72,18 @@ export default {
           init: function (component) {
             // 按钮
             let dropDownButtonContainer = document.createElement("div");
-            dropDownButtonContainer.id = "categoryButton";
+            let dropDownButtonID = JQXLite.generateID();
+            dropDownButtonContainer.id = dropDownButtonID;
             component[0].appendChild(dropDownButtonContainer);
             // 树
             let treeContainer = document.createElement("div");
-            treeContainer.id = "pmPcId";
+            let treeID = JQXLite.generateID();
+            treeContainer.id = treeID;
             treeContainer.style.cssText = "border: none;";
             dropDownButtonContainer.appendChild(treeContainer);
 
             that.categoryDropDownButtonInstance = jqwidgets.createInstance(
-              "#categoryButton",
+              `#${dropDownButtonID}`,
               "jqxDropDownButton",
               {
                 width: 250,
@@ -120,8 +122,8 @@ export default {
                     },
                   ]
                 );
-                let dropDownTree = jqwidgets.createInstance(
-                  "#pmPcId",
+                that.treeInstance = jqwidgets.createInstance(
+                  `#${treeID}`,
                   "jqxTree",
                   {
                     source: records,
@@ -262,18 +264,17 @@ export default {
 
     // 获取组件对象
     const $name = this.$refs.myForm.getComponentByName("name");
-    const $categoryButton = document.getElementById("categoryButton");
     const $unit = this.$refs.myForm.getComponentByName("unit");
     const $power = this.$refs.myForm.getComponentByName("power");
     const $remark = this.$refs.myForm.getComponentByName("remark");
-    const $id = this.$refs.myForm.getComponentByName("id");
+
+    this.machineNameInsatnce = $name;
+    this.unitInstance = $unit;
+    this.powerInstance = $power;
+    this.remarkInstance = $remark;
 
     // 设备-类型
-    let dropDownTree = jqwidgets.createInstance(
-      document.getElementById("pmPcId"),
-      "jqxTree"
-    );
-    dropDownTree.addEventHandler("select", (event) => {
+    this.treeInstance.addEventHandler("select", (event) => {
       const selectedItem = dropDownTree.getSelectedItem();
       // 不能选择包含儿子的节点
       if (selectedItem.hasItems) {
@@ -287,8 +288,6 @@ export default {
         "</div>";
       that.categoryDropDownButtonInstance.setContent(dropDownContent);
       that.categoryDropDownButtonInstance.close();
-      // 设置id值到formValue
-      const id = selectedItem.id;
     });
 
     // 设置表单验证规则
@@ -330,91 +329,62 @@ export default {
   },
   methods: {
     open(...params) {
+      const that = this;
       this.$refs.myWindow.setTitle(params[0]);
       if (params[0] == EDIT_MACHINE_PRODUCT) {
         const data = params[1];
-        const $name = this.$refs.myForm.getComponentByName("name");
-        const $power = this.$refs.myForm.getComponentByName("power");
-        const $remark = this.$refs.myForm.getComponentByName("remark");
-        const $id = this.$refs.myForm.getComponentByName("id");
-        // 设置ID
-        $id[0].children[0].value = data.pm_id;
-        // 设置产品名称
-        $name[0].value = data.pm_name;
-        // 设置类型
-        let treeInstance = jqwidgets.createInstance("#pmPcId", "jqxTree");
-        const items = treeInstance.getItems();
+        this.id = data.pm_id;
+        this.machineNameInsatnce.val(data.pm_name);
+        const items = this.treeInstance.getItems();
         for (let i = 0; i < items.length; i++) {
           if (items[i].id == data["pc_id"]) {
             const element = items[i].element;
-            treeInstance.selectItem(element);
-            treeInstance.expandItem(element);
+            this.treeInstance.selectItem(element);
+            this.treeInstance.expandItem(element);
             break;
           }
         }
-        // 设置最低风量
-        this.minAirVolumeInstance.val(data.min_air_volume);
-        // 设置最高风量
-        this.maxAirVolumeInstance.val(data.max_air_volume);
-        // 设置设备功率
-        $power[0].value = data.power;
-        // 设置产品单位
-        this.unitInstance.selectItem(data.unit);
-        // 设置备注
-        $remark[0].value = data.remark;
+        this.minAirVolumeInstance.val(data["min_air_volume"]);
+        this.maxAirVolumeInstance.val(data["max_air_volume"]);
+        this.powerInstance.val(data["power"]);
+        this.unitInstance.jqxDropDownList("selectItem", data["unit"]);
+        this.remarkInstance.val(data["remark"]);
       }
-
       this.$refs.myWindow.open();
     },
     clearForm() {
-      const $name = this.$refs.myForm.getComponentByName("name");
-      const $power = this.$refs.myForm.getComponentByName("power");
-      const $remark = this.$refs.myForm.getComponentByName("remark");
-      const $id = this.$refs.myForm.getComponentByName("id");
-
       // 重置部件设置
-      $name[0].value = "";
+      this.machineNameInsatnce.val("");
       this.categoryDropDownButtonInstance.setContent("");
-      let dreopDownTreeInstance = jqwidgets.createInstance(
-        "#pmPcId",
-        "jqxTree"
-      );
-      dreopDownTreeInstance.selectItem(null);
-      this.minAirVolumeInstance.val(0);
-      this.maxAirVolumeInstance.val(0);
-      $power[0].value = "";
-      $remark[0].value = "";
-      $id[0].children[0].value = "";
+      this.treeInstance.selectItem(null);
+      this.minAirVolumeInstance.jqxNumberInput("setDecimal", 0);
+      this.maxAirVolumeInstance.jqxNumberInput("setDecimal", 0);
+      this.powerInstance.val("");
+      this.remarkInstance.val("");
     },
     onValidationSuccess(event) {
       const title = this.$refs.myWindow.title;
-      const $name = this.$refs.myForm.getComponentByName("name");
-      let treeInstance = jqwidgets.createInstance("#pmPcId", "jqxTree");
-      const $power = this.$refs.myForm.getComponentByName("power");
-      const $remark = this.$refs.myForm.getComponentByName("remark");
-      const $id = this.$refs.myForm.getComponentByName("id");
-
       const selectedTreeItem = treeInstance.getSelectedItem();
-      this.fromValue = {
-        pm_name: $name[0].value,
+      const formData = {
+        pm_name: this.machineNameInsatnce.val(),
         pc_id: selectedTreeItem.id,
         min_air_volume: this.minAirVolumeInstance.val(),
         max_air_volume: this.maxAirVolumeInstance.val(),
-        power: $power[0].value,
+        power: this.powerInstance.val(),
         unit: this.unitInstance.val(),
-        remark: $remark[0].value,
-        pm_id: $id[0].children[0].value,
+        remark: this.remarkInstance.val(),
+        pm_id: this.id,
       };
 
       if (title == EDIT_MACHINE_PRODUCT) {
-        this.update();
+        this.update(formData);
       } else {
-        this.add();
+        this.add(formData);
       }
     },
-    add() {
+    add(formData) {
       const params = {
-        jsonParams: JSON.stringify(this.formValue),
+        jsonParams: JSON.stringify(formData),
       };
       addMachineProduct(params).then((res) => {
         this.$refs.myWindow.close();
@@ -423,9 +393,9 @@ export default {
         this.clearForm();
       });
     },
-    update() {
+    update(formData) {
       const params = {
-        jsonParams: JSON.stringify(this.formValue),
+        jsonParams: JSON.stringify(formData),
       };
       updateMachineProduct(params).then((res) => {
         this.$refs.myWindow.close();

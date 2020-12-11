@@ -142,12 +142,18 @@ export default {
       let importButtonContainer = document.createElement("div");
       let exportButtonContainer = document.createElement("div");
       let reloadButtonContainer = document.createElement("div");
-      addButtonContainer.id = "addButton";
-      deleteButtonContainer.id = "deleteButton";
-      editButtonContainer.id = "editButton";
-      importButtonContainer.id = "importButton";
-      exportButtonContainer.id = "exportButton";
-      reloadButtonContainer.id = "reloadButton";
+      let addButtonID = JQXLite.generateID();
+      let deleteButtonID = JQXLite.generateID();
+      let editButtonID = JQXLite.generateID();
+      let importButtonID = JQXLite.generateID();
+      let exportButtonID = JQXLite.generateID();
+      let reloadButtonID = JQXLite.generateID();
+      addButtonContainer.id = addButtonID;
+      deleteButtonContainer.id = deleteButtonID;
+      editButtonContainer.id = editButtonID;
+      importButtonContainer.id = importButtonID;
+      exportButtonContainer.id = exportButtonID;
+      reloadButtonContainer.id = reloadButtonID;
       addButtonContainer.style.cssText =
         "float: left;margin-left: 5px;  cursor: pointer;";
       deleteButtonContainer.style.cssText =
@@ -168,42 +174,46 @@ export default {
       buttonsContainer.appendChild(reloadButtonContainer);
       toolbar[0].appendChild(buttonsContainer);
       //创建按钮
-      let addButton = jqwidgets.createInstance("#addButton", "jqxButton", {
+      let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
         imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
       });
-      jqwidgets.createInstance("#addButton", "jqxTooltip", {
+      jqwidgets.createInstance(`#${addButtonID}`, "jqxTooltip", {
         content: "添加",
         position: "bottom",
       });
 
       let deleteButton = jqwidgets.createInstance(
-        "#deleteButton",
+        `#${deleteButtonID}`,
         "jqxButton",
         {
           imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
         }
       );
-      jqwidgets.createInstance("#deleteButton", "jqxTooltip", {
+      jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
         content: "删除",
         position: "bottom",
       });
 
-      let editButton = jqwidgets.createInstance("#editButton", "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
-      });
+      let editButton = jqwidgets.createInstance(
+        `#${editButtonID}`,
+        "jqxButton",
+        {
+          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+        }
+      );
       jqwidgets.createInstance("#editButton", "jqxTooltip", {
         content: "编辑",
         position: "bottom",
       });
 
       let importButton = jqwidgets.createInstance(
-        "#importButton",
+        `#${importButtonID}`,
         "jqxButton",
         {
           imgSrc: require(`@/assets/iconfont/custom/import.svg`),
         }
       );
-      jqwidgets.createInstance("#importButton", "jqxTooltip", {
+      jqwidgets.createInstance(`#${importButtonID}`, "jqxTooltip", {
         content: "导入",
         position: "bottom",
       });
@@ -215,23 +225,22 @@ export default {
           imgSrc: require(`@/assets/iconfont/custom/export.svg`),
         }
       );
-      jqwidgets.createInstance("#exportButton", "jqxTooltip", {
+      jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
         content: "导出",
         position: "bottom",
       });
 
       let reloadButton = jqwidgets.createInstance(
-        "#reloadButton",
+        `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
-      jqwidgets.createInstance("#reloadButton", "jqxTooltip", {
+      jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
         position: "bottom",
       });
 
       //绑定事件
-
       deleteButton.addEventHandler("click", (event) => {
         let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
         if (selectedrowindex < 0) {

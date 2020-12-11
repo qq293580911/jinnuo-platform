@@ -364,12 +364,18 @@ export default {
       let importButtonContainer = document.createElement("div");
       let exportButtonContainer = document.createElement("div");
       let reloadButtonContainer = document.createElement("div");
-      addButtonContainer.id = "addButton";
-      deleteButtonContainer.id = "deleteButton";
-      editButtonContainer.id = "editButton";
-      importButtonContainer.id = "importButton";
-      exportButtonContainer.id = "exportButton";
-      reloadButtonContainer.id = "reloadButton";
+      let addButtonID = JQXLite.generateID();
+      let deleteButtonID = JQXLite.generateID();
+      let editButtonID = JQXLite.generateID();
+      let importButtonID = JQXLite.generateID();
+      let exportButtonID = JQXLite.generateID();
+      let reloadButtonID = JQXLite.generateID();
+      addButtonContainer.id = addButtonID;
+      deleteButtonContainer.id = deleteButtonID;
+      editButtonContainer.id = editButtonID;
+      importButtonContainer.id = importButtonID;
+      exportButtonContainer.id = exportButtonID;
+      reloadButtonContainer.id = reloadButtonID;
       addButtonContainer.style.cssText =
         "float: left;margin-left: 5px;  cursor: pointer;";
       deleteButtonContainer.style.cssText =
@@ -390,13 +396,17 @@ export default {
       buttonsContainer.appendChild(reloadButtonContainer);
       toolbar[0].appendChild(buttonsContainer);
       //添加
-      let addButton = jqwidgets.createInstance("#addButton", "jqxButton", {
+      let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
         imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
       });
-      this.addInstance = jqwidgets.createInstance("#addButton", "jqxTooltip", {
-        content: "添加",
-        position: "bottom",
-      });
+      this.addInstance = jqwidgets.createInstance(
+        `#${addButtonID}`,
+        "jqxTooltip",
+        {
+          content: "添加",
+          position: "bottom",
+        }
+      );
 
       this.addInstance.addEventHandler("click", () => {
         this.$refs.orderWindow.open(ADD_ORDER);
@@ -404,21 +414,17 @@ export default {
 
       // 删除
       let deleteButton = jqwidgets.createInstance(
-        "#deleteButton",
+        `#${deleteButtonID}`,
         "jqxButton",
         {
           imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
         }
       );
-      this.deleteInsatnce = jqwidgets.createInstance(
-        "#deleteButton",
-        "jqxTooltip",
-        {
-          content: "删除",
-          position: "bottom",
-        }
-      );
-      this.deleteInsatnce.addEventHandler("click", () => {
+      jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
+        content: "删除",
+        position: "bottom",
+      });
+      deleteButton.addEventHandler("click", () => {
         let selectedrowindexes = this.$refs.myGrid.getselectedrowindexes();
         if (selectedrowindexes.length < 1) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
@@ -451,18 +457,18 @@ export default {
         });
       });
       // 修改
-      let editButton = jqwidgets.createInstance("#editButton", "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
-      });
-      this.editInstance = jqwidgets.createInstance(
-        "#editButton",
-        "jqxTooltip",
+      let editButton = jqwidgets.createInstance(
+        `#${editButtonID}`,
+        "jqxButton",
         {
-          content: "编辑",
-          position: "bottom",
+          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
         }
       );
-      this.editInstance.addEventHandler("click", () => {
+      jqwidgets.createInstance(`#${editButtonID}`, "jqxTooltip", {
+        content: "编辑",
+        position: "bottom",
+      });
+      editButton.addEventHandler("click", () => {
         let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
         if (selectedrowindex < 0) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
@@ -474,40 +480,32 @@ export default {
 
       // 导入
       let importButton = jqwidgets.createInstance(
-        "#importButton",
+        `#${importButtonID}`,
         "jqxButton",
         {
           imgSrc: require(`@/assets/iconfont/custom/import.svg`),
         }
       );
-      this.importInstance = jqwidgets.createInstance(
-        "#importButton",
-        "jqxTooltip",
-        {
-          content: "导入",
-          position: "bottom",
-        }
-      );
-      this.importInstance.addEventHandler("click", () => {
+      jqwidgets.createInstance(`#${importButtonID}`, "jqxTooltip", {
+        content: "导入",
+        position: "bottom",
+      });
+      importButton.addEventHandler("click", () => {
         this.$refs.orderImportWindow.open();
       });
 
       // 导出
       let exportButton = jqwidgets.createInstance(
-        "#exportButton",
+        `#${exportButtonID}`,
         "jqxButton",
         {
           imgSrc: require(`@/assets/iconfont/custom/export.svg`),
         }
       );
-      this.exportInstance = jqwidgets.createInstance(
-        "#exportButton",
-        "jqxTooltip",
-        {
-          content: "导出",
-          position: "bottom",
-        }
-      );
+      jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
+        content: "导出",
+        position: "bottom",
+      });
 
       this.exportInstance.addEventHandler("click", () => {
         this.exportToExcel();
@@ -515,12 +513,12 @@ export default {
 
       // 刷新
       let reloadButton = jqwidgets.createInstance(
-        "#reloadButton",
+        `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       this.refreshInstance = jqwidgets.createInstance(
-        "#reloadButton",
+        `#${reloadButtonID}`,
         "jqxTooltip",
         {
           content: "刷新",

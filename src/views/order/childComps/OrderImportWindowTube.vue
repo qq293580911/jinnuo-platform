@@ -262,7 +262,7 @@ export default {
   mounted() {
     const that = this;
     // 上传器绑定值改变事件
-    this.uploaderInstance.$off('changed').$on("changed", (data) => {
+    this.uploaderInstance.$off("changed").$on("changed", (data) => {
       let sheetName = Object.keys(data[0])[0];
       const fileContent = data[0][sheetName];
       fileContent.forEach(function (value, index) {
@@ -328,7 +328,8 @@ export default {
       uploadContainer.classList.add("tool-item");
       buttonsContainer.appendChild(uploadContainer);
       const uploader = document.createElement("div");
-      uploader.id = "uploader";
+      let uploaderID = JQXLite.generateID();
+      uploader.id = uploaderID;
       uploadContainer.appendChild(uploader);
       let uploaderComponent = Vue.extend(CustomUploader);
       this.uploaderInstance = new uploaderComponent({
@@ -353,18 +354,19 @@ export default {
             },
           },
         },
-      }).$mount("#uploader");
+      }).$mount(`#${uploaderID}`);
       // 开始行
       let spanContainer = document.createElement("span");
       spanContainer.classList.add("tool-item");
       spanContainer.innerHTML = "开始行：";
       const startRowContainer = document.createElement("div");
-      startRowContainer.id = "startRow";
+      let startRowID = JQXLite.generateID();
+      startRowContainer.id = startRowID;
       startRowContainer.classList.add("tool-item");
       buttonsContainer.appendChild(spanContainer);
       buttonsContainer.appendChild(startRowContainer);
       this.startRowInstance = jqwidgets.createInstance(
-        "#startRow",
+        `#${startRowID}`,
         "jqxNumberInput",
         {
           width: 100,
@@ -381,11 +383,12 @@ export default {
       spanContainer.innerHTML = "结束行：";
       buttonsContainer.appendChild(spanContainer);
       const endRowContainer = document.createElement("div");
-      endRowContainer.id = "endRow";
+      let endRowID = JQXLite.generateID();
+      endRowContainer.id = endRowID;
       endRowContainer.classList.add("tool-item");
       buttonsContainer.appendChild(endRowContainer);
       this.endRowInstance = jqwidgets.createInstance(
-        "#endRow",
+        `#${endRowID}`,
         "jqxNumberInput",
         {
           width: 100,
@@ -400,40 +403,34 @@ export default {
       // 确认导入按钮
       let confirmContainer = document.createElement("div");
       confirmContainer.classList.add("tool-item");
-      confirmContainer.id = "confirmImport";
+      let confirmImportID = JQXLite.generateID();
+      confirmContainer.id = confirmImportID;
       buttonsContainer.appendChild(confirmContainer);
-      let confirmImportButton = jqwidgets.createInstance(
-        "#confirmImport",
+      this.confirmImportInstance = jqwidgets.createInstance(
+        `#${confirmImportID}`,
         "jqxButton",
         { height: 25, width: 40, value: "确认" }
       );
-      this.confirmImportInstance = jqwidgets.createInstance(
-        "#confirmImport",
-        "jqxTooltip",
-        {
-          content: "确认导入",
-          position: "bottom",
-        }
-      );
+      jqwidgets.createInstance(`#${confirmImportID}`, "jqxTooltip", {
+        content: "确认导入",
+        position: "bottom",
+      });
 
       // 批量修改按钮
       let batchUpdateContainer = document.createElement("div");
       batchUpdateContainer.classList.add("tool-item");
-      batchUpdateContainer.id = "batchUpdateButton";
+      let batchUpdateID = JQXLite.generateID();
+      batchUpdateContainer.id = batchUpdateID;
       buttonsContainer.appendChild(batchUpdateContainer);
-      let batchUpdateButton = jqwidgets.createInstance(
-        "#batchUpdateButton",
+      this.batchUpdateInstance = jqwidgets.createInstance(
+        `#${batchUpdateID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/batch-update.svg`) }
       );
-      this.batchUpdateInstance = jqwidgets.createInstance(
-        "#batchUpdateButton",
-        "jqxTooltip",
-        {
-          content: "批量更新",
-          position: "bottom",
-        }
-      );
+      jqwidgets.createInstance(`#${batchUpdateID}`, "jqxTooltip", {
+        content: "批量更新",
+        position: "bottom",
+      });
       // 字段选择
       let fieldSelection = document.createElement("div");
       fieldSelection.id = "fieldSelection";

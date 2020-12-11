@@ -237,8 +237,8 @@ export default {
       this.queryParams.param = event.target.value;
     });
 
-    let searchBtn = document.getElementById("searchBtn");
-    searchBtn.addEventListener("click", (event) => {
+    // let searchBtn = document.getElementById("searchBtn");
+    this.searchButtonInstance.addEventListener("click", (event) => {
       this.render();
     });
 
@@ -267,49 +267,48 @@ export default {
     },
     initTools: function (type, index, tool, menuToolIninitialization) {
       if (this.toolsIndex < index) {
+        const that = this
         switch (index) {
           case 0:
+            let buttonsContainer = document.createElement("div");
+            buttonsContainer.style.cssText =
+              "overflow: hidden; position: relative;";
+            tool[0].appendChild(buttonsContainer);
             if (this.hasAuthority(this, "quotation:upload")) {
-              let buttonsContainer = document.createElement("div");
-              buttonsContainer.style.cssText =
-                "overflow: hidden; position: relative;";
-
               let uploadButtonContainer = document.createElement("div");
-              let deleteButtonContainer = document.createElement("div");
-              uploadButtonContainer.id = "uploadBtn";
-              deleteButtonContainer.id = "deleteBtn";
+              let uploadButtonID = JQXLite.generateID();
+              uploadButtonContainer.id = uploadButtonID;
               uploadButtonContainer.style.cssText =
                 "float: left; margin-left: 5px;";
-              deleteButtonContainer.style.cssText =
-                "float: left; margin-left: 5px;";
               buttonsContainer.appendChild(uploadButtonContainer);
-              buttonsContainer.appendChild(deleteButtonContainer);
-              tool[0].appendChild(buttonsContainer);
-
               this.uploadButtonInstance = jqwidgets.createInstance(
-                "#uploadBtn",
+                `#${uploadButtonID}`,
                 "jqxButton",
                 {
                   imgSrc: require(`@/assets/iconfont/custom/upload.svg`),
                 }
               );
-
-              jqwidgets.createInstance("#uploadBtn", "jqxTooltip", {
+              jqwidgets.createInstance(`#${uploadButtonID}`, "jqxTooltip", {
                 content: "上传",
                 position: "bottom",
               });
             }
 
             if (this.hasAuthority(this, "quotation:delete")) {
+              let deleteButtonContainer = document.createElement("div");
+              let deleteButtonID = JQXLite.generateID();
+              deleteButtonContainer.id = deleteButtonID;
+              deleteButtonContainer.style.cssText =
+                "float: left; margin-left: 5px;";
+              buttonsContainer.appendChild(deleteButtonContainer);
               this.deleteButtonInstance = jqwidgets.createInstance(
-                "#deleteBtn",
+                `#${deleteButtonID}`,
                 "jqxButton",
                 {
                   imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
                 }
               );
-
-              jqwidgets.createInstance("#deleteBtn", "jqxTooltip", {
+              jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
                 content: "删除",
                 position: "bottom",
               });
@@ -321,33 +320,39 @@ export default {
             let buttonsContainer2 = document.createElement("div");
             // 查询条件选择器
             let selectorContainer = document.createElement("div");
-            selectorContainer.id = "conditionSelector";
+            let conditionSelectorID = JQXLite.generateID();
+            selectorContainer.id = conditionSelectorID;
             selectorContainer.style.cssText =
               "float: right; margin-right: 5px;";
             // 查询输入框和点击按钮
             let searchBarContainer = document.createElement("div");
-            searchBarContainer.id = "searchBar";
+            let searchBarID = JQXLite.generateID();
+            searchBarContainer.id = searchBarID;
             searchBarContainer.style.cssText =
               "float: right; margin-right: 5px;";
 
             let searchInputContainer = document.createElement("input");
-            searchInputContainer.id = "parameter";
+            let parameterID = JQXLite.generateID();
+            searchInputContainer.id = parameterID;
 
             let searchBtn = document.createElement("div");
-            searchBtn.id = "searchBtn";
+            let searchButtonID = JQXLite.generateID();
+            searchBtn.id = searchButtonID;
             searchBtn.style.cssText = "cursor: pointer;";
 
             let searchImgContainer = document.createElement("img");
             searchImgContainer.style.cssText = "width:16px;height:16px";
-            searchImgContainer.src = require(`../../assets/iconfont/custom/search_lg.png`);
+            searchImgContainer.src = require(`@/assets/iconfont/custom/search_lg.png`);
             searchBtn.appendChild(searchImgContainer);
 
             searchBarContainer.appendChild(searchInputContainer);
             searchBarContainer.appendChild(searchBtn);
+            that.searchButtonInstance = searchBtn
 
             // 刷新按钮
             let refreshButtonContainer = document.createElement("div");
-            refreshButtonContainer.id = "refreshBtn";
+            let refreshButtonID = JQXLite.generateID();
+            refreshButtonContainer.id = refreshButtonID;
             refreshButtonContainer.style.cssText =
               "float: right; margin-right: 5px;";
 
@@ -358,7 +363,7 @@ export default {
 
             /* 创建 */
             this.conditionSelectorInstance = jqwidgets.createInstance(
-              "#conditionSelector",
+              `#${conditionSelectorID}`,
               "jqxDropDownList",
               {
                 width: 100,
@@ -375,7 +380,7 @@ export default {
             );
 
             this.searchInputInstance = jqwidgets.createInstance(
-              "#searchBar",
+              `#${searchBarID}`,
               "jqxInput",
               {
                 placeHolder: "选择查找条件输入参数进行查询",
@@ -386,7 +391,7 @@ export default {
             );
 
             this.refreshButtonInstance = jqwidgets.createInstance(
-              "#refreshBtn",
+              `#${refreshButtonID}`,
               "jqxButton",
               {
                 imgSrc: require(`@/assets/iconfont/custom/refresh.svg`),
@@ -451,7 +456,7 @@ export default {
         this.render();
       });
     },
-  }
+  },
 };
 </script>
 

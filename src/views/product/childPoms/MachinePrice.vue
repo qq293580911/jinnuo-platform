@@ -33,8 +33,8 @@ import MachinePriceWindow from "./MachinePriceWindow";
 import { formatFilter } from "@/common/util.js";
 import {
   Message,
-  ADD_MACHINE_PRICE,
-  EDIT_MACHINE_PRICE,
+  ADD_PRODUCT_PRICE,
+  EDIT_PRODUCT_PRICE,
 } from "common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import { showMachinePrice, deleteMachinePrice } from "@/network/product.js";
@@ -164,7 +164,7 @@ export default {
       });
 
       addButton.addEventHandler("click", (event) => {
-        this.$refs.machinePriceWindow.open(ADD_MACHINE_PRICE);
+        this.$refs.machinePriceWindow.open(ADD_PRODUCT_PRICE);
       });
 
       let deleteButton = jqwidgets.createInstance(
@@ -212,7 +212,7 @@ export default {
           return false;
         }
         const rowData = this.$refs.myGrid.getrowdata(index);
-        this.$refs.machinePriceWindow.open(EDIT_MACHINE_PRICE, rowData);
+        this.$refs.machinePriceWindow.open(EDIT_PRODUCT_PRICE, rowData);
       });
 
       let reloadButton = jqwidgets.createInstance(

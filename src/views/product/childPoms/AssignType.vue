@@ -5,7 +5,7 @@
       :hintType="'label'"
       @validationSuccess="onValidationSuccess($event)"
     >
-      <JqxForm #myForm ref="myForm" :template="template"> </JqxForm>
+      <JqxForm ref="myForm" :template="template"> </JqxForm>
     </JqxValidator>
     <JqxTree
       style="margin-left: 5px; float: left; margin-top: 5px"
@@ -53,85 +53,6 @@ export default {
     JqxValidator,
     JqxForm,
     JqxButton,
-  },
-  methods: {
-    buttonClick(type) {
-      const item = this.$refs.myTree.getSelectedItem();
-      switch (type) {
-        case "添加":
-          if (item) {
-            this.addCategory(item.id);
-          } else {
-            this.addCategory(null);
-          }
-          break;
-        case "编辑":
-          if (!item) {
-            this.$message.warning(Message.NO_NODE_SELECTED);
-            return false;
-          }
-          let $newName = this.$refs.myForm.getComponentByName("newName");
-          $newName.val(item.label);
-          break;
-        case "删除":
-          if (!item) {
-            this.$message.warning(Message.NO_NODE_SELECTED);
-            return false;
-          }
-          if (item.hasItems) {
-            this.$message.warning(Message.UNLABLE_DELETE_HAS_ITEMS);
-            return false;
-          }
-          this.deleteCategory(item.id);
-          break;
-        case "展开全部":
-          this.$refs.myTree.expandAll();
-          break;
-        case "收起全部":
-          this.$refs.myTree.collapseAll();
-          break;
-      }
-    },
-    addCategory(id) {
-      const params = {
-        pid: id,
-        name: "item",
-      };
-      addAssignType({ jsonParams: JSON.stringify(params) }).then((res) => {
-        // 添加节点
-        const item = this.$refs.myTree.getSelectedItem();
-        this.$refs.myTree.addTo(
-          {
-            label: "item",
-            id: id,
-          },
-          item == null ? null : item.element,
-          false
-        );
-        // 重新渲染树
-        this.$refs.myTree.render();
-        this.$message.success(Message.INSERT_SUCCESS);
-      });
-    },
-
-    deleteCategory(id) {
-      const params = {
-        id,
-      };
-      deleteAssignType({ jsonParams: JSON.stringify(params) }).then((res) => {
-        let item = this.$refs.myTree.getSelectedItem();
-        this.$refs.myTree.removeItem(item.element);
-        this.$message.success(Message.DELETE_SUCCESS);
-      });
-    },
-    updateCategory(params) {
-      updateAssignType({ jsonParams: JSON.stringify(params) }).then((res) => {
-        let item = this.$refs.myTree.getSelectedItem();
-        this.$refs.myTree.updateItem(item.element, { label: params.name });
-        this.$refs.myTree.render();
-        this.$message.success(Message.UPDATE_SUCCESS);
-      });
-    },
   },
   beforeCreate() {
     this.source = {
@@ -200,7 +121,7 @@ export default {
           this.formValues.id = item.id;
           const $newName = this.$refs.myForm.getComponentByName("newName");
           this.formValues.name = $newName.val();
-          yhis.updateCategory(this.formValues)
+          this.updateCategory(this.formValues);
         } else {
           this.$message.warning(Message.NO_NODE_SELECTED);
         }
@@ -226,8 +147,84 @@ export default {
       this.$refs.myValidator.validate(document.getElementById("myForm"));
     });
   },
+  methods: {
+    buttonClick(type) {
+      const item = this.$refs.myTree.getSelectedItem();
+      switch (type) {
+        case "添加":
+          if (item) {
+            this.addCategory(item.id);
+          } else {
+            this.addCategory(null);
+          }
+          break;
+        case "编辑":
+          if (!item) {
+            this.$message.warning(Message.NO_NODE_SELECTED);
+            return false;
+          }
+          let $newName = this.$refs.myForm.getComponentByName("newName");
+          $newName.val(item.label);
+          break;
+        case "删除":
+          if (!item) {
+            this.$message.warning(Message.NO_NODE_SELECTED);
+            return false;
+          }
+          if (item.hasItems) {
+            this.$message.warning(Message.UNLABLE_DELETE_HAS_ITEMS);
+            return false;
+          }
+          this.deleteCategory(item.id);
+          break;
+        case "展开全部":
+          this.$refs.myTree.expandAll();
+          break;
+        case "收起全部":
+          this.$refs.myTree.collapseAll();
+          break;
+      }
+    },
+    addCategory(id) {
+      const params = {
+        pid: id,
+        name: "item",
+      };
+      addAssignType({ jsonParams: JSON.stringify(params) }).then((res) => {
+        // 添加节点
+        const item = this.$refs.myTree.getSelectedItem();
+        this.$refs.myTree.addTo(
+          {
+            label: "item",
+            id: id,
+          },
+          item == null ? null : item.element,
+          false
+        );
+        // 重新渲染树
+        this.$refs.myTree.render();
+      });
+    },
+    deleteCategory(id) {
+      const params = {
+        id,
+      };
+      deleteAssignType({ jsonParams: JSON.stringify(params) }).then((res) => {
+        let item = this.$refs.myTree.getSelectedItem();
+        this.$refs.myTree.removeItem(item.element);
+        this.$refs.myTree.render();
+      });
+    },
+    updateCategory(params) {
+      updateAssignType({ jsonParams: JSON.stringify(params) }).then((res) => {
+        let item = this.$refs.myTree.getSelectedItem();
+        this.$refs.myTree.updateItem(item.element, { label: params.name });
+        this.$refs.myTree.render();
+      });
+    },
+  },
 };
 </script>
 
-<style>
+<style scoped>
 </style>

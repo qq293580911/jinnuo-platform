@@ -3,7 +3,6 @@
     <JqxWindow
       ref="myWindow"
       :width="'400px'"
-      :height="'265px'"
       :autoOpen="false"
       :position="{ x: '40%', y: '30%' }"
     >
@@ -23,12 +22,11 @@
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
-import JqxComboBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxcombobox.vue";
 
 import {
   Message,
-  ADD_MACHICNE_PRICE,
-  EDIT_MACHINE_PRICE,
+  ADD_PRODUCT_PRICE,
+  EDIT_PRODUCT_PRICE,
 } from "common/const.js";
 
 import {
@@ -43,7 +41,6 @@ export default {
     JqxWindow,
     JqxValidator,
     JqxForm,
-    JqxComboBox,
   },
   data() {
     const that = this;
@@ -90,17 +87,13 @@ export default {
               },
             });
 
-            that.machineInstance = jqwidgets.createInstance(
-              component,
-              "jqxComboBox",
-              {
-                width: 250,
-                height: 30,
-                source: dataAdapter,
-                displayMember: "pm_name",
-                valueMember: "pm_id",
-              }
-            );
+            jqwidgets.createInstance(component, "jqxComboBox", {
+              width: 250,
+              height: 30,
+              source: dataAdapter,
+              displayMember: "pm_name",
+              valueMember: "pm_id",
+            });
           },
         },
         {
@@ -112,17 +105,13 @@ export default {
           required: true,
           init: function (component) {
             const pricePlan = that.$store.state.pricePlan;
-            that.pricePlanInstance = jqwidgets.createInstance(
-              component,
-              "jqxComboBox",
-              {
-                width: 250,
-                height: 30,
-                source: pricePlan,
-                displayMember: "rule",
-                valueMember: "id",
-              }
-            );
+            jqwidgets.createInstance(component, "jqxComboBox", {
+              width: 250,
+              height: 30,
+              source: pricePlan,
+              displayMember: "rule",
+              valueMember: "id",
+            });
           },
         },
         {
@@ -133,17 +122,13 @@ export default {
           rowHeight: "40px",
           required: false,
           init: function (component) {
-            that.priceNonCccInstance = jqwidgets.createInstance(
-              component,
-              "jqxNumberInput",
-              {
-                width: 250,
-                height: 30,
-                inputMode: "simple",
-                decimalDigits: 0,
-                spinButtons: true,
-              }
-            );
+            jqwidgets.createInstance(component, "jqxNumberInput", {
+              width: 250,
+              height: 30,
+              inputMode: "simple",
+              decimalDigits: 0,
+              spinButtons: true,
+            });
           },
         },
         {
@@ -154,47 +139,35 @@ export default {
           rowHeight: "40px",
           required: false,
           init: function (component) {
-            that.priceCccInstance = jqwidgets.createInstance(
-              component,
-              "jqxNumberInput",
-              {
-                width: 250,
-                height: 30,
-                inputMode: "simple",
-                decimalDigits: 0,
-                spinButtons: true,
-              }
-            );
+            jqwidgets.createInstance(component, "jqxNumberInput", {
+              width: 250,
+              height: 30,
+              inputMode: "simple",
+              decimalDigits: 0,
+              spinButtons: true,
+            });
           },
         },
         {
           columns: [
             {
               name: "submitButton",
-              type: "custom",
-              rowHeight: "40px",
+              type: "button",
+              text: "提交",
+              width: "60px",
+              height: "30px",
+              rowHeight: "50px",
               align: "right",
               columnWidth: "50%",
-              init: function (component) {
-                jqwidgets.createInstance(component, "jqxButton", {
-                  width: 60,
-                  height: 30,
-                  value: "提交",
-                });
-              },
             },
             {
               name: "cancelButton",
-              type: "custom",
-              rowHeight: "40px",
+              type: "button",
+              text: "取消",
+              width: "60px",
+              height: "30px",
+              rowHeight: "50px",
               columnWidth: "50%",
-              init: function (component) {
-                jqwidgets.createInstance(component, "jqxButton", {
-                  width: 60,
-                  height: 30,
-                  value: "取消",
-                });
-              },
             },
           ],
         },
@@ -206,6 +179,14 @@ export default {
     const that = this;
     const $machine = this.$refs.myForm.getComponentByName("machine");
     const $pricePlan = this.$refs.myForm.getComponentByName("pricePlan");
+    const $priceCCC = this.$refs.myForm.getComponentByName("priceCcc");
+    const $priceNonCCC = this.$refs.myForm.getComponentByName("priceNonCcc");
+
+    this.machineInstance = $machine
+    this.pricePlanInstance = $pricePlan
+    this.priceCCCInstance = $priceCCC
+    this.priceNonCCC = $priceNonCCC
+
     this.$refs.myValidator.rules = [
       {
         input: $machine,
@@ -235,7 +216,7 @@ export default {
   methods: {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
-      if (params[0] == EDIT_MACHINE_PRICE) {
+      if (params[0] == EDIT_PRODUCT_PRICE) {
         const data = params[1];
         this.machineInstance.selectItem(data["pm_id"]);
         this.pricePlanInstance.selectItem(data["ps_id"]);
@@ -249,11 +230,11 @@ export default {
       const formData = {
         pmId: this.machineInstance.val(),
         psId: this.pricePlanInstance.val(),
-        priceNonCcc: this.priceNonCccInstance.val(),
-        priceCcc: this.priceCccInstance.val(),
+        priceNonCcc: this.priceNonCCCInstance.val(),
+        priceCcc: this.priceCCCInstance.val(),
         priceId: this.id,
       };
-      if (title == EDIT_MACHINE_PRICE) {
+      if (title == EDIT_PRODUCT_PRICE) {
         this.update(formData);
       } else {
         this.add(formData);
@@ -289,6 +270,9 @@ export default {
         this.clearForm();
       });
     },
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.close()
   },
 };
 </script>

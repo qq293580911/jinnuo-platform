@@ -67,25 +67,21 @@ export const Module = {
 // 用户部分
 export const ADD_USER = '添加用户'
 export const EDIT_USER = '修改用户'
-
 // 角色部分
 export const ADD_ROLE = '添加角色'
 export const EDIT_ROLE = '修改角色'
-
-export const ADD_MACHINE_PRODUCT = '添加设备产品';
-export const EDIT_MACHINE_PRODUCT = '修改设备产品';
-export const ADD_MACHINE_PRICE = '添加设备价格';
-export const EDIT_MACHINE_PRICE = '修改设备价格';
-
+// 产品部分
 export const ADD_PRODUCT = '添加产品'
 export const EDIT_PRODUCT = '修改产品'
+// 产品价格部分
+export const ADD_PRICE_PLAN = '添加价格方案'
+export const UPDATE_PRICE_PLAN = '修改价格方案'
 export const ADD_PRODUCT_PRICE = '添加产品价格'
 export const EDIT_PRODUCT_PRICE = '修改产品价格'
 // 员工部分
 export const ADD_EMPLOYEE = '添加员工';
 export const EDIT_EMPLOYEE = '修改员工';
 export const ASSIGN_POSITION = "分配职位"
-
 // 下单部分
 export const ADD_ORDER = "添加下单信息"
 export const EDIT_ORDER = "编辑下单信息"

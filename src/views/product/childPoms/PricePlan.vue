@@ -30,10 +30,14 @@
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import PricePlanWindow from "./PricePlanWindow";
 
-import { formatFilter } from "@/common/util.js";
-import { Message } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
-import { showPricePlan, getPricePlan } from "@/network/product.js";
+import { formatFilter } from "@/common/util.js";
+import { Message, ADD_PRICE_PLAN, UPDATE_PRICE_PLAN } from "@/common/const.js";
+import {
+  showPricePlan,
+  getPricePlan,
+  deletePricePlan,
+} from "@/network/product.js";
 export default {
   name: "PricePlan",
   components: {
@@ -184,17 +188,15 @@ export default {
       ],
     };
   },
-  mounted() {
-    // 记录所有方案到store中
-    getPricePlan().then((responese) => {
-      this.$store.dispatch("savePricePlan", responese).then((res) => {});
-    });
-  },
+  mounted() {},
   methods: {
-    createButtonsContainers: function (statusbar) {
+    createButtonsContainers: function (toolbar) {
+      const that = this;
       let buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
+      toolbar[0].appendChild(buttonsContainer);
+
       let addButtonContainer = document.createElement("div");
       let deleteButtonContainer = document.createElement("div");
       let editButtonContainer = document.createElement("div");
@@ -210,16 +212,19 @@ export default {
       editButtonContainer.id = editButtonID;
       reloadButtonContainer.id = reloadButtonID;
 
-      addButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-      deleteButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-      editButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-      reloadButtonContainer.style.cssText = "float: right; margin-left: 5px;";
+      addButtonContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor: pointer;";
+      deleteButtonContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor: pointer;";
+      editButtonContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor: pointer;";
+      reloadButtonContainer.style.cssText =
+        "float: right; margin-left: 5px;cursor: pointer;";
 
       buttonsContainer.appendChild(addButtonContainer);
       buttonsContainer.appendChild(deleteButtonContainer);
       buttonsContainer.appendChild(editButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
-      statusbar[0].appendChild(buttonsContainer);
       //创建按钮
       let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
         imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
@@ -227,6 +232,10 @@ export default {
       jqwidgets.createInstance(`#${addButtonID}`, "jqxTooltip", {
         content: "添加",
         position: "bottom",
+      });
+
+      addButton.addEventHandler("click", (event) => {
+        this.$refs.pricePlanWindow.open(ADD_PRICE_PLAN);
       });
 
       let deleteButton = jqwidgets.createInstance(
@@ -241,6 +250,32 @@ export default {
         position: "bottom",
       });
 
+      deleteButton.addEventHandler("click", (event) => {
+        let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+        if (selectedrowindex < 0) {
+          this.$message.warning({ content: Message.NO_ROWS_SELECTED });
+          return false;
+        }
+        this.$confirm({
+          title: `${Message.CONFIRM_DELETE}`,
+          okText: "确认",
+          cancelText: "取消",
+          centered: true,
+          okType: "danger",
+          content: (h) => <div style="color:red;"></div>,
+          onOk() {
+            const selectedIndexes = that.$refs.myGrid.getselectedrowindexes();
+            const ids = selectedIndexes.map(rowIndex=>{
+              const id = that.$refs.myGrid.getrowid(rowIndex)
+              return id
+            })
+            that.delete(ids);
+          },
+          onCancel() {},
+          class: "test",
+        });
+      });
+
       let editButton = jqwidgets.createInstance(
         `#${editButtonID}`,
         "jqxButton",
@@ -253,6 +288,16 @@ export default {
         position: "bottom",
       });
 
+      editButton.addEventHandler("click", (event) => {
+        const index = this.$refs.myGrid.getselectedrowindex();
+        if (index < 0) {
+          this.$message.warning({ content: Message.NO_ROWS_SELECTED });
+          return false;
+        }
+        const rowData = this.$refs.myGrid.getrowdata(index);
+        this.$refs.pricePlanWindow.open(UPDATE_PRICE_PLAN, rowData);
+      });
+
       let reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         "jqxButton",
@@ -263,35 +308,22 @@ export default {
         position: "bottom",
       });
 
-      //绑定事件
-      addButton.addEventHandler("click", (event) => {
-        this.$refs.pricePlanWindow.open("添加价格方案");
-      });
-
-      deleteButton.addEventHandler("click", (event) => {
-        let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
-        if (selectedrowindex < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED });
-          return false;
-        }
-        let id = this.$refs.myGrid.getrowid(selectedrowindex);
-        this.$refs.myGrid.deleterow(id);
-      });
-
-      editButton.addEventHandler("click", (event) => {
-        const index = this.$refs.myGrid.getselectedrowindex();
-        if (index < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED });
-          return false;
-        }
-        const rowData = this.$refs.myGrid.getrowdata(index);
-
-        this.$refs.pricePlanWindow.open("修改价格方案", rowData);
-      });
-
       reloadButton.addEventHandler("click", (event) => {
         this.$refs.myGrid.updatebounddata();
       });
+    },
+    delete(ids) {
+      const params = {
+        jsonParams: JSON.stringify({
+          ids,
+        }),
+      };
+      deletePricePlan(params).then((res) => {
+        this.refresh();
+      });
+    },
+    refresh() {
+      this.$refs.myGrid.updatebounddata();
     },
   },
 };

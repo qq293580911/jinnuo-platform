@@ -16,7 +16,7 @@ export function addCategory(params) {
   return request({
     url: '/productCateg/addProductCategory.do',
     method: 'post',
-    params
+    data: params
   })
 }
 
@@ -24,7 +24,7 @@ export function deleteCategory(params) {
   return request({
     url: '/productCateg/delProductCategory.do',
     method: 'delete',
-    params
+    data: params
   })
 }
 
@@ -32,7 +32,7 @@ export function updateCategory(params) {
   return request({
     url: '/productCateg/updProductCategoryInfo.do',
     method: 'put',
-    params
+    data: params
   })
 }
 
@@ -157,7 +157,7 @@ export function showNonMachineList(source, params) {
 }
 
 // 换气扇
-export function showVentilatorList(source, params) {  
+export function showVentilatorList(source, params) {
   return request({
     url: source.url,
     method: source.type,
@@ -166,27 +166,27 @@ export function showVentilatorList(source, params) {
   })
 }
 
-export function addVentilator(params) {  
+export function addVentilator(params) {
   return request({
     url: '/productManage/addVentilator.do',
-    method:'Post',
-    data:params
+    method: 'Post',
+    data: params
   })
 }
 
-export function deleteVentilator(params) {  
+export function deleteVentilator(params) {
   return request({
     url: '/productManage/delVentilator.do',
-    method:'Delete',
-    data:params
+    method: 'Delete',
+    data: params
   })
 }
 
-export function updateVentilator(params) {  
+export function updateVentilator(params) {
   return request({
     url: '/productManage/updVentilatorInfo.do',
-    method:'Put',
-    data:params
+    method: 'Put',
+    data: params
   })
 }
 
@@ -206,6 +206,30 @@ export function getPricePlan() {
   })
 }
 
+export function addPricePlan(params) {
+  return request({
+    url: '/productPrice/addPriceScheme.do',
+    method: 'Post',
+    data: params
+  })
+}
+
+export function deletePricePlan(params) {
+  return request({
+    url: '/productPrice/delPriceScheme.do',
+    method: 'Delete',
+    data: params
+  })
+}
+
+export function updatePricePlan(params) {
+  return request({
+    url: '/productPrice/updPriceSchemeInfo.do',
+    method: 'Put',
+    data: params
+  })
+}
+
 // 设备类价格
 export function showMachinePrice(source, params) {
   return request({
@@ -219,24 +243,24 @@ export function showMachinePrice(source, params) {
 export function addMachinePrice(params) {
   return request({
     url: '/productPrice/addMachinePrice.do',
-    method:'post',
-    data:params
+    method: 'post',
+    data: params
   })
 }
 
-export function deleteMachinePrice(params) {  
+export function deleteMachinePrice(params) {
   return request({
     url: '/productPrice/delMachinePrice.do',
-    method:'delete',
-    data:params
+    method: 'delete',
+    data: params
   })
 }
 
 export function updateMachinePrice(params) {
   return request({
     url: '/productPrice/updMachinePriceInfo.do',
-    method:'put',
-    data:params
+    method: 'put',
+    data: params
   })
 }
 // 非设备类价格
@@ -252,15 +276,15 @@ export function showNonMachinePrice(source, params) {
 export function addNonMachinePrice(params) {
   return request({
     url: '/productPrice/addNonMachinePrice.do',
-    method:'post',
-    data:params
+    method: 'post',
+    data: params
   })
 }
 
 export function updateNonMachinePrice(params) {
   return request({
     url: '/productPrice/updNonMachinePriceInfo.do',
-    method:'put',
-    data:params
+    method: 'put',
+    data: params
   })
 }

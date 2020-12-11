@@ -11,11 +11,15 @@
       </ul>
     </JqxMenu>
     <keep-alive>
-      <base-category v-if="currentMenuName == menus[0]"></base-category>
+      <base-category
+        v-if="currentMenuName == menus[0]"
+        :key="0"
+      ></base-category>
       <standard-category
-        v-else-if="currentMenuName == menus[1]"
+        v-if="currentMenuName == menus[1]"
+        :key="1"
       ></standard-category>
-      <assign-type v-else></assign-type>
+      <assign-type v-if="currentMenuName == menus[2]" :key="2"></assign-type>
     </keep-alive>
   </div>
 </template>

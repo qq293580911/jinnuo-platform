@@ -30,7 +30,12 @@ export default {
     jqxTree,
     jqxNumberInput,
   },
+  beforeCreate() {
+    this.dropDownButtonID = JQXLite.generateID();
+    this.treeID = JQXLite.generateID();
+  },
   data() {
+    const that = this
     return {
       template: [
         {
@@ -52,11 +57,13 @@ export default {
           required: true,
           rowHeight: "40px",
           init: function (component) {
-            component.append(
-              `<div id="categoryButton"><div style="border: none;" id='pmPcId'></div></div>`
-            );
-            let dropDownButton = jqwidgets.createInstance(
-              "#categoryButton",
+            // 按钮
+            let dropDownButtonContainer = document.createElement("div");
+            dropDownButtonContainer.id = that.dropDownButtonID;
+            component[0].appendChild(dropDownButtonContainer);
+
+            that.dropDownButtonInstance = jqwidgets.createInstance(
+              `#${that.dropDownButtonID}`,
               "jqxDropDownButton",
               {
                 width: 250,

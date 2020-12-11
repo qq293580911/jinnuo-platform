@@ -39,7 +39,7 @@ import HomeAside from "./childComps/HomeAside";
 import HomeMain from "./childComps/HomeMain";
 import { getPermissions } from "@/network/home.js";
 import { getSalesman, getQuoter } from "@/network/employee.js";
-import { getPricePlan, getAssignType } from "@/network/product.js";
+import { getPricePlan,getCategory, getAssignType } from "@/network/product.js";
 import { getSplitPlan } from "@/network/quote.js";
 jqx.theme = "ui-smoothness";
 export default {
@@ -80,6 +80,7 @@ export default {
     this.getPermissions();
     this.getSlasmans();
     this.getQuoters();
+    this.getProductTypes();
     this.getAssignTypes();
     this.getPricePlans();
     this.getSplitPlans();
@@ -113,6 +114,37 @@ export default {
         getSalesman().then((responese) => {
           this.$store.dispatch("saveSalesmans", responese);
         });
+      }
+    },
+    getProductTypes() {
+      const that = this
+      const productTypes = this.$store.state.productType;
+      if (productTypes == null) {
+        const source = {
+          datatype: "json",
+          datafields: [
+            { name: "id", map: "pc_id", type: "number" },
+            { name: "parentid", map: "pc_pid", type: "number" },
+            { name: "text", map: "pc_name", type: "string" },
+            { name: "value", map: "pc_id", type: "string" },
+          ],
+          id: "id",
+          type: "json",
+          url: "/productCateg/getProductCategoryData.do",
+        };
+        const dataAdapter = new jqx.dataAdapter(source, {
+          loadServerData(serverdata, source, callback) {
+            getCategory(source.url, source, serverdata).then((res) => {
+              callback({
+                records: res.records,
+              });
+            });
+          },
+          loadComplete(records) {
+            that.$store.state.productType = records;
+          },
+        });
+        dataAdapter.dataBind();
       }
     },
     getAssignTypes() {

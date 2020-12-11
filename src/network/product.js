@@ -124,17 +124,17 @@ export function addMachineProduct(params) {
 
 export function deleteMachineProduct(params) {
   return request({
-    url: '/productCateg/delMachineProduct.do',
+    url: '/productManage/delMachineProduct.do',
     method: 'delete',
-    params: params
+    data: params
   })
 }
 
 export function updateMachineProduct(params) {
   return request({
-    url: '/productManage/addNonMachineProduct.do',
+    url: '/productManage/updMachineProductInfo.do',
     method: 'put',
-    params: params
+    data: params
   })
 }
 
@@ -153,6 +153,40 @@ export function showNonMachineList(source, params) {
     method: source.type,
     source,
     params
+  })
+}
+
+// 换气扇
+export function showVentilatorList(source, params) {  
+  return request({
+    url: source.url,
+    method: source.type,
+    source,
+    params
+  })
+}
+
+export function addVentilator(params) {  
+  return request({
+    url: '/productManage/addVentilator.do',
+    method:'Post',
+    data:params
+  })
+}
+
+export function deleteVentilator(params) {  
+  return request({
+    url: '/productManage/delVentilator.do',
+    method:'Delete',
+    data:params
+  })
+}
+
+export function updateVentilator(params) {  
+  return request({
+    url: '/productManage/updVentilatorInfo.do',
+    method:'Put',
+    data:params
   })
 }
 

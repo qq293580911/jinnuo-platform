@@ -10,26 +10,27 @@
       :showtoolbar="true"
       :rendertoolbar="createButtonsContainers"
       :pageable="true"
-      :pagesize="20"
+      :pagesize="25"
       :pagesizeoptions="[5, 10, 15, 20, 25, 30]"
       :sortable="true"
       :filterable="true"
       :altrows="true"
       :enabletooltip="true"
-      :editable="false"
+      :editmode="'dblclick'"
       :selectionmode="'multiplerowsextended'"
       :virtualmode="true"
       :rendergridrows="rendergridrows"
+      :showstatusbar="true"
+      :statusbarheight="30"
     >
     </JqxGrid>
-    <machine-window ref="myWindow"></machine-window>
+    <ventilator-window ref="ventilatorWindow"></ventilator-window>
   </div>
 </template>
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
-import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
-import MachineWindow from "./MachineWindow";
+import VentilatorWindow from "./VentilatorWindow.vue";
 
 import { formatFilter } from "@/common/util.js";
 import { getLocalization } from "@/common/localization.js";
@@ -39,44 +40,38 @@ import {
   EDIT_PRODUCT,
   CONFIRM_DELETE,
 } from "@/common/const.js";
+import { showVentilatorList, deleteVentilator } from "@/network/product.js";
 
-import { showMachineList, deleteMachineProduct } from "@/network/product.js";
 export default {
-  name: "Machine",
   components: {
     JqxGrid,
-    MachineWindow,
+    VentilatorWindow,
   },
-  beforeCreate: function () {
+  beforeCreate() {
     this.source = {
-      filter: () => {
-        this.$refs.myGrid.updatebounddata("filter");
-      },
       datafields: [
-        { name: "pm_id", type: "number" },
-        { name: "pm_name", type: "string" },
-        { name: "model", type: "string" },
-        { name: "min_air_volume", type: "number" },
-        { name: "max_air_volume", type: "number" },
-        { name: "power", type: "string" },
-        { name: "unit", type: "string" },
-        { name: "remark", type: "string" },
+        { name: "id", type: "number" },
+        { name: "name", type: "string" },
         { name: "pc_name", type: "string" },
-        { name: "pc_id", type: "string" },
-        { name: "open_status", type: "string" },
+        { name: "pc_id", type: "number" },
+        { name: "specification", type: "string" },
+        { name: "hole_size", type: "string" },
+        { name: "air_volume", type: "number" },
+        { name: "panel_material", type: "string" },
+        { name: "remark", type: "string" },
+        { name: "status", type: "string" },
       ],
       type: "get",
       datatype: "json",
       root: "rows",
-      sortcolumn: "pm_id",
-      sortdirection: "asc",
-      id: "pm_id",
-      url: `/productManage/showMachineProductList.do`,
+      sortcolumn: "id",
+      sortdirection: "desc",
+      id: "id",
+      url: `/productManage/showVentilatorList.do`,
     };
   },
   data() {
     return {
-      //数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
         formatData: function (data) {
@@ -84,7 +79,7 @@ export default {
         },
         loadServerData: function (serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
-          showMachineList(source, serverdata).then((res) => {
+          showVentilatorList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
               totalrecords: res.total,
@@ -100,64 +95,80 @@ export default {
       columns: [
         {
           text: "名称",
-          datafield: "pm_name",
-          columntype: "textbox",
-          align: "center",
-          cellsalign: "center",
-        },
-        {
-          text: "型号",
-          datafield: "model",
-          columntype: "textbox",
+          datafield: "name",
           align: "center",
           cellsalign: "center",
         },
         {
           text: "分类",
           datafield: "pc_name",
-          columntype: "textbox",
           align: "center",
           cellsalign: "center",
         },
         {
-          text: "最低风量",
-          datafield: "min_air_volume",
-          columntype: "textbox",
+          text: "规格",
+          datafield: "specification",
           align: "center",
           cellsalign: "center",
         },
         {
-          text: "最高风量",
-          datafield: "max_air_volume",
-          columntype: "textbox",
+          text: "开孔尺寸",
+          datafield: "hole_size",
           align: "center",
           cellsalign: "center",
         },
         {
-          text: "功率",
-          datafield: "power",
-          columntype: "textbox",
+          text: "风量",
+          datafield: "air_volume",
           align: "center",
           cellsalign: "center",
         },
         {
-          text: "单位",
-          datafield: "unit",
-          columntype: "textbox",
+          text: "面板材质",
+          datafield: "panel_material",
           align: "center",
           cellsalign: "center",
         },
         {
           text: "备注",
           datafield: "remark",
-          columntype: "textbox",
           align: "center",
           cellsalign: "center",
+        },
+        {
+          text: "启用状态",
+          datafield: "status",
+          align: "center",
+          cellsalign: "center",
+          cellsrenderer: function (
+            row,
+            columnfield,
+            value,
+            defaulthtml,
+            columnproperties,
+            rowdata
+          ) {
+            if (value == "已停用") {
+              return (
+                '<span style="width:100%;display:block; text-align: ' +
+                columnproperties.cellsalign +
+                ';line-height:29px; color: #ff0000;">' +
+                value +
+                "</span>"
+              );
+            }
+            return (
+              '<span style="width:100%;display:block; text-align: ' +
+              columnproperties.cellsalign +
+              ';line-height:29px; color: #008000;">' +
+              value +
+              "</span>"
+            );
+          },
         },
       ],
     };
   },
-  mounted() {},
   methods: {
     createButtonsContainers: function (statusbar) {
       const that = this;
@@ -178,16 +189,21 @@ export default {
       deleteButtonContainer.id = deleteButtonID;
       editButtonContainer.id = editButtonID;
       reloadButtonContainer.id = reloadButtonID;
-      addButtonContainer.style.cssText = "float: left; margin-left: 5px; cursor: pointer;";
-      deleteButtonContainer.style.cssText = "float: left; margin-left: 5px; cursor: pointer;";
-      editButtonContainer.style.cssText = "float: left; margin-left: 5px; cursor: pointer;";
-      reloadButtonContainer.style.cssText = "float: right; margin-left: 5px; cursor: pointer;";
+      addButtonContainer.style.cssText =
+        "float: left; margin-left: 5px; cursor: pointer;";
+      deleteButtonContainer.style.cssText =
+        "float: left; margin-left: 5px; cursor: pointer;";
+      editButtonContainer.style.cssText =
+        "float: left; margin-left: 5px; cursor: pointer;";
+      reloadButtonContainer.style.cssText =
+        "float: right; margin-left: 5px; cursor: pointer;";
 
       buttonsContainer.appendChild(addButtonContainer);
       buttonsContainer.appendChild(deleteButtonContainer);
       buttonsContainer.appendChild(editButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
       statusbar[0].appendChild(buttonsContainer);
+
       //创建按钮
       let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
         imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
@@ -198,7 +214,7 @@ export default {
       });
 
       addButton.addEventHandler("click", (event) => {
-        this.$refs.myWindow.open(ADD_PRODUCT);
+        this.$refs.ventilatorWindow.open(ADD_PRODUCT);
       });
 
       let deleteButton = jqwidgets.createInstance(
@@ -232,7 +248,7 @@ export default {
             const ids = selectedIndexes.map((rowIndex) => {
               let id = that.$refs.myGrid.getrowid(rowIndex);
               const map = {
-                pm_id: id,
+                id,
               };
               return map;
             });
@@ -262,7 +278,7 @@ export default {
           return false;
         }
         const rowData = this.$refs.myGrid.getrowdata(index);
-        this.$refs.myWindow.open(EDIT_PRODUCT, rowData);
+        this.$refs.ventilatorWindow.open(EDIT_PRODUCT, rowData);
       });
 
       let reloadButton = jqwidgets.createInstance(
@@ -285,8 +301,8 @@ export default {
           ids,
         }),
       };
-      deleteMachineProduct(params).then((res) => {
-        this.refresh()
+      deleteVentilator(params).then((res) => {
+        this.refresh();
       });
     },
     refresh() {
@@ -296,11 +312,5 @@ export default {
 };
 </script>
 
-<style scoped>
-.machine {
-  height: calc(100vh - 135px);
-}
-.jqx-grid {
-  border-style: none;
-}
+<style>
 </style>

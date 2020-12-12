@@ -171,7 +171,7 @@ export default {
                       title: "常规风机",
                       contentContainer: "machineSelectionPanel",
                       initContent: function (div, a, b, c) {
-                        that.ribbon = div[0].parentElement.parentElement;
+                        // that.ribbon = div[0].parentElement.parentElement;
                         let SelectionGridComponent = Vue.extend(SelectionGrid);
                         that.generalBlowerTopInstance = new SelectionGridComponent(
                           {
@@ -461,6 +461,7 @@ export default {
 
     // 卡片集
     this.$bus.$off("selectRibbon").$on("selectRibbon", (val) => {
+      console.log($('.jqx-ribbon'))
       let ribbonIndex = 0;
       switch (val) {
         case GENERAL_BLOWER:
@@ -493,7 +494,8 @@ export default {
         default:
           break;
       }
-      $(this.ribbon).jqxRibbon("selectAt", ribbonIndex);
+      const selector = document.getElementsByClassName('jqx-ribbon')[2];
+      $(selector).jqxRibbon("selectAt", ribbonIndex);
     });
   },
   methods: {
@@ -531,11 +533,12 @@ export default {
         default:
           break;
       }
-      // $(this.ribbon).jqxRibbon("selectAt", ribbonIndex);
+      const selector = document.getElementsByClassName('jqx-ribbon')[2];
+      $(selector).jqxRibbon("selectAt", ribbonIndex);
     },
   },
   beforeDestroy() {
-    $(this.ribbon).jqxRibbon("destroy");
+    
   },
   destroyed() {
     this.$refs.mainGrid.$destroy();

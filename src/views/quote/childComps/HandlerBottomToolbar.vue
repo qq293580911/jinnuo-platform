@@ -203,8 +203,8 @@ export default {
             selectionType.addEventHandler("select", (event) => {
               const value = event.args.item.value;
               that.selectionToolInstance.selectionType = value;
-              this.$bus.$emit('selectRibbon',value)
-              // this.$parent.selectRibbon(value);
+              // this.$bus.$emit('selectRibbon',value)
+              this.$parent.selectRibbon(value);
             });
             break;
 

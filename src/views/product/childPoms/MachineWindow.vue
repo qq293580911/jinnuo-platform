@@ -25,11 +25,7 @@ import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 // import jqxNumberInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxnumberinput.vue";
 // import jqxComboBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxcombobox.vue";
 
-import {
-  Message,
-  ADD_PRODUCT,
-  EDIT_PRODUCT,
-} from "common/const.js";
+import { Message, ADD_PRODUCT, EDIT_PRODUCT } from "common/const.js";
 
 import {
   getCategory,
@@ -102,64 +98,54 @@ export default {
             );
 
             const source = {
-              dataFields: [
-                { name: "id", map: "pc_id", type: "number" },
-                { name: "pId", map: "pc_pid", type: "string" },
-                { name: "name", map: "pc_name", type: "string" },
-              ],
-              url: "/productCateg/getAllProductCategory.do",
               datatype: "json",
+              dataFields: [
+                { name: "id", type: "number" },
+                { name: "parentid", type: "number" },
+                { name: "text", type: "string" },
+              ],
+              localdata: that.$store.state.productType.records,
             };
-
-            const dataAdapter = new jqx.dataAdapter(source, {
-              loadServerData(serverdata, source, callback) {
-                getCategory(source.url, source, serverdata).then((res) => {
-                  callback({
-                    originaldata: res,
-                    records: res.records,
-                  });
-                });
-              },
-              loadComplete(records) {
-                records = dataAdapter.getRecordsHierarchy(
-                  "id",
-                  "pId",
-                  "items",
-                  [
-                    {
-                      name: "name",
-                      map: "label",
-                    },
-                  ]
-                );
-                that.treeInstance = jqwidgets.createInstance(
-                  `#${that.treeID}`,
-                  "jqxTree",
-                  {
-                    source: records,
-                    width: 248,
-                    height: 250,
-                  }
-                );
-
-                that.treeInstance.addEventHandler("select", (event) => {
-                  const selectedItem = that.treeInstance.getSelectedItem();
-                  // 不能选择包含儿子的节点
-                  if (selectedItem.hasItems) {
-                    that.$message.warning(Message.UNSELECTABLE_NODE);
-                    return false;
-                  }
-                  // 设置文本内容到dorpDownButton
-                  const dropDownContent =
-                    '<div style="position: relative; margin-left: 3px; line-height: 30px;">' +
-                    selectedItem.label +
-                    "</div>";
-                  that.dropDownButtonInstance.setContent(dropDownContent);
-                  that.dropDownButtonInstance.close();
-                });
-              },
-            });
+            const dataAdapter = new jqx.dataAdapter(source);
             dataAdapter.dataBind();
+            const records = dataAdapter.getRecordsHierarchy(
+              "id",
+              "parentid",
+              "items",
+              [
+                {
+                  name: "text",
+                  map: "label",
+                },
+              ]
+            );
+
+            that.treeInstance = jqwidgets.createInstance(
+              `#${that.treeID}`,
+              "jqxTree",
+              {
+                source: records,
+                width: 250,
+                height: 250,
+              }
+            );
+
+            //树绑定选择事件
+            that.treeInstance.addEventHandler("select", (event) => {
+              const selectedItem = that.treeInstance.getSelectedItem();
+              // 不能选择包含儿子的节点
+              if (selectedItem.hasItems) {
+                that.$message.warning(Message.UNSELECTABLE_NODE);
+                return false;
+              }
+              // 设置文本内容到dorpDownButton
+              const dropDownContent =
+                '<div style="position: relative; margin-left: 3px; line-height: 30px;">' +
+                selectedItem.label +
+                "</div>";
+              that.dropDownButtonInstance.setContent(dropDownContent);
+              that.dropDownButtonInstance.close();
+            });
           },
         },
         {
@@ -251,7 +237,6 @@ export default {
               type: "button",
               text: "提交",
               width: "60px",
-              height: "30px",
               rowHeight: "50px",
               align: "right",
               columnWidth: "50%",
@@ -261,7 +246,6 @@ export default {
               type: "button",
               text: "取消",
               width: "60px",
-              height: "30px",
               rowHeight: "50px",
               columnWidth: "50%",
             },
@@ -272,7 +256,6 @@ export default {
   },
   mounted() {
     const that = this;
-
     // 获取组件对象
     const $name = this.$refs.myForm.getComponentByName("name");
     const $model = this.$refs.myForm.getComponentByName("model");
@@ -296,7 +279,7 @@ export default {
         rule: "required",
       },
       {
-        input: $category,
+        input: `#${that.dropDownButtonID}`,
         message: "该项必选",
         action: "close",
         rule: function (input) {
@@ -328,12 +311,12 @@ export default {
     open(...params) {
       const that = this;
       this.$refs.myWindow.setTitle(params[0]);
-      this.clearForm()
+      this.clearForm();
       if (params[0] == EDIT_PRODUCT) {
         const data = params[1];
-        this.id = data['pm_id'];
-        this.machineNameInsatnce.val(data['pm_name']);
-        this.machineModelInsatnce.val(data['model'])
+        this.id = data["pm_id"];
+        this.machineNameInsatnce.val(data["pm_name"]);
+        this.machineModelInsatnce.val(data["model"]);
         const items = this.treeInstance.getItems();
         for (let i = 0; i < items.length; i++) {
           if (items[i].id == data["pc_id"]) {
@@ -351,22 +334,11 @@ export default {
       }
       this.$refs.myWindow.open();
     },
-    clearForm() {
-      // 重置部件设置
-      this.machineNameInsatnce.val("");
-      this.machineModelInsatnce.val('')
-      this.dropDownButtonInstance.setContent("");
-      this.treeInstance.selectItem(null);
-      this.minAirVolumeInstance.setDecimal(0);
-      this.maxAirVolumeInstance.setDecimal(0);
-      this.powerInstance.val("");
-      this.remarkInstance.val("");
-    },
     onValidationSuccess(event) {
       const title = this.$refs.myWindow.title;
       const formData = {
         pm_name: this.machineNameInsatnce.val(),
-        model:this.machineModelInsatnce.val(),
+        model: this.machineModelInsatnce.val(),
         pc_id: this.treeInstance.getSelectedItem().id,
         min_air_volume: this.minAirVolumeInstance.val(),
         max_air_volume: this.maxAirVolumeInstance.val(),
@@ -404,6 +376,20 @@ export default {
         this.clearForm();
       });
     },
+    clearForm() {
+      // 重置部件设置
+      this.machineNameInsatnce.val("");
+      this.machineModelInsatnce.val("");
+      this.dropDownButtonInstance.setContent("");
+      this.treeInstance.selectItem(null);
+      this.minAirVolumeInstance.setDecimal(0);
+      this.maxAirVolumeInstance.setDecimal(0);
+      this.powerInstance.val("");
+      this.remarkInstance.val("");
+    },
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.close()
   },
 };
 </script>

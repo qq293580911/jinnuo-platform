@@ -2,6 +2,8 @@ import {
   SAVE_PERMISSIONS,
   SAVE_SALESMANS,
   SAVE_QUOTERS,
+  // 产品
+  SAVE_FORMULA,
   SAVE_PRICE_PLAN,
   SAVE_SPLIT_PLAN,
   // 报价处理
@@ -14,7 +16,7 @@ import {
   // 今日报价
   SAVE_TODAY_QUOTE,
   REMOVE_TODAY_QUOTE
-  
+
 } from './mutation-types'
 
 //mutations唯一目的就是修改state中的状态
@@ -29,17 +31,20 @@ export default {
   [SAVE_QUOTERS](state, payload) {
     state.quoters = payload
   },
+  [SAVE_FORMULA](state, payload) {
+    state.formula = payload
+  },
   [SAVE_PRICE_PLAN](state, payload) {
     state.pricePlan = payload
   },
-  [SAVE_SPLIT_PLAN](state, payload){
+  [SAVE_SPLIT_PLAN](state, payload) {
     state.splitPlan = payload
   },
   // 当前报价
-  [SAVE_CURRENT_QUOTE_PRICE_PLAN](state, payload){
+  [SAVE_CURRENT_QUOTE_PRICE_PLAN](state, payload) {
     state.currentQuote.pricePlan = payload
   },
-  [SAVE_CURRENT_QUOTE_SPLIT_PLAN](state, payload){
+  [SAVE_CURRENT_QUOTE_SPLIT_PLAN](state, payload) {
     state.currentQuote.splitPlan = payload
   },
   [SAVE_CURRENT_QUOTE_NAME](state, payload) {
@@ -48,21 +53,21 @@ export default {
   [SAVE_CURRENT_QUOTE_CONTENT](state, payload) {
     state.currentQuote.content = payload
   },
-  [UPDATE_CURRENT_QUOTE_CONTENT](state, payload){
-    payload.forEach(item=>{
+  [UPDATE_CURRENT_QUOTE_CONTENT](state, payload) {
+    payload.forEach(item => {
       state.currentQuote.content[item['uid']] = item
     })
   },
-  [APPEND_CURRENT_QUOTE_CONTENT](state, payload){
+  [APPEND_CURRENT_QUOTE_CONTENT](state, payload) {
     let content = state.currentQuote.content
     content = content.concat(payload)
     state.currentQuote.content = content
   },
   // 今日报价
-  [SAVE_TODAY_QUOTE](state, payload){
+  [SAVE_TODAY_QUOTE](state, payload) {
     state.todayQuote.push(payload)
   },
-  [REMOVE_TODAY_QUOTE](state, payload){
-    state.todayQuote.splice(payload,1)
+  [REMOVE_TODAY_QUOTE](state, payload) {
+    state.todayQuote.splice(payload, 1)
   }
 }

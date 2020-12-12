@@ -34,7 +34,10 @@ import NonMachineWindow from "./NonMachineWindow";
 import { formatFilter } from "@/common/util.js";
 import { Message, ADD_PRODUCT, EDIT_PRODUCT } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
-import { showNonMachineList } from "@/network/product.js";
+import {
+  showNonMachineList,
+  deleteNonMachineProduct,
+} from "@/network/product.js";
 export default {
   name: "Machine",
   components: {
@@ -239,10 +242,12 @@ export default {
   },
   mounted() {},
   methods: {
-    createButtonsContainers: function (statusbar) {
+    createButtonsContainers: function (toolbar) {
+      const that = this;
       let buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
+      toolbar[0].appendChild(buttonsContainer);
       let addButtonContainer = document.createElement("div");
       let deleteButtonContainer = document.createElement("div");
       let editButtonContainer = document.createElement("div");
@@ -258,16 +263,20 @@ export default {
       editButtonContainer.id = editButtonID;
       reloadButtonContainer.id = reloadButtonID;
 
-      addButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-      deleteButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-      editButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-      reloadButtonContainer.style.cssText = "float: right; margin-left: 5px;";
+      addButtonContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor:pointer;";
+      deleteButtonContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor:pointer;";
+      editButtonContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor:pointer;";
+      reloadButtonContainer.style.cssText =
+        "float: right; margin-left: 5px;cursor:pointer;";
 
       buttonsContainer.appendChild(addButtonContainer);
       buttonsContainer.appendChild(deleteButtonContainer);
       buttonsContainer.appendChild(editButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
-      statusbar[0].appendChild(buttonsContainer);
+
       //创建按钮
       let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
         imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
@@ -299,8 +308,25 @@ export default {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
           return false;
         }
-        let id = this.$refs.myGrid.getrowid(selectedrowindex);
-        this.$refs.myGrid.deleterow(id);
+        this.$confirm({
+          title: `${Message.CONFIRM_DELETE}`,
+          okText: "确认",
+          cancelText: "取消",
+          centered: true,
+          okType: "danger",
+          content: (h) => <div style="color:red;"></div>,
+          onOk() {
+            const selectedIndexes = that.$refs.myGrid.getselectedrowindexes();
+            const ids = selectedIndexes.map((rowIndex) => {
+              return {
+                pnm_id: that.$refs.myGrid.getrowid(rowIndex),
+              };
+            });
+            that.delete(ids);
+          },
+          onCancel() {},
+          class: "test",
+        });
       });
 
       let editButton = jqwidgets.createInstance(
@@ -338,6 +364,19 @@ export default {
       reloadButton.addEventHandler("click", (event) => {
         this.$refs.myGrid.updatebounddata();
       });
+    },
+    delete(ids) {
+      const params = {
+        jsonParams: JSON.stringify({
+          ids,
+        }),
+      };
+      deleteNonMachineProduct(params).then((res) => {
+        this.refresh();
+      });
+    },
+    refresh() {
+      this.$refs.myGrid.updatebounddata();
     },
   },
 };

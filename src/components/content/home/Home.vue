@@ -39,7 +39,7 @@ import HomeAside from "./childComps/HomeAside";
 import HomeMain from "./childComps/HomeMain";
 import { getPermissions } from "@/network/home.js";
 import { getSalesman, getQuoter } from "@/network/employee.js";
-import { getPricePlan,getCategory, getAssignType } from "@/network/product.js";
+import { getPricePlan,getCategory, getAssignType,getFormula } from "@/network/product.js";
 import { getSplitPlan } from "@/network/quote.js";
 jqx.theme = "ui-smoothness";
 export default {
@@ -84,11 +84,12 @@ export default {
     this.getAssignTypes();
     this.getPricePlans();
     this.getSplitPlans();
+    this.getFormulas();
   },
   methods: {
     getPermissions() {
       const permissions = this.$store.state.permissions;
-      if (permissions == null) {
+      if (Array.isArray(permissions) == false) {
         this.user = JSON.parse(window.sessionStorage.getItem("user"));
         const params = {
           jsonParams: JSON.stringify({
@@ -102,7 +103,7 @@ export default {
     },
     getQuoters() {
       const quoters = this.$store.state.quoters;
-      if (quoters == null) {
+      if (Array.isArray(quoters) == false) {
         getQuoter().then((responese) => {
           this.$store.dispatch("saveQuoters", responese);
         });
@@ -110,7 +111,7 @@ export default {
     },
     getSlasmans() {
       const salesmans = this.$store.state.salesmans;
-      if (salesmans == null) {
+      if (Array.isArray(salesmans) == false) {
         getSalesman().then((responese) => {
           this.$store.dispatch("saveSalesmans", responese);
         });
@@ -119,7 +120,7 @@ export default {
     getProductTypes() {
       const that = this
       const productTypes = this.$store.state.productType;
-      if (productTypes == null) {
+      if (Array.isArray(productTypes) == false) {
         const source = {
           datatype: "json",
           datafields: [
@@ -150,7 +151,7 @@ export default {
     getAssignTypes() {
       const that = this;
       const assignTypes = this.$store.state.assignType;
-      if (assignTypes == null) {
+      if (Array.isArray(assignTypes) == false) {
         const source = {
           datatype: "json",
           datafields: [
@@ -198,6 +199,16 @@ export default {
         });
       }
     },
+    getFormulas(){
+      const formulas = this.$store.state.formula;
+      if (Array.isArray(formulas) == false) {
+        getFormula().then((responese) => {
+          if (Array.isArray(responese)) {
+            this.$store.dispatch("saveFormula", responese);
+          }
+        });
+      }
+    }
   },
 };
 </script>

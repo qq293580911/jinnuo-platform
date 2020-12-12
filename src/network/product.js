@@ -156,6 +156,38 @@ export function showNonMachineList(source, params) {
   })
 }
 
+export function getFormula(params) {
+  return request({
+    url: `/productManage/getAllProductFormula.do`,
+    method: `Get`,
+    params
+  })
+}
+
+export function addNonMachineProduct(params) {
+  return request({
+    url: `/productManage/addNonMachineProduct.do`,
+    method: `Post`,
+    data: params
+  })
+}
+
+export function deleteNonMachineProduct(params) {  
+  return request({
+    url:'/productManage/delNonMachineProduct.do',
+    method:'Delete',
+    data:params
+  })
+}
+
+export function updateNonMachineProduct(params) {
+  return request({
+    url: `/productManage/updNonMachineProductInfo.do`,
+    method: `Put`,
+    data: params
+  })
+}
+
 // 换气扇
 export function showVentilatorList(source, params) {
   return request({

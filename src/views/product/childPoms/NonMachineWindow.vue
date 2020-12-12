@@ -2,40 +2,43 @@
   <JqxWindow
     ref="myWindow"
     :width="'400px'"
-    :height="'545px'"
     :autoOpen="false"
     :position="{ x: '40%', y: '30%' }"
   >
     <div>
-      <JqxForm ref="myForm" :template="template"> </JqxForm>
+      <JqxValidator
+        ref="myValidator"
+        @validationSuccess="onValidationSuccess($event)"
+      >
+        <JqxForm ref="myForm" :template="template"> </JqxForm>
+      </JqxValidator>
     </div>
   </JqxWindow>
 </template>
 
 <script>
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
+import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
-import jqxDropDownButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxdropdownbutton.vue";
-import jqxTree from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtree.vue";
-import jqxNumberInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxnumberinput.vue";
-import jqxComboBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxcombobox.vue";
 
-import { getCategory } from "@/network/product.js";
+import { Message, ADD_PRODUCT, EDIT_PRODUCT } from "@/common/const";
+import {
+  getCategory,
+  addNonMachineProduct,
+  updateNonMachineProduct,
+} from "@/network/product.js";
 export default {
-  name: "NonMachineWindow",
   components: {
     JqxWindow,
+    JqxValidator,
     JqxForm,
-    jqxDropDownButton,
-    jqxTree,
-    jqxNumberInput,
   },
   beforeCreate() {
     this.dropDownButtonID = JQXLite.generateID();
     this.treeID = JQXLite.generateID();
   },
   data() {
-    const that = this
+    const that = this;
     return {
       template: [
         {
@@ -46,8 +49,6 @@ export default {
           width: "250px",
           required: true,
           rowHeight: "40px",
-          info: "输入产品名称",
-          infoPosition: "right",
         },
         {
           name: "category",
@@ -61,6 +62,12 @@ export default {
             let dropDownButtonContainer = document.createElement("div");
             dropDownButtonContainer.id = that.dropDownButtonID;
             component[0].appendChild(dropDownButtonContainer);
+            // 树
+            let treeContainer = document.createElement("div");
+            let treeID = JQXLite.generateID();
+            treeContainer.id = that.treeID;
+            treeContainer.style.cssText = "border: none;";
+            dropDownButtonContainer.appendChild(treeContainer);
 
             that.dropDownButtonInstance = jqwidgets.createInstance(
               `#${that.dropDownButtonID}`,
@@ -73,45 +80,51 @@ export default {
             const source = {
               datatype: "json",
               dataFields: [
-                { name: "id", map: "pc_id" },
-                { name: "pId", map: "pc_pid" },
-                { name: "name", map: "pc_name" },
+                { name: "id", type: "number" },
+                { name: "parentid", type: "number" },
+                { name: "text", type: "string" },
               ],
-              url: "/productCateg/getAllProductCategory.do",
+              localdata: that.$store.state.productType.records,
             };
-            const dataAdapter = new jqx.dataAdapter(source, {
-              loadServerData(serverdata, source, callback) {
-                getCategory(source.url, source, serverdata).then((res) => {
-                  callback({
-                    originaldata: res,
-                    records: res,
-                  });
-                });
-              },
-              loadComplete(records) {},
-            });
+            const dataAdapter = new jqx.dataAdapter(source);
             dataAdapter.dataBind();
             const records = dataAdapter.getRecordsHierarchy(
               "id",
-              "pId",
+              "parentid",
               "items",
               [
                 {
-                  name: "name",
+                  name: "text",
                   map: "label",
                 },
               ]
             );
 
-            let dropDownTree = jqwidgets.createInstance("#pmPcId", "jqxTree", {
-              source: records,
-              width: 250,
-              height: 250,
-            });
+            that.treeInstance = jqwidgets.createInstance(
+              `#${that.treeID}`,
+              "jqxTree",
+              {
+                source: records,
+                width: 250,
+                height: 250,
+              }
+            );
 
             //树绑定选择事件
-            dropDownTree.addEventHandler("select", (event) => {
-
+            that.treeInstance.addEventHandler("select", (event) => {
+              const selectedItem = that.treeInstance.getSelectedItem();
+              // 不能选择包含儿子的节点
+              if (selectedItem.hasItems) {
+                that.$message.warning(Message.UNSELECTABLE_NODE);
+                return false;
+              }
+              // 设置文本内容到dorpDownButton
+              const dropDownContent =
+                '<div style="position: relative; margin-left: 3px; line-height: 30px;">' +
+                selectedItem.label +
+                "</div>";
+              that.dropDownButtonInstance.setContent(dropDownContent);
+              that.dropDownButtonInstance.close();
             });
           },
         },
@@ -132,60 +145,20 @@ export default {
             component.append(
               '<div style="display:inline-block;vertical-align: middle;" id="limitSizeShort"></div>'
             );
-            let numberInput = jqwidgets.createInstance(
-              "#limitSizeLong,#limitSizeShort",
-              "jqxNumberInput",
-              {
-                width: 120,
-                height: 30,
-                inputMode: "simple",
-                decimalDigits: 0,
-                spinButtons: true,
-              }
-            );
-          },
-        },
-        {
-          name: "minSize",
-          type: "custom",
-          label: "最小尺寸",
-          labelWidth: "80px",
-          width: "250px",
-          required: false,
-          rowHeight: "40px",
-          init: function (component) {
-            let numberInput = jqwidgets.createInstance(
-              component,
-              "jqxNumberInput",
-              {
-                width: 250,
-                height: 30,
-                inputMode: "simple",
-                decimalDigits: 0,
-                spinButtons: true,
-              }
-            );
-          },
-        },
-        {
-          name: "maxSize",
-          type: "custom",
-          label: "最大尺寸",
-          labelWidth: "80px",
-          required: false,
-          rowHeight: "40px",
-          init: function (component) {
-            let numberInput = jqwidgets.createInstance(
-              component,
-              "jqxNumberInput",
-              {
-                width: 250,
-                height: 30,
-                inputMode: "simple",
-                decimalDigits: 0,
-                spinButtons: true,
-              }
-            );
+            jqwidgets.createInstance("#limitSizeLong", "jqxNumberInput", {
+              width: 120,
+              height: 30,
+              inputMode: "simple",
+              decimalDigits: 0,
+              spinButtons: true,
+            });
+            jqwidgets.createInstance("#limitSizeShort", "jqxNumberInput", {
+              width: 120,
+              height: 30,
+              inputMode: "simple",
+              decimalDigits: 0,
+              spinButtons: true,
+            });
           },
         },
         {
@@ -195,20 +168,16 @@ export default {
           labelWidth: "80px",
           required: false,
           rowHeight: "40px",
-          info:'圆形的最小尺寸',
-          infoPosition:'right',
+          info: "圆形的最小尺寸",
+          infoPosition: "right",
           init: function (component) {
-            let numberInput = jqwidgets.createInstance(
-              component,
-              "jqxNumberInput",
-              {
-                width: 250,
-                height: 30,
-                inputMode: "simple",
-                decimalDigits: 0,
-                spinButtons: true,
-              }
-            );
+            jqwidgets.createInstance(component, "jqxNumberInput", {
+              width: 250,
+              height: 30,
+              inputMode: "simple",
+              decimalDigits: 0,
+              spinButtons: true,
+            });
           },
         },
         {
@@ -218,20 +187,16 @@ export default {
           labelWidth: "80px",
           required: false,
           rowHeight: "40px",
-          info:'圆形的最大尺寸',
-          infoPosition:'right',
+          info: "圆形的最大尺寸",
+          infoPosition: "right",
           init: function (component) {
-            let numberInput = jqwidgets.createInstance(
-              component,
-              "jqxNumberInput",
-              {
-                width: 250,
-                height: 30,
-                inputMode: "simple",
-                decimalDigits: 0,
-                spinButtons: true,
-              }
-            );
+            jqwidgets.createInstance(component, "jqxNumberInput", {
+              width: 250,
+              height: 30,
+              inputMode: "simple",
+              decimalDigits: 0,
+              spinButtons: true,
+            });
           },
         },
         {
@@ -242,27 +207,12 @@ export default {
           required: true,
           rowHeight: "40px",
           init: function (component) {
+            const formulas = that.$store.state.formula;
             let comboBox = jqwidgets.createInstance(component, "jqxComboBox", {
               width: 250,
               height: 30,
-              source: [],
+              source: formulas,
             });
-            // component.jqxComboBox({
-            //   source: (function () {
-            //     const source = {
-            //       dataFields: [{ map: 0, type: "string" }],
-            //       url: "../../productManage/getAllProductFormula.do",
-            //       type: "get",
-            //       dataType: "json",
-            //       async: false,
-            //     };
-            //     const dataAdapter = new $.jqx.dataAdapter(source);
-            //     dataAdapter.dataBind();
-            //     return dataAdapter.recordids;
-            //   })(),
-            //   width: 250,
-            //   height: 30,
-            // });
           },
         },
         {
@@ -270,37 +220,23 @@ export default {
           label: "计量单位",
           type: "dropdownlist",
           labelWidth: "80px",
-          width:'250px',
+          width: "250px",
           required: true,
           rowHeight: "40px",
-          options:[
-            { label: "个"}
-          ]
+          options: [{ label: "个" }],
         },
         {
           name: "isCCC",
           type: "dropdownlist",
           label: "强制认证",
           labelWidth: "80px",
-          width:'250px',
+          width: "250px",
           required: true,
           rowHeight: "40px",
-          options:[
+          options: [
             { label: "是", value: 1 },
-            { label: "否", value: 0 }
-          ]
-          // init: function (component) {
-          //   let comboBox = jqwidgets.createInstance(component, "jqxComboBox", {
-          //     source: [
-          //       { label: "是", value: 1 },
-          //       { label: "否", value: 0 },
-          //     ],
-          //     width: 250,
-          //     height: 30,
-          //     displayMember: "label",
-          //     valueMember: "value",
-          //   });
-          // },
+            { label: "否", value: 0 },
+          ],
         },
         {
           name: "remark",
@@ -318,7 +254,6 @@ export default {
               type: "button",
               text: "提交",
               width: "60px",
-              height: "30px",
               rowHeight: "50px",
               align: "right",
               columnWidth: "50%",
@@ -328,27 +263,187 @@ export default {
               type: "button",
               text: "取消",
               width: "60px",
-              height: "30px",
               rowHeight: "50px",
               columnWidth: "50%",
             },
           ],
         },
-        {
-          name: "id",
-          type: "custom",
-          init: function (component) {
-            component.append('<input id="pnmId" type="hidden"/>');
-          },
-        },
       ],
     };
+  },
+  mounted() {
+    const that = this;
+    const $name = this.$refs.myForm.getComponentByName("name");
+    const $category = this.$refs.myForm.getComponentByName("category");
+    const $limitSizeLong = $("#limitSizeLong");
+    const $limitSizeShort = $("#limitSizeShort");
+    const $minSizeRound = this.$refs.myForm.getComponentByName("minSizeRound");
+    const $maxSizeRound = this.$refs.myForm.getComponentByName("maxSizeRound");
+    const $formula = this.$refs.myForm.getComponentByName("formula");
+    const $unit = this.$refs.myForm.getComponentByName("unit");
+    const $isCCC = this.$refs.myForm.getComponentByName("isCCC");
+    const $remark = this.$refs.myForm.getComponentByName("remark");
+
+    this.nameInstance = $name;
+    this.categoryInstance = $category;
+    this.limitSizeLongInstance = $limitSizeLong;
+    this.limitSizeShortInstance = $limitSizeShort;
+    this.minSizeRoundInstance = $minSizeRound;
+    this.maxSizeRoundInstance = $maxSizeRound;
+    this.formulaInstance = $formula;
+    this.unitInstance = $unit;
+    this.isCCCInstance = $isCCC;
+    this.remarkInstance = $remark;
+
+    // 设置表单验证规则
+    this.$refs.myValidator.rules = [
+      {
+        input: $name,
+        message: "该项必填",
+        action: "keyup,blur",
+        rule: "required",
+      },
+      {
+        input: `#${that.dropDownButtonID}`,
+        message: "该项必选",
+        action: "close",
+        rule: function (input) {
+          return input[0].textContent != "";
+        },
+      },
+      {
+        input: $limitSizeLong,
+        message: "必须左长右短",
+        action: "valueChanged",
+        rule: function () {
+          const limitSizeLong = $limitSizeLong.val();
+          const limitSizeShort = $limitSizeShort.val();
+          return limitSizeLong >= limitSizeShort;
+        },
+      },
+      {
+        input: $limitSizeShort,
+        message: "必须左长右短",
+        action: "valueChanged",
+        rule: function () {
+          const limitSizeLong = $limitSizeLong.val();
+          const limitSizeShort = $limitSizeShort.val();
+          return limitSizeLong >= limitSizeShort;
+        },
+      },
+      {
+        input: $formula,
+        message: "该项必选",
+        action: "select",
+        rule: function () {
+          const index = $formula.jqxComboBox("getSelectedIndex");
+          return index > -1;
+        },
+      },
+      {
+        input: $unit,
+        message: "该项必选",
+        action: "select",
+        rule: function () {
+          const index = $unit.jqxDropDownList("getSelectedIndex");
+          return index > -1;
+        },
+      },
+      {
+        input: $isCCC,
+        message: "该项必选",
+        action: "select",
+        rule: function () {
+          const index = $isCCC.jqxDropDownList("getSelectedIndex");
+          return index > -1;
+        },
+      },
+    ];
+    // 提交并验证表单
+    const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
+    confirmBtn[0].addEventListener("click", (event) => {
+      this.$refs.myValidator.validate(document.getElementById("myForm"));
+    });
   },
   methods: {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
+      this.clearForm();
+      if (params[0] == EDIT_PRODUCT) {
+        const data = params[1];
+        this.nameInstance.val(data["pnm_name"]);
+        const items = this.treeInstance.getItems();
+        const item = items.find(item=>{
+          return item['id'] == data["pc_id"]
+        })
+        this.treeInstance.selectItem(item.element);
+        this.treeInstance.expandItem(item.element);
+        this.limitSizeLongInstance.jqxNumberInput('setDecimal',data['limit_size_long'])
+        this.limitSizeShortInstance.jqxNumberInput('setDecimal',data['limit_size_short'])
+        this.minSizeRoundInstance.jqxNumberInput('setDecimal',data['round_min_size'])
+        this.maxSizeRoundInstance.jqxNumberInput('setDecimal',data['round_max_size'])
+        this.formulaInstance.jqxComboBox('selectItem',data['formula'])
+        this.unitInstance.jqxDropDownList('selectItem',data['unit'])
+        this.isCCCInstance.jqxDropDownList('selectItem',data['is_ccc']=='是'?1:0)
+        this.remarkInstance.val(data['remark'])
+        this.id = data['pnm_id']
+      }
       this.$refs.myWindow.open();
     },
+    onValidationSuccess(event) {
+      const title = this.$refs.myWindow.title;
+      const formData = {};
+      formData["pnm_name"] = this.nameInstance.val();
+      formData["pc_id"] = this.treeInstance.getSelectedItem().id;
+      formData["limit_size_long"] = this.limitSizeLongInstance.val();
+      formData["limit_size_short"] = this.limitSizeShortInstance.val();
+      formData["round_min_size"] = this.minSizeRoundInstance.val();
+      formData["round_max_size"] = this.maxSizeRoundInstance.val();
+      formData["unit"] = this.unitInstance.val();
+      formData["formula"] = this.formulaInstance.val();
+      formData["is_ccc"] = this.isCCCInstance.val();
+      formData["remark"] = this.remarkInstance.val();
+      formData["pnm_id"] = this.id;
+      if (title == EDIT_PRODUCT) {
+        this.update(formData);
+      } else {
+        this.add(formData);
+      }
+    },
+    add(formData) {
+      const params = {
+        jsonParams: JSON.stringify(formData),
+      };
+      addNonMachineProduct(params).then((res) => {
+        this.$refs.myWindow.close();
+        this.$parent.refresh();
+      });
+    },
+    update(formData) {
+      const params = {
+        jsonParams: JSON.stringify(formData),
+      };
+      updateNonMachineProduct(params).then((res) => {
+        this.$refs.myWindow.close();
+        this.$parent.refresh();
+      });
+    },
+    clearForm() {
+      this.nameInstance.val("");
+      this.dropDownButtonInstance.setContent("");
+      this.treeInstance.selectItem(null);
+      this.limitSizeLongInstance.jqxNumberInput("setDecimal", 0);
+      this.limitSizeShortInstance.jqxNumberInput("setDecimal", 0);
+      this.minSizeRoundInstance.jqxNumberInput("setDecimal", 0);
+      this.maxSizeRoundInstance.jqxNumberInput("setDecimal", 0);
+      this.formulaInstance.jqxComboBox("clearSelection");
+      this.unitInstance.jqxDropDownList("clearSelection");
+      this.isCCCInstance.jqxDropDownList("clearSelection");
+      this.remarkInstance.val("");
+    },
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.close();
   },
 };
 </script>

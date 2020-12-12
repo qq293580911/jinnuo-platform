@@ -1,6 +1,10 @@
+// 产品
 export const SAVE_PRICE_PLAN = 'save_price_plan';
 export const SAVE_SPLIT_PLAN = 'save_split_plan'
+export const SAVE_FORMULA = 'save_formula'
+// 权限
 export const SAVE_PERMISSIONS = 'save_permissions';
+// 人员
 export const SAVE_SALESMANS = 'save_salesmans';
 export const SAVE_QUOTERS = 'save_quoters';
 // 报价处理

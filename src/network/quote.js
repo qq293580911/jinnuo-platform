@@ -220,3 +220,12 @@ export function addQuotationAndDetail(form) {
     }
   })
 }
+
+// 报价统计
+export function getQuoterColumnChartData(params) {  
+  return request({
+    url: '/qtnStat/getQuoterQuotationColumnChartData.do',
+    method: 'Get',
+    params
+  })
+}

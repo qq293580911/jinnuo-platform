@@ -138,11 +138,10 @@ export function updateMachineProduct(params) {
   })
 }
 
-export function getAllMachineProduct(source, params) {
+export function getAllMachineProduct() {
   return request({
-    url: source.url,
-    method: source.type,
-    params
+    url: '/productManage/getAllMachineProduct.do',
+    method:'Get'
   })
 }
 
@@ -172,11 +171,11 @@ export function addNonMachineProduct(params) {
   })
 }
 
-export function deleteNonMachineProduct(params) {  
+export function deleteNonMachineProduct(params) {
   return request({
-    url:'/productManage/delNonMachineProduct.do',
-    method:'Delete',
-    data:params
+    url: '/productManage/delNonMachineProduct.do',
+    method: 'Delete',
+    data: params
   })
 }
 
@@ -185,6 +184,13 @@ export function updateNonMachineProduct(params) {
     url: `/productManage/updNonMachineProductInfo.do`,
     method: `Put`,
     data: params
+  })
+}
+
+export function getAllNonMachineProduct(source) {
+  return request({
+    url: '/productManage/getAllNonMachineProduct.do',
+    method: 'Get'
   })
 }
 
@@ -309,6 +315,14 @@ export function addNonMachinePrice(params) {
   return request({
     url: '/productPrice/addNonMachinePrice.do',
     method: 'post',
+    data: params
+  })
+}
+
+export function deleteNonMachinePrice(params) {
+  return request({
+    url: '/productPrice/delNonMachinePrice.do',
+    method: 'Delete',
     data: params
   })
 }

@@ -3,6 +3,7 @@
     <JqxWindow
       ref="myWindow"
       :width="'400px'"
+      :height="'255px'"
       :autoOpen="false"
       :position="{ x: '40%', y: '30%' }"
     >
@@ -54,45 +55,22 @@ export default {
           rowHeight: "40px",
           required: true,
           init: function (component) {
-            const source = {
-              dataFields: [
-                { name: "pm_id", type: "number" },
-                { name: "pm_name", type: "string" },
-                { name: "pc_name", type: "string" },
-                { name: "power", type: "string" },
-              ],
-              url: "/productManage/getAllMachineProduct.do",
-              type: "get",
-              datatype: "json",
-            };
-            const dataAdapter = new jqx.dataAdapter(source, {
-              loadServerData(serverdata, source, callback) {
-                getAllMachineProduct(source, serverdata).then((res) => {
-                  callback({
-                    originaldata: res,
-                    records: res,
-                  });
-                });
-              },
-              loadComplete(records) {
-                records.records.forEach(function (element) {
-                  element["html"] =
-                    "<div tabIndex=0 style='padding: 1px;'><div>" +
-                    element["pm_name"] +
-                    "</div><div>" +
-                    element["power"] +
-                    "</div></div>";
-                  element["group"] = element["pc_name"];
-                });
-              },
-            });
-
-            jqwidgets.createInstance(component, "jqxComboBox", {
-              width: 250,
-              height: 30,
-              source: dataAdapter,
-              displayMember: "pm_name",
-              valueMember: "pm_id",
+            getAllMachineProduct().then((res) => {
+              res.map((item) => {
+                item[
+                  "html"
+                ] = `<div tabIndex=0 style='padding: 1px;'><div>${item["pm_name"]}</div><div>${item["power"]}</div></div>`;
+                item["group"] = item["pc_name"];
+                return item;
+              });
+              jqwidgets.createInstance(component, "jqxComboBox", {
+                width: 250,
+                height: 30,
+                source: res,
+                displayMember: "pnm_name",
+                valueMember: "pnm_id",
+                animationType: "none",
+              });
             });
           },
         },
@@ -111,6 +89,7 @@ export default {
               source: pricePlan,
               displayMember: "rule",
               valueMember: "id",
+              animationType: "none",
             });
           },
         },
@@ -155,7 +134,6 @@ export default {
               type: "button",
               text: "提交",
               width: "60px",
-              height: "30px",
               rowHeight: "50px",
               align: "right",
               columnWidth: "50%",
@@ -165,7 +143,6 @@ export default {
               type: "button",
               text: "取消",
               width: "60px",
-              height: "30px",
               rowHeight: "50px",
               columnWidth: "50%",
             },
@@ -182,10 +159,10 @@ export default {
     const $priceCCC = this.$refs.myForm.getComponentByName("priceCcc");
     const $priceNonCCC = this.$refs.myForm.getComponentByName("priceNonCcc");
 
-    this.machineInstance = $machine
-    this.pricePlanInstance = $pricePlan
-    this.priceCCCInstance = $priceCCC
-    this.priceNonCCC = $priceNonCCC
+    this.machineInstance = $machine;
+    this.pricePlanInstance = $pricePlan;
+    this.priceNonCCCInstance = $priceNonCCC;
+    this.priceCCCInstance = $priceCCC;
 
     this.$refs.myValidator.rules = [
       {
@@ -193,7 +170,7 @@ export default {
         message: "该项必选",
         action: "select",
         rule: function (input) {
-          const index = that.machineInstance.getSelectedIndex();
+          const index = that.machineInstance.jqxComboBox("getSelectedIndex");
           return index > -1;
         },
       },
@@ -202,7 +179,7 @@ export default {
         message: "该项必选",
         action: "select",
         rule(input) {
-          const index = that.pricePlanInstance.getSelectedIndex();
+          const index = that.pricePlanInstance.jqxComboBox("getSelectedIndex");
           return index > -1;
         },
       },
@@ -216,12 +193,16 @@ export default {
   methods: {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
+      this.clearForm();
       if (params[0] == EDIT_PRODUCT_PRICE) {
         const data = params[1];
-        this.machineInstance.selectItem(data["pm_id"]);
-        this.pricePlanInstance.selectItem(data["ps_id"]);
-        this.priceNonCccInstance.val(data["price_non_ccc"]);
-        this.priceCccInstance.val(data["price_ccc"]);
+        this.machineInstance.jqxComboBox("selectItem", data["pm_id"]);
+        this.pricePlanInstance.jqxComboBox("selectItem", data["ps_id"]);
+        this.priceNonCCCInstance.jqxNumberInput(
+          "setDecimal",
+          data["price_non_ccc"]
+        );
+        this.priceCCCInstance.jqxNumberInput("setDecimal", data["price_ccc"]);
         this.id = data["price_id"];
       }
       this.$refs.myWindow.open();
@@ -234,6 +215,7 @@ export default {
         priceCcc: this.priceCCCInstance.val(),
         priceId: this.id,
       };
+      const title = this.$refs.myWindow.title;
       if (title == EDIT_PRODUCT_PRICE) {
         this.update(formData);
       } else {
@@ -242,10 +224,10 @@ export default {
     },
     clearForm() {
       // 重置部件设置
-      this.machineInstance.clearSelection();
-      this.pricePlanInstance.clearSelection();
-      this.priceNonCccInstance.val(0);
-      this.priceCccInstance.val(0);
+      this.machineInstance.jqxComboBox("clearSelection");
+      this.pricePlanInstance.jqxComboBox("clearSelection");
+      this.priceNonCCCInstance.jqxNumberInput("setDecimal", 0);
+      this.priceCCCInstance.jqxNumberInput("setDecimal", 0);
     },
     add(formData) {
       const params = {
@@ -253,9 +235,7 @@ export default {
       };
       addMachinePrice(params).then((res) => {
         this.$refs.myWindow.close();
-        // 提醒父组件刷新网格
         this.$parent.refresh();
-        this.clearForm();
       });
     },
     update(formData) {
@@ -264,15 +244,12 @@ export default {
       };
       updateMachinePrice(params).then((res) => {
         this.$refs.myWindow.close();
-        this.$message.success(Message.UPDATE_SUCCESS);
-        // 提醒父组件刷新网格
         this.$parent.refresh();
-        this.clearForm();
       });
     },
   },
   beforeDestroy() {
-    this.$refs.myWindow.close()
+    this.$refs.myWindow.close();
   },
 };
 </script>

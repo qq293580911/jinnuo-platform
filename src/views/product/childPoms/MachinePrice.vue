@@ -125,10 +125,12 @@ export default {
   },
   mounted() {},
   methods: {
-    createButtonsContainers: function (statusbar) {
+    createButtonsContainers: function (toolbar) {
+      const that = this;
       let buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
+      toolbar[0].appendChild(buttonsContainer);
       let addButtonContainer = document.createElement("div");
       let deleteButtonContainer = document.createElement("div");
       let editButtonContainer = document.createElement("div");
@@ -144,16 +146,20 @@ export default {
       editButtonContainer.id = editButtonID;
       reloadButtonContainer.id = reloadButtonID;
 
-      addButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-      deleteButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-      editButtonContainer.style.cssText = "float: left; margin-left: 5px;";
-      reloadButtonContainer.style.cssText = "float: right; margin-left: 5px;";
+      addButtonContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor:pointer;";
+      deleteButtonContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor:pointer;";
+      editButtonContainer.style.cssText =
+        "float: left; margin-left: 5px;cursor:pointer;";
+      reloadButtonContainer.style.cssText =
+        "float: right; margin-left: 5px;cursor:pointer;";
 
       buttonsContainer.appendChild(addButtonContainer);
       buttonsContainer.appendChild(deleteButtonContainer);
       buttonsContainer.appendChild(editButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
-      statusbar[0].appendChild(buttonsContainer);
+
       //创建按钮
       let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
         imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
@@ -185,12 +191,22 @@ export default {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
           return false;
         }
-        const ids = [];
-        selectedrowindexes.forEach((item) => {
-          const id = this.$refs.myGrid.getrowid(item);
-          ids.push(id);
+        this.$confirm({
+          title: `${Message.CONFIRM_DELETE}`,
+          okText: "确认",
+          cancelText: "取消",
+          centered: true,
+          okType: "danger",
+          content: (h) => <div style="color:red;"></div>,
+          onOk() {
+            const ids = selectedrowindexes.map((rowIndex) => {
+              return that.$refs.myGrid.getrowid(rowIndex);
+            });
+            that.delete(ids);
+          },
+          onCancel() {},
+          class: "test",
         });
-        this.delete(ids);
       });
 
       let editButton = jqwidgets.createInstance(
@@ -231,13 +247,12 @@ export default {
     },
     delete(ids) {
       const params = {
-        jsonParams: {
+        jsonParams: JSON.stringify({
           ids,
-        },
+        }),
       };
       deleteMachinePrice(params).then((res) => {
-        this.$refs.myGrid.updatebounddata();
-        this.$message.success(Message.DELETE_SUCCESS);
+        this.refresh();
       });
     },
     refresh() {

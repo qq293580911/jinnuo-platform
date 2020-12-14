@@ -40,7 +40,10 @@ import {
   EDIT_PRODUCT_PRICE,
 } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
-import { showNonMachinePrice } from "@/network/product.js";
+import {
+  showNonMachinePrice,
+  deleteNonMachinePrice,
+} from "@/network/product.js";
 export default {
   name: "NonMachinePrice",
   components: {
@@ -59,7 +62,6 @@ export default {
         { name: "pnm_id", type: "number" },
         { name: "pnm_name", type: "string" },
         { name: "panel_price", type: "number" },
-        { name: "panel_extra_price", type: "number" },
         { name: "valve_price", type: "number" },
       ],
       type: "get",
@@ -108,13 +110,6 @@ export default {
           cellsalign: "center",
         },
         {
-          text: "面板额外价格",
-          datafield: "panel_extra_price",
-          columntype: "textbox",
-          align: "center",
-          cellsalign: "center",
-        },
-        {
           text: "阀体价格",
           datafield: "valve_price",
           columntype: "textbox",
@@ -133,6 +128,7 @@ export default {
   },
   methods: {
     createButtonsContainers: function (statusbar) {
+      const that = this
       let buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
@@ -191,11 +187,28 @@ export default {
       });
 
       deleteButton.addEventHandler("click", (event) => {
-        let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
-        if (selectedrowindex < 0) {
+        let selectedrowindexes = this.$refs.myGrid.getselectedrowindexes();
+        if (selectedrowindexes.length < 1) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
           return false;
         }
+
+        this.$confirm({
+          title: `${Message.CONFIRM_DELETE}`,
+          okText: "确认",
+          cancelText: "取消",
+          centered: true,
+          okType: "danger",
+          content: (h) => <div style="color:red;"></div>,
+          onOk() {
+            const ids = selectedrowindexes.map((rowIndex) => {
+              return that.$refs.myGrid.getrowid(rowIndex);
+            });
+            that.delete(ids);
+          },
+          onCancel() {},
+          class: "test",
+        });
         let id = this.$refs.myGrid.getrowid(selectedrowindex);
         this.$refs.myGrid.deleterow(id);
       });
@@ -235,6 +248,19 @@ export default {
       reloadButton.addEventHandler("click", (event) => {
         this.$refs.myGrid.updatebounddata();
       });
+    },
+    delete(ids) {
+      const params = {
+        jsonParams: JSON.stringify({
+          ids,
+        }),
+      };
+      deleteNonMachinePrice(params).then((res) => {
+        this.refresh();
+      });
+    },
+    refresh() {
+      this.$refs.myGrid.updatebounddata();
     },
   },
 };

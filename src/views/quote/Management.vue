@@ -12,31 +12,34 @@
     </JqxMenu>
     <keep-alive>
       <detail v-if="currentMenuName == menus[0]"></detail>
+      <statistics v-if="currentMenuName == menus[1]"></statistics>
     </keep-alive>
   </div>
 </template>
 
 <script>
 import JqxMenu from "jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue";
-import Detail from './childComps/Detail'
+import Detail from "./childComps/Detail";
+import Statistics from "./childComps/Statistics";
 export default {
   name: "QuoteManagement",
-    components: {
+  components: {
     JqxMenu,
-    Detail
+    Detail,
+    Statistics,
   },
   data: function () {
     return {
       menus: ["数据汇总", "图形统计"],
       currentMenuName: "数据汇总",
-    }
+    };
   },
   methods: {
-    onItemclick(event){
-      const menuName = event.args.textContent
-      this.currentMenuName = menuName
-    }
-  }
+    onItemclick(event) {
+      const menuName = event.args.textContent;
+      this.currentMenuName = menuName;
+    },
+  },
 };
 </script>
 

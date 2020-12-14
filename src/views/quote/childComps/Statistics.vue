@@ -23,6 +23,7 @@
         ></chart-toolbar>
         <chart-layout ref="chartLayout">
           <slot slot="top">
+            <!-- 上部柱状图 -->
             <column-chart
               ref="columnChart"
               :date-mode="dateMode"
@@ -32,9 +33,31 @@
               :model="'报价员'"
             ></column-chart>
           </slot>
-          <slot slot="bottomLeft">下左</slot>
-          <slot slot="bottomCenter">下中</slot>
-          <slot slot="bottomRight">下右</slot>
+          <slot slot="bottomLeft">
+            <!-- 下左 饼状图个人 -->
+            <pie-chart-single
+              ref="pieChartSingle"
+              :subject="subject"
+            ></pie-chart-single>
+          </slot>
+          <!-- 下中 饼状图所有 -->
+          <slot slot="bottomCenter">
+            <pie-chart-all
+              ref="pieChartSingle"
+              :subject="subject"
+              :start-date="startDate"
+              :end-date="endDate"
+            ></pie-chart-all>
+          </slot>
+          <!-- 下右 所有占比网格化 -->
+          <slot slot="bottomRight">
+            <ratio-grid
+              ref="ratioGrid"
+              :subject="subject"
+              :start-date="startDate"
+              :end-date="endDate"
+            ></ratio-grid>
+          </slot>
         </chart-layout>
       </div>
       <!-- <div>业务员</div> -->
@@ -47,12 +70,18 @@ import JqxTabs from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtabs.vue";
 import ChartToolbar from "./ChartToolbar";
 import ChartLayout from "./ChartLayout";
 import ColumnChart from "./ColumnChart";
+import PieChartSingle from "./PieChartSingle";
+import PieChartAll from "./PieChartAll";
+import RatioGrid from "./RatioGrid";
 export default {
   components: {
     JqxTabs,
     ChartToolbar,
     ChartLayout,
     ColumnChart,
+    PieChartSingle,
+    PieChartAll,
+    RatioGrid,
   },
   data() {
     const that = this;
@@ -91,18 +120,19 @@ export default {
       this.model = "报价员";
     },
     changeSubject(data) {
-      this.subject = data
+      this.subject = data;
     },
     changeStartDate(data) {
-      this.startDate = data
+      this.startDate = data;
     },
     changeEndDate(data) {
-      this.endDate = data
+      this.endDate = data;
     },
     changeDateMode(data) {
-      this.dateMode = data
+      this.dateMode = data;
     },
   },
+  beforeCreate() {},
 };
 </script>
 

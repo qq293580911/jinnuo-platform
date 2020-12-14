@@ -43,7 +43,7 @@ export default {
     });
     // 日期类型
     this.dateModeInstance.addEventHandler("select", (event) => {
-      const dateMode = event.args.item.value
+      const dateMode = event.args.item.value;
       this.$emit("changeDateMode", dateMode);
     });
   },
@@ -90,6 +90,7 @@ export default {
               {
                 width: 110,
                 height: 25,
+                culture: "ja-JP",
                 formatString: "yyyy-MM-dd",
                 value: new Date(startDate),
               }
@@ -106,6 +107,7 @@ export default {
               {
                 width: 110,
                 height: 25,
+                culture: "ja-JP",
                 formatString: "yyyy-MM-dd",
                 value: new Date(endDate),
               }

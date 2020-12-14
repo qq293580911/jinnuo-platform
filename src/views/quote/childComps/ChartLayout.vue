@@ -16,27 +16,27 @@ export default {};
 .content {
   width: 100%;
   height: calc(100vh - 200px);
-  background-color: green;
+  /* background-color: green; */
   /* display: flex; */
 }
 .top {
   width: 100%;
-  height: calc(50%);
-  background-color: yellow;
+  height: calc(45%);
+  /* background-color: yellow; */
   float: left;
   /* flex: 1; */
 }
 .bottom {
   width: 100%;
-  height: calc(50%);
-  background-color: green;
+  height: calc(54%);
+  /* background-color: green; */
   float: left;
   display: flex;
 }
 .bottom .left {
   width: calc(33%);
   height: calc(100%);
-  background-color: red;
+  /* background-color: red; */
   float: left;
   margin: 0 auto;
 }
@@ -50,7 +50,7 @@ export default {};
 .bottom .right {
   width: calc(33%);
   height: calc(100%);
-  background-color: blue;
+  /* background-color: blue; */
   float: left;
   margin: 0 auto;
   flex: 1;

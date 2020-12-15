@@ -22,7 +22,7 @@
             class="trigger"
             :type="collapsed ? 'menu-unfold' : 'menu-fold'"
             @click="() => (collapsed = !collapsed)"
-          /> 
+          />
         </a-layout-header> -->
         <!-- 右侧主面板 -->
         <a-layout-content>
@@ -39,7 +39,7 @@ import HomeAside from "./childComps/HomeAside";
 import HomeMain from "./childComps/HomeMain";
 import { getPermissions } from "@/network/home.js";
 import { getSalesman, getQuoter } from "@/network/employee.js";
-import { getPricePlan,getCategory, getAssignType,getFormula } from "@/network/product.js";
+import { getPricePlan, getCategory, getAssignType, getFormula } from "@/network/product.js";
 import { getSplitPlan } from "@/network/quote.js";
 jqx.theme = "ui-smoothness";
 export default {
@@ -47,11 +47,11 @@ export default {
   components: {
     HomeNavBar,
     HomeAside,
-    HomeMain,
+    HomeMain
   },
   data() {
     return {
-      collapsed: false,
+      collapsed: false
     };
   },
   created() {},
@@ -71,8 +71,8 @@ export default {
       sessionStorage.removeItem("store");
     }
 
-    //在页面刷新时将vuex里的信息保存到sessionStorage里
-    window.onbeforeunload = function (e) {
+    // 在页面刷新时将vuex里的信息保存到sessionStorage里
+    window.onbeforeunload = function(e) {
       // TODO
       sessionStorage.setItem("store", JSON.stringify(that.$store.state));
     };
@@ -93,8 +93,8 @@ export default {
         this.user = JSON.parse(window.sessionStorage.getItem("user"));
         const params = {
           jsonParams: JSON.stringify({
-            userId: this.user.id,
-          }),
+            userId: this.user.id
+          })
         };
         getPermissions(params).then((responese) => {
           this.$store.dispatch("savePermissions", responese);
@@ -127,23 +127,23 @@ export default {
             { name: "id", map: "pc_id", type: "number" },
             { name: "parentid", map: "pc_pid", type: "number" },
             { name: "text", map: "pc_name", type: "string" },
-            { name: "value", map: "pc_id", type: "string" },
+            { name: "value", map: "pc_id", type: "string" }
           ],
           id: "id",
           type: "json",
-          url: "/productCateg/getProductCategoryData.do",
+          url: "/productCateg/getProductCategoryData.do"
         };
         const dataAdapter = new jqx.dataAdapter(source, {
           loadServerData(serverdata, source, callback) {
             getCategory(source.url, source, serverdata).then((res) => {
               callback({
-                records: res.records,
+                records: res.records
               });
             });
           },
           loadComplete(records) {
             that.$store.state.productType = records;
-          },
+          }
         });
         dataAdapter.dataBind();
       }
@@ -158,23 +158,23 @@ export default {
             { name: "id", map: "at_id", type: "number" },
             { name: "parentid", map: "at_pid", type: "number" },
             { name: "text", map: "at_name", type: "string" },
-            { name: "value", map: "at_id", type: "string" },
+            { name: "value", map: "at_id", type: "string" }
           ],
           id: "id",
           type: "json",
-          url: "/productCateg/getAssignTypeData.do",
+          url: "/productCateg/getAssignTypeData.do"
         };
         const dataAdapter = new jqx.dataAdapter(source, {
           loadServerData(serverdata, source, callback) {
             getAssignType(source.url, source, serverdata).then((res) => {
               callback({
-                records: res.records,
+                records: res.records
               });
             });
           },
           loadComplete(records) {
             that.$store.state.assignType = records;
-          },
+          }
         });
         dataAdapter.dataBind();
       }
@@ -199,7 +199,7 @@ export default {
         });
       }
     },
-    getFormulas(){
+    getFormulas() {
       const formulas = this.$store.state.formula;
       if (Array.isArray(formulas) == false) {
         getFormula().then((responese) => {
@@ -209,7 +209,7 @@ export default {
         });
       }
     }
-  },
+  }
 };
 </script>
 

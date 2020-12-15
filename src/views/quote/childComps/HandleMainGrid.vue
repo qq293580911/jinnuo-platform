@@ -42,27 +42,15 @@ import JqxLoader from "jqwidgets-scripts/jqwidgets-vue/vue_jqxloader.vue";
 import ShowMoreWindow from "./ShowMoreWindow";
 import { getLocalization } from "@/common/localization.js";
 import { dataExport } from "@/common/util.js";
-import {
-  GENERAL_BLOWER,
-  OUTSIDE_BUY,
-  VENTILATOR,
-  CONTROL_BOX,
-  WALL_BLOWER,
-  DUCT_BLOWER,
-  MUTE_BLOWER,
-  SIDE_WALL_BLOWER,
-  SIDE_WALL_BLOWER_EP,
-} from "@/common/const.js";
 import { filterData, handle } from "@/network/quote.js";
 export default {
   name: "MainGrid",
   components: {
     JqxGrid,
     JqxLoader,
-    ShowMoreWindow,
+    ShowMoreWindow
   },
-  beforeCreate: function () {
-    const that = this;
+  beforeCreate: function() {
     this.source = {
       datafields: [
         { name: "serialNumber", type: "number" },
@@ -80,9 +68,9 @@ export default {
         { name: "isCcc", type: "boolean" },
         { name: "processStatus", type: "string" },
         { name: "actuatorCount", map: "filter>actuatorCount", type: "number" },
-        { name: "specErrorDesc", type: "array" },
+        { name: "specErrorDesc", type: "array" }
       ],
-      localdata: [],
+      localdata: []
     };
   },
   data() {
@@ -92,7 +80,7 @@ export default {
       showMore: false,
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        beforeLoadComplete: function (records) {
+        beforeLoadComplete: function(records) {
           records.forEach((item, index) => {
             const processStatus = item["processStatus"];
             const unitPrice = item["unitPrice"];
@@ -127,7 +115,7 @@ export default {
               item["totalPrice"] = total;
             }
           });
-        },
+        }
       }),
       columns: [
         {
@@ -136,7 +124,7 @@ export default {
           columntype: "textbox",
           align: "center",
           cellsalign: "center",
-          width: 45,
+          width: 45
         },
         {
           text: "名称",
@@ -144,7 +132,7 @@ export default {
           columntype: "textbox",
           align: "center",
           cellsalign: "center",
-          width: 200,
+          width: 200
         },
         {
           text: "规格及型号",
@@ -153,7 +141,7 @@ export default {
           align: "center",
           cellsalign: "center",
           width: 450,
-          cellsrenderer: function (
+          cellsrenderer: function(
             index,
             datafield,
             value,
@@ -167,12 +155,12 @@ export default {
             }
             return cellElement;
           },
-          cellclassname: function (row, columnfield, value) {
+          cellclassname: function(row, columnfield, value) {
             const rowdata = that.$refs.myGrid.getrowdata(row);
             if (rowdata["specErrorDesc"]) {
               return "yellow";
             }
-          },
+          }
         },
         {
           text: "单位",
@@ -181,7 +169,7 @@ export default {
           align: "center",
           cellsalign: "center",
           width: 45,
-          cellclassname: function (row, columnfield, value) {
+          cellclassname: function(row, columnfield, value) {
             const rowdata = that.$refs.myGrid.getrowdata(row);
             const specModel = rowdata["specModel"];
             if (specModel != null && specModel != "") {
@@ -194,9 +182,9 @@ export default {
               }
             }
           },
-          createeditor: function (row, cellvalue, editor) {
+          createeditor: function(row, cellvalue, editor) {
             editor.jqxDropDownList({ source: ["台", "个"] });
-          },
+          }
         },
         {
           text: "数量",
@@ -205,7 +193,7 @@ export default {
           align: "center",
           cellsalign: "center",
           width: 45,
-          cellsrenderer: function (
+          cellsrenderer: function(
             index,
             datafield,
             value,
@@ -219,20 +207,20 @@ export default {
                 </div>`;
             }
           },
-          validation: function (cell, value) {
+          validation: function(cell, value) {
             if (value < 0 || value > 1500) {
               return { result: false, message: "数量只能在0-1500之间" };
             }
             return true;
           },
-          createeditor: function (row, cellvalue, editor) {
+          createeditor: function(row, cellvalue, editor) {
             editor.jqxNumberInput({ decimalDigits: 0, digits: 3 });
           },
-          cellclassname: function (row, columnfield, value) {
+          cellclassname: function(row, columnfield, value) {
             if (/^[1-9]+\d*$/.test(value) == false) {
               return "yellow";
             }
-          },
+          }
         },
         {
           text: "单价",
@@ -241,7 +229,7 @@ export default {
           align: "center",
           cellsalign: "center",
           width: 100,
-          cellsrenderer: function (
+          cellsrenderer: function(
             index,
             datafield,
             value,
@@ -271,7 +259,7 @@ export default {
             return `<div class='jqx-center-align'>
               ${that.dataAdapter.formatNumber(unitPrice, "d0")}
               </div>`;
-          },
+          }
         },
         {
           text: "总价",
@@ -281,7 +269,7 @@ export default {
           aggregates: ["sum"],
           cellsalign: "center",
           width: 100,
-          cellsrenderer: function (
+          cellsrenderer: function(
             index,
             datafield,
             value,
@@ -294,12 +282,12 @@ export default {
             if (unitPrice == "" || isNaN(unitPrice)) {
               return defaultvalue;
             } else {
-              let total = unitPrice * quantity;
+              const total = unitPrice * quantity;
               return `<div class='jqx-center-align'>
                 ${that.dataAdapter.formatNumber(total, "d0")}</div>`;
             }
           },
-          aggregatesrenderer: that.aggregatesrenderer,
+          aggregatesrenderer: that.aggregatesrenderer
         },
         {
           text: "备注",
@@ -308,7 +296,7 @@ export default {
           align: "center",
           cellsalign: "center",
           width: 185,
-          cellsrenderer: function (
+          cellsrenderer: function(
             index,
             datafield,
             value,
@@ -320,14 +308,14 @@ export default {
               return `<div class='jqx-center-align'>${value} </div>`;
             }
             return `<div class='jqx-center-align'> ${value} </div>`;
-          },
+          }
         },
         {
           text: "选型/执行器",
           datafield: "selection",
           columntype: "textbox",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "加点",
@@ -336,7 +324,7 @@ export default {
           align: "center",
           cellsalign: "center",
           hidden: true,
-          width: 100,
+          width: 100
         },
         {
           text: "公式",
@@ -345,7 +333,7 @@ export default {
           align: "center",
           cellsalign: "center",
           hidden: true,
-          width: 300,
+          width: 300
         },
         {
           text: "指派类型",
@@ -354,9 +342,9 @@ export default {
           align: "center",
           cellsalign: "center",
           hidden: true,
-          width: 200,
-        },
-      ],
+          width: 200
+        }
+      ]
     };
   },
   watch: {
@@ -367,15 +355,15 @@ export default {
         const clientY = offset.top + 14;
         this.$refs.showMoreWindow.open(clientX, clientY);
         $("#showMore").jqxButton({
-          imgSrc: require(`@/assets/iconfont/custom/hidden.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/hidden.svg`)
         });
       } else {
         $("#showMore").jqxButton({
-          imgSrc: require(`@/assets/iconfont/custom/show.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/show.svg`)
         });
         this.$refs.showMoreWindow.close();
       }
-    },
+    }
   },
   mounted() {
     const that = this;
@@ -387,12 +375,12 @@ export default {
     // 接收到导入的请求，获取文本内容并筛选渲染
     this.$bus.$off("import").$on("import", () => {
       this.firstHandle = true;
-      let content = this.$store.state.currentQuote.content;
+      const content = this.$store.state.currentQuote.content;
       this.$store.dispatch("filterQuoteContent", content).then((response) => {
         const params = {
           jsonParams: JSON.stringify({
-            content: response,
-          }),
+            content: response
+          })
         };
         filterData(params).then((res) => {
           this.$store.dispatch("saveCurrentQuoteContent", res["content"]);
@@ -430,8 +418,8 @@ export default {
         jsonParams: JSON.stringify({
           dataSource: content,
           priceRule: pricePlan,
-          splitRule: splitPlan,
-        }),
+          splitRule: splitPlan
+        })
       };
       this.$refs.myLoader.open();
       handle(params).then((res) => {
@@ -480,7 +468,7 @@ export default {
           return false;
         }
       }
-      const filterRows = rows
+      rows
         .filter((rowdata) => {
           return rowdata["productName"] == firstProductName;
         })
@@ -493,17 +481,17 @@ export default {
       const name = `done_${this.$store.state.currentQuote.name}`;
       const columns = this.$refs.myGrid.columns;
       const content = this.$refs.myGrid.getrows();
-      content.forEach(rowData=>{
-        const totalPrice = rowData['totalPrice']
-        if(/\d+\.?\d+/.test(totalPrice)==false){
-          rowData['totalPrice']=0
+      content.forEach((rowData) => {
+        const totalPrice = rowData["totalPrice"];
+        if (/\d+\.?\d+/.test(totalPrice) == false) {
+          rowData["totalPrice"] = 0;
         }
-      })
+      });
       dataExport(name, columns, content, {
         rowConfig: {
           start: 30,
           end: 30,
-          other: 30,
+          other: 30
         },
         colConfig: {
           A: 40,
@@ -517,26 +505,26 @@ export default {
           I: 100,
           J: 40,
           k: 120,
-          L: 100,
+          L: 100
         },
-        numberCol:['序号','数量','单价','总价']
+        numberCol: ["序号", "数量", "单价", "总价"]
       });
       this.$confirm({
         title: `要记录到今日报价吗？`,
         okText: "确认",
         cancelText: "取消",
         centered: true,
-        content: (h) => <div style="color:red;"></div>,
+        content: (h) => <div style='color:red;'></div>,
         onOk() {
           const payload = {
             name,
-            content,
+            content
           };
           that.$store.dispatch("saveTodayQuote", payload);
           that.$bus.$emit("refreshTodayQuote");
         },
         onCancel() {},
-        class: "test",
+        class: "test"
       });
     });
 
@@ -564,32 +552,32 @@ export default {
   },
   methods: {
     rendertoolbar(toolbar) {
-      let buttonsContainer = document.createElement("div");
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
       toolbar[0].appendChild(buttonsContainer);
       // 显示更多
-      let showMoreContainer = document.createElement("div");
+      const showMoreContainer = document.createElement("div");
       showMoreContainer.id = "showMore";
       showMoreContainer.style.cssText = "float: right;cursor: pointer;";
       buttonsContainer.appendChild(showMoreContainer);
-      //创建按钮
+      // 创建按钮
       this.showMoreButtonInstance = jqwidgets.createInstance(
         "#showMore",
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/show-more.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/show-more.svg`)
         }
       );
 
       jqwidgets.createInstance("#showMore", "jqxTooltip", {
         content: "显示更多",
-        position: "mouse",
+        position: "mouse"
       });
     },
     aggregatesrenderer(aggregates, column, element) {
       let renderString = "";
-      $.each(aggregates, function (key, value) {
+      $.each(aggregates, function(key, value) {
         renderString += `<div class="jqx-center-align">合计: 
           ${value}</div>`;
       });
@@ -602,7 +590,7 @@ export default {
     myGridOnRowSelect(event) {
       const rowData = event.args.row;
       const unit = rowData["unit"];
-      if ("台" === unit) {
+      if (unit === "台") {
         // 初始化选型参数
         this.$bus.$emit("setSelectionParams", rowData);
       }
@@ -616,9 +604,9 @@ export default {
       this.$refs.myGrid.beginupdate();
       this.$refs.myGrid.hidecolumn(field);
       this.$refs.myGrid.endupdate();
-    },
+    }
   },
-  destroyed() {},
+  destroyed() {}
 };
 </script>
 

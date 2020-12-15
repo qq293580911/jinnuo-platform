@@ -38,9 +38,9 @@ import { showCustomerList } from "@/network/customer.js";
 export default {
   components: {
     JqxWindow,
-    JqxDataTable,
+    JqxDataTable
   },
-  beforeCreate: function () {
+  beforeCreate: function() {
     this.source = {
       dataFields: [
         { name: "id", type: "number" },
@@ -49,7 +49,7 @@ export default {
         { name: "gender", type: "string" },
         { name: "phone", type: "string" },
         { name: "company", type: "string" },
-        { name: "position", type: "string" },
+        { name: "position", type: "string" }
       ],
       type: "get",
       dataType: "json",
@@ -57,60 +57,60 @@ export default {
       sortcolumn: "id",
       sortdirection: "desc",
       root: "rows",
-      record: "rows",
+      record: "rows"
     };
   },
   data() {
     return {
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           showCustomerList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
-        },
+        }
       }),
       columns: [
         {
           text: "名称",
           cellsAlign: "center",
           align: "center",
-          dataField: "name",
+          dataField: "name"
         },
         {
           text: "性别",
           cellsAlign: "center",
           align: "center",
-          dataField: "gender",
+          dataField: "gender"
         },
         {
           text: "电话",
           dataField: "phone",
           cellsAlign: "center",
           align: "center",
-          width: 120,
+          width: 120
         },
         {
           text: "公司",
           dataField: "company",
           align: "center",
-          cellsAlign: "center",
+          cellsAlign: "center"
         },
         {
           text: "职位",
           cellsAlign: "center",
           align: "center",
-          dataField: "position",
-        },
+          dataField: "position"
+        }
       ],
-      contractInfo:{}
+      contractInfo: {}
     };
   },
   methods: {
@@ -119,16 +119,16 @@ export default {
       this.contractInfo = params[1]
       this.$refs.myWindow.open();
     },
-    onRowDoubleClick(event){
+    onRowDoubleClick(event) {
       const value = this.$refs.myDataTable.getSelection();
       const newData = {
-        id:this.contractInfo['id'],
-        customer:value[0]['id']
+        id: this.contractInfo['id'],
+        customer: value[0]['id']
       }
       const params = {
-        jsonParams:JSON.stringify(newData)
+        jsonParams: JSON.stringify(newData)
       }
-      updateContract(params).then(res=>{
+      updateContract(params).then(res => {
         this.$parent.refresh()
       })
       this.$refs.myWindow.close()
@@ -136,7 +136,7 @@ export default {
   },
   beforeDestroy() {
     this.$refs.myWindow.close()
-  },
+  }
 };
 </script>
 

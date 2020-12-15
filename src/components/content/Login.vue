@@ -110,7 +110,7 @@
 <script>
 import { login, User } from "@/network/login.js";
 export default {
-  name: "login",
+  name: "Login",
   data() {
     return {
       isOpened: false,
@@ -118,11 +118,11 @@ export default {
         return Object.keys(fieldsError).some((field) => fieldsError[field]);
       },
       form: this.$form.createForm(this, { name: "horizontal_login" }),
-      user: {},
+      user: {}
     };
   },
   created() {
-    //绑定滚动条事件
+    // 绑定滚动条事件
     window.addEventListener("scroll", () => {
       if (window.scrollY > window.innerHeight / 3 && !this.isOpened) {
         const scrollDown = document.querySelector(".scroll-down");
@@ -169,7 +169,7 @@ export default {
               window.sessionStorage.setItem("token", "sdsdsdsd");
               window.sessionStorage.setItem("user", JSON.stringify(this.user));
               this.$router.push({
-                path: `/home`,
+                path: `/home`
               });
             }
           });
@@ -183,8 +183,8 @@ export default {
           return false;
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

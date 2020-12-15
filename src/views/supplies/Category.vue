@@ -5,7 +5,7 @@
       :hintType="'label'"
       @validationSuccess="onValidationSuccess($event)"
     >
-      <JqxForm #myForm ref="myForm" :template="template"> </JqxForm>
+      <JqxForm ref="myForm" :template="template"> </JqxForm>
     </JqxValidator>
     <JqxTree
       style="margin-left: 5px; float: left; margin-top: 5px"
@@ -40,14 +40,14 @@ import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 import JqxButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue";
 
 import { Message } from "@/common/const.js";
-import { getCategory } from "@/network/supplies.js";
+import { getCategory, addCategory, deleteCategory, updateCategory } from "@/network/supplies.js";
 export default {
   name: "SuppliesCategory",
   components: {
     JqxTree,
     JqxValidator,
     JqxForm,
-    JqxButton,
+    JqxButton
   },
   mounted() {
     const $newName = this.$refs.myForm.getComponentByName("newName");
@@ -58,8 +58,8 @@ export default {
         input: $newName,
         message: "该项必填",
         action: "blur,input",
-        rule: "required",
-      },
+        rule: "required"
+      }
     ];
     // 验证表单
     const btn = this.$refs.myForm.getComponentByName("submitBtn");
@@ -79,12 +79,15 @@ export default {
           }
           break;
         case "编辑":
-          if (!item) {
-            this.$message.warning(Message.NO_NODE_SELECTED);
-            return false;
+          {
+            if (!item) {
+              this.$message.warning(Message.NO_NODE_SELECTED);
+              return false;
+            }
+            const $newName = this.$refs.myForm.getComponentByName("newName");
+            $newName.val(item.label);
           }
-          let $newName = this.$refs.myForm.getComponentByName("newName");
-          $newName.val(item.label);
+
           break;
         case "删除":
           if (!item) {
@@ -108,7 +111,7 @@ export default {
     addCategory(id) {
       const params = {
         pid: id,
-        name: "item",
+        name: "item"
       };
       addCategory({ jsonParams: JSON.stringify(params) }).then((res) => {
         // 添加节点
@@ -116,7 +119,7 @@ export default {
         this.$refs.myTree.addTo(
           {
             label: "item",
-            id: id,
+            id: id
           },
           item == null ? null : item.element,
           false
@@ -128,22 +131,22 @@ export default {
     },
     deleteCategory(id) {
       const params = {
-        id,
+        id
       };
       deleteCategory({ jsonParams: JSON.stringify(params) }).then((res) => {
-        let item = this.$refs.myTree.getSelectedItem();
+        const item = this.$refs.myTree.getSelectedItem();
         this.$refs.myTree.removeItem(item.element);
         this.$message.success(Message.DELETE_SUCCESS);
       });
     },
     updateCategory(params) {
       updateCategory({ jsonParams: JSON.stringify(params) }).then((res) => {
-        let item = this.$refs.myTree.getSelectedItem();
+        const item = this.$refs.myTree.getSelectedItem();
         this.$refs.myTree.updateItem(item.element, { label: params.name });
         this.$refs.myTree.render();
         this.$message.success(Message.UPDATE_SUCCESS);
       });
-    },
+    }
   },
   beforeCreate() {
     this.source = {
@@ -151,21 +154,21 @@ export default {
         { name: "id", map: "id", type: "number" },
         { name: "parentid", map: "parent_id", type: "number" },
         { name: "text", map: "type_name", type: "string" },
-        { name: "value", map: "id", type: "string" },
+        { name: "value", map: "id", type: "string" }
       ],
       id: "id",
       type: "get",
       datatype: "json",
-      url: "/supplies/getAllSuppliesType.do",
+      url: "/supplies/getAllSuppliesType.do"
     };
   },
   created() {
     const that = this;
     const dataAdapter = new jqx.dataAdapter(this.source, {
       loadServerData(serverdata, source, callback) {
-        getCategory( source, serverdata).then((res) => {
+        getCategory(source, serverdata).then((res) => {
           callback({
-            records: res.records,
+            records: res.records
           });
         });
       },
@@ -177,7 +180,7 @@ export default {
           [{ name: "text", map: "label" }]
         );
         that.$refs.myTree.source = that.records;
-      },
+      }
     });
     dataAdapter.dataBind();
   },
@@ -193,17 +196,17 @@ export default {
               type: "text",
               align: "left",
               width: "230px",
-              rowHeight: "40px",
+              rowHeight: "40px"
             },
             {
               name: "submitBtn",
               bind: "submitBtn",
               type: "button",
               text: "确认",
-              width: "60px",
-            },
-          ],
-        },
+              width: "60px"
+            }
+          ]
+        }
       ],
       formValues: {},
       onValidationSuccess(event) {
@@ -217,9 +220,9 @@ export default {
           this.$message.warning(Message.NO_NODE_SELECTED);
         }
       },
-      buttonGroup: ["添加", "编辑", "删除", "展开全部", "收起全部"],
+      buttonGroup: ["添加", "编辑", "删除", "展开全部", "收起全部"]
     };
-  },
+  }
 };
 </script>
 

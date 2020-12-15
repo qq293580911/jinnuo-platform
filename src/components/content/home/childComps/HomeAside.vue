@@ -33,7 +33,7 @@ export default {
     return {
       mode: "inline",
       menus: [],
-      user: {},
+      user: {}
     };
   },
   created() {
@@ -49,25 +49,25 @@ export default {
       const params = {
         title: menu.name,
         content: menu.component,
-        component: menu.component,
+        component: menu.component
       };
       this.$bus.$emit("addTab", params);
     },
     initMenu() {
       const params = {
-        userId: this.user.id,
+        userId: this.user.id
       };
 
       getMenus(params).then((res) => {
         let menus = [];
-        for (let element of res) {
+        for (const element of res) {
           menus.push(new Menu(element));
         }
         menus = formatToTree(menus);
         this.menus = menus;
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

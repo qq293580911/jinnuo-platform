@@ -17,55 +17,52 @@
 </template>
 <script>
 import JqxChart from "jqwidgets-scripts/jqwidgets-vue/vue_jqxchart.vue";
-
-import { formatDate } from "@/common/util";
-import { getQuoterColumnChartData } from "@/network/quote";
 export default {
   components: {
-    JqxChart,
+    JqxChart
   },
-  beforeCreate: function () {
+  beforeCreate: function() {
     this.source = {
       datafields: [
         { name: "years", map: "years", type: "string" },
         { name: "months", map: "months", type: "string" },
         { name: "days", map: "days", type: "string" },
         { name: "quoter", map: "quoter", type: "string" },
-        { name: "count", map: "count", type: "number" },
+        { name: "count", map: "count", type: "number" }
       ],
       url: "/api/qtnStat/getQuoterQuotationColumnChartData.do",
       data: {},
       async: false,
       datatype: "json",
-      type: "Get",
+      type: "Get"
     };
   },
   props: {
     dateMode: {
       type: String,
-      default: "days",
+      default: "days"
     },
     startDate: {
       type: String,
-      default: "",
+      default: ""
     },
     endDate: {
       type: String,
-      default: "",
+      default: ""
     },
     subject: {
       type: Number,
-      default: 0,
+      default: 0
     },
     model: {
       type: String,
-      default: "报价员",
-    },
+      default: "报价员"
+    }
   },
   created() {
     this.source.data = { jsonParams: JSON.stringify(this.params) };
   },
-  data: function () {
+  data: function() {
     const that = this;
     return {
       params: {
@@ -73,7 +70,7 @@ export default {
         startDate: this.startDate,
         endDate: this.endDate,
         dateMode: this.dateMode,
-        model: this.model,
+        model: this.model
       },
       dataAdapter: new jqx.dataAdapter(this.source),
       title: "报价员报价份数记录",
@@ -88,7 +85,7 @@ export default {
         displayText: "日",
         type: "date",
         baseUnit: "day",
-        formatFunction: function (value) {
+        formatFunction: function(value) {
           if (value) {
             const dateMode = that.dateMode;
             switch (dateMode) {
@@ -108,7 +105,7 @@ export default {
           }
           return "";
         },
-        showGridLines: true,
+        showGridLines: true
       },
       seriesGroups: [
         {
@@ -125,7 +122,7 @@ export default {
             displayValueAxis: true,
             description: "",
             axisSize: "auto",
-            tickMarksColor: "#888888",
+            tickMarksColor: "#888888"
           },
           series: [
             {
@@ -134,61 +131,55 @@ export default {
               labels: {
                 visible: true,
                 verticalAlignment: "top",
-                offset: { x: 0, y: -20 },
+                offset: { x: 0, y: -20 }
               },
-              colorFunction: function (value, itemIndex, serie, group) {
+              colorFunction: function(value, itemIndex, serie, group) {
                 const dateMode = that.dateMode;
                 switch (dateMode) {
                   case "days":
                     return value > 40
                       ? "#DD001B"
                       : value > 30
-                      ? "#1CA261"
-                      : "#2682EE";
-                    break;
+                        ? "#1CA261"
+                        : "#2682EE";
                   case "months":
                     return value > 700
                       ? "#DD001B"
                       : value > 500
-                      ? "#1CA261"
-                      : "#2682EE";
-                    break;
+                        ? "#1CA261"
+                        : "#2682EE";
                   case "years":
                     return value > 15000
                       ? "#DD001B"
                       : value > 10000
-                      ? "#1CA261"
-                      : "#2682EE";
-                    break;
+                        ? "#1CA261"
+                        : "#2682EE";
                   default:
                     break;
                 }
               },
-              formatFunction: function (value) {
+              formatFunction: function(value) {
                 if (value) {
                   return value;
                 }
                 return "";
-              },
-            },
-          ],
-        },
-      ],
+              }
+            }
+          ]
+        }
+      ]
     };
   },
   watch: {
     subject(data) {
-      this.subject = data;
       this.params.quoter = data;
       this.refresh();
     },
     startDate(data) {
-      this.startDate = data;
       this.params.startDate = data;
       this.refresh();
     },
     endDate(data) {
-      this.endDate = data;
       this.params.endDate = data;
       this.refresh();
     },
@@ -218,18 +209,17 @@ export default {
         default:
           break;
       }
-      this.dateMode = data;
       this.params.dateMode = data;
       this.refresh();
-    },
+    }
   },
   methods: {
     refresh() {
       this.source.data = { jsonParams: JSON.stringify(this.params) };
       this.dataAdapter.dataBind();
       this.$refs.myChart.refresh();
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>

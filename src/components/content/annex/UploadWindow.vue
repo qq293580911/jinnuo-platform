@@ -11,6 +11,7 @@
         <JqxFileUpload
           ref="myUploader"
           :width="'100%'"
+          :multipleFilesUpload="true"
           :uploadUrl="uploadUrl"
           :fileInputName="fileInputName"
           :localization="localization"
@@ -29,17 +30,17 @@
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxFileUpload from "jqwidgets-scripts/jqwidgets-vue/vue_jqxfileupload.vue";
 
-import { Message, FILE_UPLOAD } from "@/common/const.js";
+import { Message } from "@/common/const.js";
 export default {
   components: {
     JqxWindow,
-    JqxFileUpload,
+    JqxFileUpload
   },
   props: {
     annexType: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   data() {
     return {
@@ -52,8 +53,8 @@ export default {
         uploadButton: "上传",
         cancelButton: "取消",
         uploadFileTooltip: "上传这个",
-        cancelFileTooltip: "删除这个",
-      },
+        cancelFileTooltip: "删除这个"
+      }
     };
   },
   beforeCreate() {},
@@ -68,7 +69,7 @@ export default {
       const fileName = event.args.file;
       const reg = RegExp(/[#,\\,%,&]/g);
       if (reg.test(fileName)) {
-        const lastIndex = args.owner._fileRows.length - 1;
+        const lastIndex = event.args.owner._fileRows.length - 1;
         this.$message.warning(Message.CONTAINS_INVALID_SYMBOL);
         this.$refs.myUploader.cancelFile(lastIndex);
         return false;
@@ -96,10 +97,13 @@ export default {
         this.$parent.refresh();
       }
       this.$refs.myWindow.close();
-    },
+    }
   },
+  beforeDestroy() {
+    this.$refs.myWindow.close()
+  }
 };
 </script>
 
-<style>
+<style scoped>
 </style>

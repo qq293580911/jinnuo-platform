@@ -33,7 +33,6 @@
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
-import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
 import EmployeeWindow from "./childComps/EmployeeWindow";
 import AssignWindow from "./childComps/AssignPositionWindow";
 
@@ -44,24 +43,23 @@ import {
   Message,
   ADD_EMPLOYEE,
   EDIT_EMPLOYEE,
-  ASSIGN_POSITION,
+  ASSIGN_POSITION
 } from "@/common/const.js";
 
 import {
   showEmployeeList,
   deleteEmployee,
-  showEmployeePosition,
+  showEmployeePosition
 } from "@/network/employee.js";
 
 export default {
   name: "Employee",
   components: {
     JqxGrid,
-    JqxTooltip,
     EmployeeWindow,
-    AssignWindow,
+    AssignWindow
   },
-  beforeCreate: function () {
+  beforeCreate: function() {
     this.source = {
       filter: () => {
         this.$refs.myGrid.updatebounddata("filter");
@@ -78,7 +76,7 @@ export default {
         { name: "company", type: "string" },
         { name: "organization", type: "string" },
         { name: "agency", type: "string" },
-        { name: "is_resign", type: "string" },
+        { name: "is_resign", type: "string" }
       ],
       type: "get",
       datatype: "json",
@@ -86,28 +84,28 @@ export default {
       sortcolumn: "emp_id",
       sortdirection: "desc",
       id: "emp_id",
-      url: `/emp/showEmployeeList.do`,
+      url: `/emp/showEmployeeList.do`
     };
   },
   data() {
     return {
-      //数据网格
+      // 数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           showEmployeeList(source.url, source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
-        },
+        }
       }),
-      rendergridrows: function (obj) {
+      rendergridrows: function(obj) {
         return obj.data;
       },
       columns: [
@@ -116,42 +114,42 @@ export default {
           datafield: "emp_name",
           editable: false,
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "所属部门",
           datafield: "dept_name",
           editable: false,
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "大区",
           datafield: "company",
           editable: false,
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "分部",
           datafield: "agency",
           editable: false,
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "性别",
           datafield: "gender",
           editable: false,
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "电话",
           datafield: "phone",
           editable: false,
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "入职时间",
@@ -159,7 +157,7 @@ export default {
           cellsformat: "yyyy-MM-dd",
           editable: false,
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "在职状态",
@@ -167,7 +165,7 @@ export default {
           columntype: "dropdownlist",
           align: "center",
           cellsalign: "center",
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -192,8 +190,8 @@ export default {
                 "</span>"
               );
             }
-          },
-        },
+          }
+        }
       ],
       rowdetailstemplate: {
         rowdetails:
@@ -206,23 +204,23 @@ export default {
           "</div>" +
           "<div class='position'></div>" +
           "</div>",
-        rowdetailsheight: 200,
-      },
+        rowdetailsheight: 200
+      }
     };
   },
   methods: {
-    createButtonsContainers: function (statusbar) {
+    createButtonsContainers: function(statusbar) {
       const that = this;
 
-      let buttonsContainer = document.createElement("div");
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
 
-      let addButtonContainer = document.createElement("div");
-      let deleteButtonContainer = document.createElement("div");
-      let editButtonContainer = document.createElement("div");
-      let reloadButtonContainer = document.createElement("div");
-      let assignButtonContainer = document.createElement("div");
+      const addButtonContainer = document.createElement("div");
+      const deleteButtonContainer = document.createElement("div");
+      const editButtonContainer = document.createElement("div");
+      const reloadButtonContainer = document.createElement("div");
+      const assignButtonContainer = document.createElement("div");
 
       const addButtonID = JQXLite.generateID();
       const deleteButtonID = JQXLite.generateID();
@@ -248,69 +246,69 @@ export default {
       buttonsContainer.appendChild(assignButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
       statusbar[0].appendChild(buttonsContainer);
-      //创建按钮
-      let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+      // 创建按钮
+      const addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
+        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`)
       });
       jqwidgets.createInstance(`#${addButtonID}`, "jqxTooltip", {
         content: "添加",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let deleteButton = jqwidgets.createInstance(
+      const deleteButton = jqwidgets.createInstance(
         `#${deleteButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`)
         }
       );
       jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
         content: "删除",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let editButton = jqwidgets.createInstance(
+      const editButton = jqwidgets.createInstance(
         `#${editButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/edit.svg`)
         }
       );
-      let editButtonTooltip = jqwidgets.createInstance(
+      jqwidgets.createInstance(
         `#${editButtonID}`,
         "jqxTooltip",
         { content: "编辑", position: "bottom" }
       );
 
-      let assignButton = jqwidgets.createInstance(
+      const assignButton = jqwidgets.createInstance(
         `#${assignButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/assign.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/assign.svg`)
         }
       );
       jqwidgets.createInstance(`#${assignButtonID}`, "jqxTooltip", {
         content: "职位分配",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let reloadButton = jqwidgets.createInstance(
+      const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
-        position: "bottom",
+        position: "bottom"
       });
 
-      //绑定事件
+      // 绑定事件
       addButton.addEventHandler("click", (event) => {
         this.$refs.myWindow.open(ADD_EMPLOYEE);
       });
 
       deleteButton.addEventHandler("click", (event) => {
-        let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+        const selectedrowindex = this.$refs.myGrid.getselectedrowindex();
         if (selectedrowindex < 0) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
           return false;
@@ -322,18 +320,18 @@ export default {
           cancelText: "取消",
           centered: true,
           okType: "danger",
-          content: (h) => <div style="color:red;"></div>,
+          content: (h) => <div style='color:red;'></div>,
           onOk() {
             const selectedIndexes = that.$refs.myGrid.getselectedrowindexes();
             const ids = [];
-            selectedIndexes.forEach(function (value) {
+            selectedIndexes.forEach(function(value) {
               const id = that.$refs.myGrid.getrowid(value);
               ids.push(id);
             });
             that.delete(ids);
           },
           onCancel() {},
-          class: "test",
+          class: "test"
         });
       });
 
@@ -367,9 +365,9 @@ export default {
       });
     },
     initrowdetails(index, parentElement, gridElement, datarecord) {
-      let tabsdiv,
-        information,
-        position = null;
+      let tabsdiv = null;
+      let information;
+      let position = null;
       tabsdiv = $($(parentElement).children()[0]);
       if (tabsdiv != null) {
         information = tabsdiv.find(".information");
@@ -436,7 +434,7 @@ export default {
         $(tabsdiv).jqxTabs({
           width: "95%",
           height: 170,
-          initTabContent: function (tab) {
+          initTabContent: function(tab) {
             if (tab == 1) {
               const empId = datarecord.uid.toString();
               const jsonParams = {};
@@ -444,30 +442,30 @@ export default {
               const source = {
                 dataFields: [
                   { name: "pos_name", type: "string" },
-                  { name: "pos_id", type: "number" },
+                  { name: "pos_id", type: "number" }
                 ],
                 url: "/emp/getPositionListByEmployee.do",
                 type: "get",
                 data: { jsonParams: JSON.stringify(jsonParams) },
                 dataType: "json",
                 id: "id",
-                async: false,
+                async: false
               };
               const nestedGridAdapter = new $.jqx.dataAdapter(source, {
-                formatData: function (data) {
+                formatData: function(data) {
                   return data;
                 },
-                loadServerData: function (serverdata, source, callback) {
+                loadServerData: function(serverdata, source, callback) {
                   serverdata = formatFilter(serverdata);
                   showEmployeePosition(source.url, source, serverdata).then(
                     (res) => {
                       callback({
                         records: res.rows,
-                        totalrecords: res.total,
+                        totalrecords: res.total
                       });
                     }
                   );
-                },
+                }
               });
 
               jqwidgets.createInstance(positionGrid, "jqxGrid", {
@@ -480,20 +478,20 @@ export default {
                     text: "职位名称",
                     datafield: "pos_name",
                     cellsAlign: "center",
-                    align: "center",
-                  },
-                ],
+                    align: "center"
+                  }
+                ]
               });
             }
-          },
+          }
         });
       }
     },
     delete(ids) {
       const params = {
         jsonParams: JSON.stringify({
-          items: ids,
-        }),
+          items: ids
+        })
       };
       deleteEmployee(params).then((res) => {
         this.$refs.myGrid.updatebounddata();
@@ -501,8 +499,8 @@ export default {
     },
     refresh() {
       this.$refs.myGrid.updatebounddata();
-    },
-  },
+    }
+  }
 };
 </script>
 

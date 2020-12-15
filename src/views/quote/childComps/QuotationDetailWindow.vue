@@ -33,7 +33,7 @@ export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   data() {
     const that = this;
@@ -41,7 +41,7 @@ export default {
       template: [
         {
           type: "label",
-          label: "基本信息",
+          label: "基本信息"
         },
         {
           columns: [
@@ -52,7 +52,7 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: true,
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "projectAddress",
@@ -61,9 +61,9 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: true,
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -81,9 +81,9 @@ export default {
                   width: 250,
                   height: 30,
                   displayMember: "emp_name",
-                  valueMember: "emp_id",
+                  valueMember: "emp_id"
                 });
-              },
+              }
             },
             {
               name: "salesman",
@@ -99,11 +99,11 @@ export default {
                   width: 250,
                   height: 30,
                   displayMember: "emp_name",
-                  valueMember: "emp_id",
+                  valueMember: "emp_id"
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -115,7 +115,7 @@ export default {
               required: true,
               columnWidth: "50%",
               init: (component) => {
-                let provinceSelector = jqwidgets.createInstance(
+                const provinceSelector = jqwidgets.createInstance(
                   component,
                   "jqxComboBox",
                   {
@@ -123,7 +123,7 @@ export default {
                     width: 250,
                     height: 30,
                     displayMember: "name",
-                    valueMember: "name",
+                    valueMember: "name"
                   }
                 );
                 // 省份绑定选择事件
@@ -132,17 +132,17 @@ export default {
                   // 当选择省份的时候，更新城市的数据
                   const $city = that.$refs.myForm.getComponentByName("city");
                   jqwidgets.createInstance($city, "jqxComboBox", {
-                    source: getCity(provinceValue),
+                    source: getCity(provinceValue)
                   });
                   // 重置县/区为空
                   const $county = that.$refs.myForm.getComponentByName(
                     "county"
                   );
                   jqwidgets.createInstance($county, "jqxComboBox", {
-                    source: [],
+                    source: []
                   });
                 });
-              },
+              }
             },
             {
               name: "customer",
@@ -151,9 +151,9 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: false,
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -165,7 +165,7 @@ export default {
               required: true,
               columnWidth: "50%",
               init: (component) => {
-                let citySelector = jqwidgets.createInstance(
+                const citySelector = jqwidgets.createInstance(
                   component,
                   "jqxComboBox",
                   {
@@ -173,7 +173,7 @@ export default {
                     width: 250,
                     height: 30,
                     displayMember: "name",
-                    valueMember: "name",
+                    valueMember: "name"
                   }
                 );
                 const $province = that.$refs.myForm.getComponentByName(
@@ -188,10 +188,10 @@ export default {
                     "county"
                   );
                   jqwidgets.createInstance($county, "jqxComboBox", {
-                    source: getArea(provinceValue, cityValue),
+                    source: getArea(provinceValue, cityValue)
                   });
                 });
-              },
+              }
             },
             {
               name: "customerPhone",
@@ -200,9 +200,9 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: false,
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -213,8 +213,8 @@ export default {
               labelWidth: "110px",
               required: false,
               columnWidth: "50%",
-              init: function (component) {
-                const countySelector = jqwidgets.createInstance(
+              init: function(component) {
+                jqwidgets.createInstance(
                   component,
                   "jqxComboBox",
                   {
@@ -222,10 +222,10 @@ export default {
                     height: 30,
                     source: [],
                     displayMember: "name",
-                    valueMember: "name",
+                    valueMember: "name"
                   }
                 );
-              },
+              }
             },
             {
               name: "customerCompany",
@@ -234,9 +234,9 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: false,
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -254,9 +254,9 @@ export default {
                   displayMember: "rule",
                   valueMember: "id",
                   width: 250,
-                  height: 30,
+                  height: 30
                 });
-              },
+              }
             },
             {
               name: "isRepeat",
@@ -266,9 +266,9 @@ export default {
               width: 250,
               required: true,
               columnWidth: "50%",
-              options: ["常规", "重复"],
-            },
-          ],
+              options: ["常规", "重复"]
+            }
+          ]
         },
         {
           columns: [
@@ -279,7 +279,7 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: false,
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "brokerage",
@@ -288,9 +288,9 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: false,
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -301,7 +301,7 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: false,
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "tax",
@@ -310,9 +310,9 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: false,
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -323,8 +323,8 @@ export default {
               labelWidth: "110px",
               required: false,
               columnWidth: "50%",
-              init: function (component) {
-                let numberInput = jqwidgets.createInstance(
+              init: function(component) {
+                jqwidgets.createInstance(
                   component,
                   "jqxNumberInput",
                   {
@@ -333,10 +333,10 @@ export default {
                     inputMode: "simple",
                     digits: 11,
                     spinButtons: true,
-                    decimalDigits: 0,
+                    decimalDigits: 0
                   }
                 );
-              },
+              }
             },
             {
               name: "quotePrice",
@@ -345,8 +345,8 @@ export default {
               labelWidth: "110px",
               required: false,
               columnWidth: "50%",
-              init: function (component) {
-                let numberInput = jqwidgets.createInstance(
+              init: function(component) {
+                jqwidgets.createInstance(
                   component,
                   "jqxNumberInput",
                   {
@@ -355,12 +355,12 @@ export default {
                     inputMode: "simple",
                     digits: 11,
                     spinButtons: true,
-                    decimalDigits: 0,
+                    decimalDigits: 0
                   }
                 );
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -371,27 +371,33 @@ export default {
               labelWidth: "110px",
               width: "250px",
               required: false,
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "quoteDate",
-              type: "date",
+              type: "custom",
               label: "报价日期",
               labelWidth: "110px",
-              width: 250,
               required: false,
               columnWidth: "50%",
-              formatString: "yyyy-MM-dd",
-            },
-          ],
+              init: function(component) {
+                jqwidgets.createInstance(component, 'jqxDateTimeInput', {
+                  width: 250,
+                  height: 30,
+                  culture: "zh-CN",
+                  formatString: "yyyy-MM-dd"
+                })
+              }
+            }
+          ]
         },
         {
           type: "blank",
-          height: "20px",
+          height: "20px"
         },
         {
           type: "label",
-          label: "控制箱信息",
+          label: "控制箱信息"
         },
         {
           columns: [
@@ -402,16 +408,16 @@ export default {
               labelWidth: "110px",
               required: false,
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxNumberInput", {
                   width: 250,
                   height: 30,
                   inputMode: "simple",
                   digits: 11,
                   spinButtons: true,
-                  decimalDigits: 0,
+                  decimalDigits: 0
                 });
-              },
+              }
             },
             {
               name: "controlBoxQuotePrice",
@@ -420,18 +426,18 @@ export default {
               labelWidth: "110px",
               required: false,
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxNumberInput", {
                   width: 250,
                   height: 30,
                   inputMode: "simple",
                   digits: 11,
                   spinButtons: true,
-                  decimalDigits: 0,
+                  decimalDigits: 0
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -441,30 +447,30 @@ export default {
               rowHeight: "50px",
               align: "right",
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component[0], "jqxButton", {
                   width: 60,
                   height: 30,
-                  value: "提交",
+                  value: "提交"
                 });
-              },
+              }
             },
             {
               name: "cancelButton",
               type: "custom",
               rowHeight: "50px",
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component[0], "jqxButton", {
                   width: 60,
                   height: 30,
-                  value: "取消",
+                  value: "取消"
                 });
-              },
-            },
-          ],
-        },
-      ],
+              }
+            }
+          ]
+        }
+      ]
     };
   },
   mounted() {
@@ -542,7 +548,7 @@ export default {
         input: $projectName,
         message: "不能为空!",
         action: "keyup, blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $quoter,
@@ -551,7 +557,7 @@ export default {
         rule: () => {
           const selectIndex = $quoter.jqxComboBox("getSelectedIndex");
           return selectIndex > -1;
-        },
+        }
       },
       {
         input: $salesman,
@@ -560,7 +566,7 @@ export default {
         rule: () => {
           const selectIndex = $salesman.jqxComboBox("getSelectedIndex");
           return selectIndex > -1;
-        },
+        }
       },
       {
         input: $priceModel,
@@ -569,7 +575,7 @@ export default {
         rule: () => {
           const selectIndex = $priceModel.jqxComboBox("getSelectedIndex");
           return selectIndex > -1;
-        },
+        }
       },
       {
         input: $isRepeat,
@@ -577,7 +583,7 @@ export default {
         rule: () => {
           const selectIndex = $isRepeat.jqxDropDownList("getSelectedIndex");
           return selectIndex > -1;
-        },
+        }
       },
       {
         input: $province,
@@ -586,7 +592,7 @@ export default {
         rule: () => {
           const selectIndex = $province.jqxComboBox("getSelectedIndex");
           return selectIndex > -1;
-        },
+        }
       },
       {
         input: $city,
@@ -595,19 +601,19 @@ export default {
         rule: () => {
           const selectIndex = $city.jqxComboBox("getSelectedIndex");
           return selectIndex > -1;
-        },
+        }
       },
       {
         input: $customer,
         message: "不能为空!",
         action: "keyup, blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $customer,
         message: "只能为中文!",
         action: "keyup, blur",
-        rule: "notNumber",
+        rule: "notNumber"
       },
       {
         input: $customerPhone,
@@ -617,7 +623,7 @@ export default {
           const phone = $customerPhone.val();
           const reg = /^(1[3456789]\d{9})?$/;
           return reg.test(phone);
-        },
+        }
       },
       {
         input: $quoteDate,
@@ -626,8 +632,8 @@ export default {
         rule: () => {
           const quoteDate = $quoteDate.val();
           return new Date(quoteDate) <= new Date();
-        },
-      },
+        }
+      }
     ];
 
     // 提交并验证表单
@@ -693,7 +699,7 @@ export default {
       formData.controlBoxReservePrice = this.controlBoxReservePriceInstance.val();
       formData.controlBoxQuotePrice = this.controlBoxQuotePriceInstance.val();
 
-      let form = new FormData();
+      const form = new FormData();
       form.append("jsonParams", JSON.stringify(formData));
       form.append("files", that.reservePriceFile);
       form.append("files", that.quotePriceFile);
@@ -737,17 +743,17 @@ export default {
       const params = {
         jsonParams: JSON.stringify({
           projectName,
-          salesman,
-        }),
+          salesman
+        })
       };
       queryDuplicate(params).then((res) => {
         this.isRepeatInstance.jqxDropDownList("selectItem", res["repeat"]);
       });
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close();
-  },
+  }
 };
 </script>
 

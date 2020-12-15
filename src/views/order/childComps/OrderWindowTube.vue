@@ -30,7 +30,7 @@ export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   created() {
     this.salesmans = this.$store.state.salesmans;
@@ -46,7 +46,7 @@ export default {
           width: "250px",
           required: true,
           rowHeight: "40px",
-          options: [{ value: "风管" }, { value: "风管辅材" }],
+          options: [{ value: "风管" }, { value: "风管辅材" }]
         },
         {
           name: "orderDate",
@@ -56,7 +56,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "projectName",
@@ -65,7 +65,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "salesman",
@@ -81,9 +81,9 @@ export default {
               height: 30,
               animationType: "slide",
               displayMember: "emp_name",
-              valueMember: "emp_id",
+              valueMember: "emp_id"
             });
-          },
+          }
         },
         {
           name: "contractNumber",
@@ -92,7 +92,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "orderNumber",
@@ -101,7 +101,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "orderAmount",
@@ -110,16 +110,16 @@ export default {
           labelWidth: "100px",
           required: true,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             component.jqxNumberInput({
               width: 250,
               height: 30,
               inputMode: "simple",
               digits: 11,
               spinButtons: true,
-              decimalDigits: 0,
+              decimalDigits: 0
             });
-          },
+          }
         },
         {
           name: "orderArea",
@@ -128,16 +128,16 @@ export default {
           labelWidth: "100px",
           required: false,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             component.jqxNumberInput({
               width: 250,
               height: 30,
               inputMode: "simple",
               digits: 11,
               spinButtons: true,
-              decimalDigits: 2,
+              decimalDigits: 2
             });
-          },
+          }
         },
         {
           name: "remark",
@@ -146,7 +146,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "considerationCommissionStatus",
@@ -155,13 +155,13 @@ export default {
           labelWidth: "100px",
           required: false,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             component.jqxDropDownList({
               source: ["进行中", "已终止"],
               width: 250,
-              height: 30,
+              height: 30
             });
-          },
+          }
         },
         {
           columns: [
@@ -173,7 +173,7 @@ export default {
               height: "30px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -182,12 +182,12 @@ export default {
               width: "60px",
               height: "30px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         }
       ],
-      id:null
+      id: null
     };
   },
   mounted() {
@@ -225,13 +225,13 @@ export default {
         rule: () => {
           const index = $productType.jqxDropDownList("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $projectName,
         message: "不能为空!",
         action: "keyup, blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $salesman,
@@ -240,20 +240,20 @@ export default {
         rule: () => {
           const index = $salesman.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $contractNumber,
         message: "不能为空!",
         action: "keyup, blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $orderNumber,
         message: "不能为空!",
         action: "keyup, blur",
-        rule: "required",
-      },
+        rule: "required"
+      }
     ];
     // 提交并验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
@@ -287,7 +287,7 @@ export default {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
       if (params[0] == EDIT_ORDER) {
-        let rowData = params[1];
+        const rowData = params[1];
         this.$nextTick(() => {
           this.productTypeInstance.jqxDropDownList("selectIndex", 0);
           this.orderDateInstance.jqxDateTimeInput(
@@ -318,7 +318,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addOrder(params).then((res) => {
         this.$refs.myWindow.close();
@@ -328,7 +328,7 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateOrder(params).then((res) => {
         this.$refs.myWindow.close();
@@ -348,8 +348,8 @@ export default {
       this.orderAreaInstance.jqxNumberInput("setDecimal", 0);
       this.considerationCommissionStatus.jqxDropDownList("clearSelection");
       this.remarkInstance.val("");
-    },
-  },
+    }
+  }
 };
 </script>
 

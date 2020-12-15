@@ -1,4 +1,4 @@
-﻿export let getLocalization = (culture) => {
+﻿export const getLocalization = (culture) => {
   let localization = null;
   switch (culture) {
     case 'de':
@@ -232,12 +232,12 @@
           "非空"
         ],
         filterbooleancomparisonoperators: ["等于", "不等于"],
-        validationstring: "输入的值无效", //输入的值无效
-        emptydatastring: "没有数据显示", //没有数据显示
-        filterselectstring: "选择筛选", //选择筛选
-        loadtext: "正在加载...", //正在加载
+        validationstring: "输入的值无效", // 输入的值无效
+        emptydatastring: "没有数据显示", // 没有数据显示
+        filterselectstring: "选择筛选", // 选择筛选
+        loadtext: "正在加载...", // 正在加载
         clearstring: "清理",
-        todaystring: "今天",
+        todaystring: "今天"
       };
       break;
     case 'en':

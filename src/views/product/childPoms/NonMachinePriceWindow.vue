@@ -28,14 +28,14 @@ import { Message, ADD_PRODUCT_PRICE, EDIT_PRODUCT_PRICE } from "@/common/const";
 import {
   getAllNonMachineProduct,
   addNonMachinePrice,
-  updateNonMachinePrice,
+  updateNonMachinePrice
 } from "@/network/product.js";
 export default {
   name: "NonMachinePriceWindow",
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   data() {
     const that = this;
@@ -48,7 +48,7 @@ export default {
           labelWidth: "80px",
           rowHeight: "40px",
           required: true,
-          init: function (component) {
+          init: function(component) {
             getAllNonMachineProduct().then((res) => {
               res.map((item) => {
                 item[
@@ -63,10 +63,10 @@ export default {
                 source: res,
                 displayMember: "pnm_name",
                 valueMember: "pnm_id",
-                animationType:'none'
+                animationType: 'none'
               });
             });
-          },
+          }
         },
         {
           name: "pricePlan",
@@ -75,7 +75,7 @@ export default {
           labelWidth: "80px",
           rowHeight: "40px",
           required: true,
-          init: function (component) {
+          init: function(component) {
             const pricePlan = that.$store.state.pricePlan;
             jqwidgets.createInstance(component, "jqxComboBox", {
               width: 250,
@@ -83,9 +83,9 @@ export default {
               displayMember: "rule",
               valueMember: "id",
               source: pricePlan,
-              animationType:'none'
+              animationType: 'none'
             });
-          },
+          }
         },
         {
           name: "panelPrice",
@@ -96,8 +96,8 @@ export default {
           required: true,
           info: "面板/常规/非3C",
           infoPosition: "right",
-          init: function (component) {
-            let comboBox = jqwidgets.createInstance(
+          init: function(component) {
+            const comboBox = jqwidgets.createInstance(
               component,
               "jqxNumberInput",
               {
@@ -105,10 +105,10 @@ export default {
                 height: 30,
                 inputMode: "simple",
                 decimalDigits: 0,
-                spinButtons: true,
+                spinButtons: true
               }
             );
-          },
+          }
         },
         {
           name: "valvePrice",
@@ -119,8 +119,8 @@ export default {
           required: true,
           required: true,
           info: "阀体/圆形/3C",
-          init: function (component) {
-            let comboBox = jqwidgets.createInstance(
+          init: function(component) {
+            const comboBox = jqwidgets.createInstance(
               component,
               "jqxNumberInput",
               {
@@ -128,10 +128,10 @@ export default {
                 height: 30,
                 inputMode: "simple",
                 decimalDigits: 0,
-                spinButtons: true,
+                spinButtons: true
               }
             );
-          },
+          }
         },
         {
           columns: [
@@ -143,7 +143,7 @@ export default {
               height: "30px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -152,17 +152,17 @@ export default {
               width: "60px",
               height: "30px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           type: "custom",
-          init: function (component) {
+          init: function(component) {
             component.append('<input id="priceId" type="hidden"/>');
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
   },
   mounted() {
@@ -181,20 +181,20 @@ export default {
         input: $product,
         message: "该项必选",
         action: "select",
-        rule: function () {
+        rule: function() {
           var index = $product.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $pricePlan,
         message: "该项必选",
         action: "select",
-        rule: function () {
+        rule: function() {
           var index = $pricePlan.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
-      },
+        }
+      }
     ];
 
     // 提交并验证表单
@@ -206,13 +206,13 @@ export default {
   methods: {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
-      if(params[0]==EDIT_PRODUCT_PRICE){
+      if (params[0] == EDIT_PRODUCT_PRICE) {
         const data = params[1]
         console.log(data)
-        this.productInstance.jqxComboBox('selectItem',data['pnm_id'])
-        this.pricePlanInstance.jqxComboBox('selectItem',data['ps_id'])
-        this.panelPriceInstance.jqxNumberInput('setDecimal',data['panel_price'])
-        this.valvePriceInstance.jqxNumberInput('setDecimal',data['valve_price'])
+        this.productInstance.jqxComboBox('selectItem', data['pnm_id'])
+        this.pricePlanInstance.jqxComboBox('selectItem', data['ps_id'])
+        this.panelPriceInstance.jqxNumberInput('setDecimal', data['panel_price'])
+        this.valvePriceInstance.jqxNumberInput('setDecimal', data['valve_price'])
         this.id = this['price_id']
       }
       this.$refs.myWindow.open();
@@ -233,7 +233,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addNonMachinePrice(params).then((res) => {
         this.$refs.myWindow.close();
@@ -242,17 +242,17 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateNonMachinePrice(params).then((res) => {
         this.$refs.myWindow.close();
         this.$parent.refresh();
       });
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close();
-  },
+  }
 };
 </script>
 

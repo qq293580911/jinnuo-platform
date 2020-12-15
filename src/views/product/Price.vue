@@ -29,23 +29,23 @@ export default {
     JqxMenu,
     PricePlan,
     MachinePrice,
-    NonMachinePrice,
+    NonMachinePrice
   },
   data() {
     return {
       menus: ["价格方案", "设备价格", "非设备价格"],
-      currentMenuName: "价格方案",
+      currentMenuName: "价格方案"
     };
   },
   created() {
-    
+
   },
   methods: {
-    onItemclick(event){
+    onItemclick(event) {
       const menuName = event.args.textContent
       this.currentMenuName = menuName
     }
-  },
+  }
 };
 </script>
 

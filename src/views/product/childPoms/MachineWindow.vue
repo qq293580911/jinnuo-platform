@@ -30,14 +30,14 @@ import { Message, ADD_PRODUCT, EDIT_PRODUCT } from "common/const.js";
 import {
   getCategory,
   addMachineProduct,
-  updateMachineProduct,
+  updateMachineProduct
 } from "@/network/product.js";
 export default {
   name: "MachineWindow",
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
     // jqxDropDownButton,
     // jqxTree,
     // jqxNumberInput,
@@ -58,7 +58,7 @@ export default {
           labelWidth: "80px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "model",
@@ -67,7 +67,7 @@ export default {
           labelWidth: "80px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "category",
@@ -76,14 +76,14 @@ export default {
           labelWidth: "80px",
           required: true,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             // 按钮
-            let dropDownButtonContainer = document.createElement("div");
+            const dropDownButtonContainer = document.createElement("div");
             dropDownButtonContainer.id = that.dropDownButtonID;
             component[0].appendChild(dropDownButtonContainer);
             // 树
-            let treeContainer = document.createElement("div");
-            let treeID = JQXLite.generateID();
+            const treeContainer = document.createElement("div");
+            const treeID = JQXLite.generateID();
             treeContainer.id = that.treeID;
             treeContainer.style.cssText = "border: none;";
             dropDownButtonContainer.appendChild(treeContainer);
@@ -93,7 +93,7 @@ export default {
               "jqxDropDownButton",
               {
                 width: 250,
-                height: 30,
+                height: 30
               }
             );
 
@@ -102,9 +102,9 @@ export default {
               dataFields: [
                 { name: "id", type: "number" },
                 { name: "parentid", type: "number" },
-                { name: "text", type: "string" },
+                { name: "text", type: "string" }
               ],
-              localdata: that.$store.state.productType.records,
+              localdata: that.$store.state.productType.records
             };
             const dataAdapter = new jqx.dataAdapter(source);
             dataAdapter.dataBind();
@@ -115,8 +115,8 @@ export default {
               [
                 {
                   name: "text",
-                  map: "label",
-                },
+                  map: "label"
+                }
               ]
             );
 
@@ -126,11 +126,11 @@ export default {
               {
                 source: records,
                 width: 250,
-                height: 250,
+                height: 250
               }
             );
 
-            //树绑定选择事件
+            // 树绑定选择事件
             that.treeInstance.addEventHandler("select", (event) => {
               const selectedItem = that.treeInstance.getSelectedItem();
               // 不能选择包含儿子的节点
@@ -146,7 +146,7 @@ export default {
               that.dropDownButtonInstance.setContent(dropDownContent);
               that.dropDownButtonInstance.close();
             });
-          },
+          }
         },
         {
           name: "minAirVolume",
@@ -155,7 +155,7 @@ export default {
           labelWidth: "80px",
           required: false,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             that.minAirVolumeInstance = jqwidgets.createInstance(
               component,
               "jqxNumberInput",
@@ -164,10 +164,10 @@ export default {
                 height: 30,
                 inputMode: "simple",
                 decimalDigits: 0,
-                spinButtons: true,
+                spinButtons: true
               }
             );
-          },
+          }
         },
         {
           name: "maxAirVolume",
@@ -176,7 +176,7 @@ export default {
           labelWidth: "80px",
           required: false,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             that.maxAirVolumeInstance = jqwidgets.createInstance(
               component,
               "jqxNumberInput",
@@ -185,10 +185,10 @@ export default {
                 height: 30,
                 inputMode: "simple",
                 decimalDigits: 0,
-                spinButtons: true,
+                spinButtons: true
               }
             );
-          },
+          }
         },
         {
           name: "power",
@@ -199,7 +199,7 @@ export default {
           required: true,
           rowHeight: "40px",
           info: "输入产品功率",
-          infoPosition: "right",
+          infoPosition: "right"
         },
         {
           name: "unit",
@@ -208,7 +208,7 @@ export default {
           labelWidth: "80px",
           required: true,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             that.unitInstance = jqwidgets.createInstance(
               component,
               "jqxDropDownList",
@@ -216,10 +216,10 @@ export default {
                 source: ["台"],
                 width: 250,
                 height: 30,
-                selectedIndex: 0,
+                selectedIndex: 0
               }
             );
-          },
+          }
         },
         {
           name: "remark",
@@ -228,7 +228,7 @@ export default {
           labelWidth: "80px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           columns: [
@@ -239,7 +239,7 @@ export default {
               width: "60px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -247,11 +247,11 @@ export default {
               text: "取消",
               width: "60px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
-        },
-      ],
+              columnWidth: "50%"
+            }
+          ]
+        }
+      ]
     };
   },
   mounted() {
@@ -276,30 +276,30 @@ export default {
         input: $name,
         message: "该项必填",
         action: "input,blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: `#${that.dropDownButtonID}`,
         message: "该项必选",
         action: "close",
-        rule: function (input) {
+        rule: function(input) {
           return input[0].textContent != "";
-        },
+        }
       },
       {
         input: $unit,
         message: "该项必选",
         action: "select",
-        rule: function (input) {
+        rule: function(input) {
           return input[0].textContent != "";
-        },
+        }
       },
       {
         input: $power,
         message: "该项必填",
         action: "input,blur",
-        rule: "required",
-      },
+        rule: "required"
+      }
     ];
     // 提交并验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
@@ -345,7 +345,7 @@ export default {
         power: this.powerInstance.val(),
         unit: this.unitInstance.val(),
         remark: this.remarkInstance.val(),
-        pm_id: this.id,
+        pm_id: this.id
       };
 
       if (title == EDIT_PRODUCT) {
@@ -356,7 +356,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addMachineProduct(params).then((res) => {
         this.$refs.myWindow.close();
@@ -367,7 +367,7 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateMachineProduct(params).then((res) => {
         this.$refs.myWindow.close();
@@ -386,11 +386,11 @@ export default {
       this.maxAirVolumeInstance.setDecimal(0);
       this.powerInstance.val("");
       this.remarkInstance.val("");
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close()
-  },
+  }
 };
 </script>
 

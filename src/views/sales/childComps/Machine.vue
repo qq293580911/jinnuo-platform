@@ -22,26 +22,23 @@
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
-import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
 
 import { formatFilter, dataExport } from "@/common/util.js";
-import { Message } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import { showMachineList } from "@/network/sales.js";
 export default {
   name: "SalesMachine",
   components: {
-    JqxGrid,
-    JqxTooltip,
+    JqxGrid
   },
   beforeCreate() {
     this.params = {
-      startDate: (function () {
+      startDate: (function() {
         return "2020-10-01";
       })(),
-      endDate: (function () {
+      endDate: (function() {
         return "2020-10-31";
-      })(),
+      })()
     };
 
     this.source = {
@@ -57,11 +54,11 @@ export default {
         { name: "order_amount", type: "number" },
         { name: "order_reserve_price", type: "number" },
         { name: "delivery_amount", type: "number" },
-        { name: "delivery_reserve_price", type: "number" },
+        { name: "delivery_reserve_price", type: "number" }
       ],
       url: "/sales/showSalesMachine.do",
       type: "get",
-      datatype: "json",
+      datatype: "json"
     };
   },
   data() {
@@ -69,20 +66,20 @@ export default {
     return {
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           serverdata.jsonParams = JSON.stringify(that.params);
           showMachineList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
         },
-        beforeLoadComplete(records) {},
+        beforeLoadComplete(records) {}
       }),
       columns: [
         {
@@ -90,14 +87,14 @@ export default {
           datafield: "salesman_company",
           cellsAlign: "center",
           align: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "办事处",
           datafield: "salesman_agency",
           cellsAlign: "center",
           align: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "业务员",
@@ -105,14 +102,14 @@ export default {
           cellsAlign: "center",
           align: "center",
           aggregates: ["count"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "在职状态",
           datafield: "is_resign",
           cellsAlign: "center",
           align: "center",
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -137,7 +134,7 @@ export default {
                 "</span>"
               );
             }
-          },
+          }
         },
         {
           text: "报价份数",
@@ -145,7 +142,7 @@ export default {
           cellsAlign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "报价金额",
@@ -153,7 +150,7 @@ export default {
           cellsAlign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "合同份数",
@@ -161,7 +158,7 @@ export default {
           cellsAlign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "合同金额",
@@ -169,7 +166,7 @@ export default {
           cellsAlign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "下单金额",
@@ -177,7 +174,7 @@ export default {
           cellsAlign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "下单底价",
@@ -185,7 +182,7 @@ export default {
           cellsAlign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "送货金额",
@@ -193,7 +190,7 @@ export default {
           cellsAlign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "送货底价",
@@ -201,21 +198,21 @@ export default {
           cellsAlign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
-        },
-      ],
+          aggregatesrenderer: this.aggregatesRenderer
+        }
+      ]
     };
   },
   mounted() {},
   methods: {
-    createButtonsContainers: function (statusbar) {
-      let buttonsContainer = document.createElement("div");
+    createButtonsContainers: function(statusbar) {
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
-      let startDateContainer = document.createElement("div");
-      let endDateContainer = document.createElement("div");
-      let exportButtonContainer = document.createElement("div");
-      let reloadButtonContainer = document.createElement("div");
+      const startDateContainer = document.createElement("div");
+      const endDateContainer = document.createElement("div");
+      const exportButtonContainer = document.createElement("div");
+      const reloadButtonContainer = document.createElement("div");
       startDateContainer.id = "startDate";
       endDateContainer.id = "endDate";
       exportButtonContainer.id = "exportButton";
@@ -235,28 +232,28 @@ export default {
       buttonsContainer.appendChild(exportButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
       statusbar[0].appendChild(buttonsContainer);
-      //创建部件
+      // 创建部件
       const startDate = jqwidgets.createInstance(
         "#startDate",
         "jqxDateTimeInput",
         {
           width: 150,
           formatString: "yyyy-MM-dd",
-          value: new Date(this.params.startDate),
+          value: new Date(this.params.startDate)
         }
       );
 
       const endDate = jqwidgets.createInstance("#endDate", "jqxDateTimeInput", {
         width: 150,
         formatString: "yyyy-MM-dd",
-        value: new Date(this.params.endDate),
+        value: new Date(this.params.endDate)
       });
 
-      let exportButton = jqwidgets.createInstance(
+      const exportButton = jqwidgets.createInstance(
         "#exportButton",
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/export.svg`)
         }
       );
 
@@ -271,8 +268,8 @@ export default {
       });
 
       exportButton.addEventHandler("click", (event) => {
-        let rowsData = this.$refs.myGrid.getrows();
-        let columns = this.$refs.myGrid.columns;
+        const rowsData = this.$refs.myGrid.getrows();
+        const columns = this.$refs.myGrid.columns;
         dataExport("销售统计-设备.xlsx", columns, rowsData);
       });
 
@@ -280,14 +277,14 @@ export default {
         this.$refs.myGrid.updatebounddata();
       });
 
-      let reloadButton = jqwidgets.createInstance(
+      const reloadButton = jqwidgets.createInstance(
         "#reloadButton",
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       jqwidgets.createInstance("#reloadButton", "jqxTooltip", {
         content: "刷新",
-        position: "bottom",
+        position: "bottom"
       });
 
       reloadButton.addEventHandler("click", (event) => {
@@ -296,7 +293,7 @@ export default {
     },
     aggregatesRenderer(aggregates, column, element) {
       var renderString = "";
-      $.each(aggregates, function (key, value) {
+      $.each(aggregates, function(key, value) {
         switch (key) {
           case "sum":
             renderString +=
@@ -309,8 +306,8 @@ export default {
         }
       });
       return renderString;
-    },
-  },
+    }
+  }
 };
 </script>
 

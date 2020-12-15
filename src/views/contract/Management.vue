@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       menus: ["数据汇总", "只看已签"],
-      currentMenuName: "数据汇总",
+      currentMenuName: "数据汇总"
     };
   },
   created() {},
@@ -37,8 +37,8 @@ export default {
     onItemclick(event) {
       const menuName = event.args.textContent;
       this.currentMenuName = menuName;
-    },
-  },
+    }
+  }
 };
 </script>
 

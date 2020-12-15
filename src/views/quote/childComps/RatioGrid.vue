@@ -29,7 +29,7 @@ import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import { getLocalization } from "@/common/localization.js";
 export default {
   components: {
-    JqxGrid,
+    JqxGrid
   },
   beforeCreate() {
     this.source = {
@@ -39,10 +39,10 @@ export default {
         { name: "amount", type: "number" },
         { name: "month_avg_count", type: "number" },
         { name: "month_avg_amount", type: "number" },
-        { name: "quote_share", type: "number" },
+        { name: "quote_share", type: "number" }
       ],
       datatype: "json",
-      localdata: [],
+      localdata: []
     };
   },
   data() {
@@ -50,7 +50,7 @@ export default {
     return {
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source),
-      rendergridrows: function (obj) {
+      rendergridrows: function(obj) {
         return obj.data;
       },
       columns: [
@@ -58,7 +58,7 @@ export default {
           text: "报价员",
           datafield: "name",
           cellsalign: "center",
-          align: "center",
+          align: "center"
         },
         {
           text: "报价份数",
@@ -66,7 +66,7 @@ export default {
           cellsalign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: that.aggregatesRenderer,
+          aggregatesrenderer: that.aggregatesRenderer
         },
         {
           text: "报价金额",
@@ -74,27 +74,27 @@ export default {
           cellsalign: "center",
           align: "center",
           aggregates: ["sum"],
-          aggregatesrenderer: that.aggregatesRenderer,
+          aggregatesrenderer: that.aggregatesRenderer
         },
         {
           text: "月平均份数",
           datafield: "month_avg_count",
           cellsalign: "center",
-          align: "center",
+          align: "center"
         },
         {
           text: "月平均金额",
           datafield: "month_avg_amount",
           cellsalign: "center",
-          align: "center",
+          align: "center"
         },
         {
           text: "报价占比",
           datafield: "quote_share",
           cellsalign: "center",
-          align: "center",
-        },
-      ],
+          align: "center"
+        }
+      ]
     };
   },
   mounted() {
@@ -106,7 +106,7 @@ export default {
   methods: {
     aggregatesRenderer(aggregates, column, element) {
       var renderString = "";
-      $.each(aggregates, function (key, value) {
+      $.each(aggregates, function(key, value) {
         switch (key) {
           case "sum":
             renderString +=
@@ -119,8 +119,8 @@ export default {
         }
       });
       return renderString;
-    },
-  },
+    }
+  }
 };
 </script>
 

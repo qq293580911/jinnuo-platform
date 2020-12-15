@@ -34,8 +34,7 @@ export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
-    Uploader,
+    JqxForm
   },
   data() {
     const that = this;
@@ -51,37 +50,37 @@ export default {
               rowHeight: 50,
               labelWidth: "50px",
               columnWidth: "80%",
-              init: function (component) {
-                let UploaderComponent = Vue.extend(Uploader);
-                let uploadInstance = new UploaderComponent({
+              init: function(component) {
+                const UploaderComponent = Vue.extend(Uploader);
+                const uploadInstance = new UploaderComponent({
                   propsData: {
                     width: 250,
                     height: 30,
                     type: "jqxInput",
                     fieldsCofig: {},
-                    showUploadButton: false,
-                  },
+                    showUploadButton: false
+                  }
                 }).$mount(component[0]);
                 that.$refs.reserveUploader = uploadInstance;
-              },
+              }
             },
             {
               name: "reserveBrowseButton",
               type: "custom",
               labelWidth: "50px",
               columnWidth: "20%",
-              init: function (component) {
-                let button = jqwidgets.createInstance(component, "jqxButton", {
+              init: function(component) {
+                const button = jqwidgets.createInstance(component, "jqxButton", {
                   width: 60,
                   height: 30,
-                  value: "浏览..",
+                  value: "浏览.."
                 });
                 button.addEventHandler("click", (event) => {
                   that.$refs.reserveUploader.open();
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -93,36 +92,36 @@ export default {
               required: true,
               labelWidth: "50px",
               columnWidth: "80%",
-              init: function (component) {
-                let UploaderComponent = Vue.extend(Uploader);
-                let uploadInstance = new UploaderComponent({
+              init: function(component) {
+                const UploaderComponent = Vue.extend(Uploader);
+                const uploadInstance = new UploaderComponent({
                   propsData: {
                     width: 250,
                     height: 30,
                     type: "jqxInput",
-                    showUploadButton: false,
-                  },
+                    showUploadButton: false
+                  }
                 }).$mount(component[0]);
                 that.$refs.quoteUploader = uploadInstance;
-              },
+              }
             },
             {
               name: "quoteBrowseButton",
               type: "custom",
               labelWidth: "50px",
               columnWidth: "20%",
-              init: function (component) {
-                let button = jqwidgets.createInstance(component, "jqxButton", {
+              init: function(component) {
+                const button = jqwidgets.createInstance(component, "jqxButton", {
                   width: 60,
                   height: 30,
-                  value: "浏览..",
+                  value: "浏览.."
                 });
                 button.addEventHandler("click", (event) => {
                   that.$refs.quoteUploader.open();
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -132,31 +131,31 @@ export default {
               rowHeight: "40px",
               columnWidth: "50%",
               align: "right",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxButton", {
                   width: 60,
                   height: 30,
-                  value: "提交",
+                  value: "提交"
                 });
-              },
+              }
             },
             {
               name: "cancelButton",
               type: "custom",
               rowHeight: "40px",
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxButton", {
                   width: 60,
                   height: 30,
-                  value: "取消",
+                  value: "取消"
                 });
-              },
-            },
-          ],
-        },
+              }
+            }
+          ]
+        }
       ],
-      detailFormData: {},
+      detailFormData: {}
     };
   },
   mounted() {
@@ -173,18 +172,18 @@ export default {
         input: $browseButton1,
         message: "文件不能为空！",
         action: "blur",
-        rule: function () {
+        rule: function() {
           return that.$refs.reserveUploader.inputValue != "";
-        },
+        }
       },
       {
         input: $browseButton2,
         message: "文件不能为空！",
         action: "blur",
-        rule: function () {
+        rule: function() {
           return that.$refs.quoteUploader.inputValue != "";
-        },
-      },
+        }
+      }
     ];
     // 验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
@@ -194,10 +193,10 @@ export default {
 
     // 底价
     this.$refs.reserveUploader.$on("changed", (data) => {
-      let sheetName = Object.keys(data[0])[0];
+      const sheetName = Object.keys(data[0])[0];
       const reserveFileContent = data[0][sheetName];
-      for (let row of reserveFileContent) {
-        for (let key in row) {
+      for (const row of reserveFileContent) {
+        for (const key in row) {
           const cellData = row[key]
             .toString()
             .replace(/\s+/g, "")
@@ -240,7 +239,7 @@ export default {
           if (salesman) {
             salesman = salesman[0];
             const salesmans = that.$store.state.salesmans;
-            let emp = salesmans.find((salesm) => {
+            const emp = salesmans.find((salesm) => {
               return salesm["emp_name"] == salesman;
             });
             if (emp) {
@@ -270,10 +269,10 @@ export default {
 
     // 报价
     this.$refs.quoteUploader.$on("changed", (data) => {
-      let sheetName = Object.keys(data[0])[0];
+      const sheetName = Object.keys(data[0])[0];
       const quoteFileContent = data[0][sheetName];
-      for (let row of quoteFileContent) {
-        for (let key in row) {
+      for (const row of quoteFileContent) {
+        for (const key in row) {
           const cellData = row[key];
           if (/([合,总,共]计)+([(,（]?合同价?[)）]?)?/.test(cellData)) {
             that.detailFormData["quotePrice"] = row["G"];
@@ -300,11 +299,11 @@ export default {
         quotePriceFile
       );
       this.$refs.myWindow.close();
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close()
-  },
+  }
 };
 </script>
 

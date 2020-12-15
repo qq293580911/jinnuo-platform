@@ -81,7 +81,7 @@ export default {
     ColumnChart,
     PieChartSingle,
     PieChartAll,
-    RatioGrid,
+    RatioGrid
   },
   data() {
     const that = this;
@@ -89,14 +89,14 @@ export default {
       dateMode: "days",
       startDate: (() => {
         const date = new Date();
-        let startDate = new Date(date.getFullYear(), date.getMonth(), 1).format(
+        const startDate = new Date(date.getFullYear(), date.getMonth(), 1).format(
           "yyyy-MM-dd"
         );
         return startDate;
       })(),
       endDate: (() => {
         const date = new Date();
-        let endDate = new Date(
+        const endDate = new Date(
           date.getFullYear(),
           date.getMonth() + 1,
           0
@@ -107,7 +107,7 @@ export default {
         const quoters = that.$store.state.quoters;
         const firstQuoter = quoters[0]["emp_id"];
         return firstQuoter;
-      })(),
+      })()
     };
   },
   mounted() {},
@@ -130,9 +130,9 @@ export default {
     },
     changeDateMode(data) {
       this.dateMode = data;
-    },
+    }
   },
-  beforeCreate() {},
+  beforeCreate() {}
 };
 </script>
 

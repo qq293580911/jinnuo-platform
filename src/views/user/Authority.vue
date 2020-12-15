@@ -7,7 +7,7 @@
 <script>
 import Role from 'views/user/Role'
 export default {
-  components:{
+  components: {
     Role
   }
 }

@@ -35,21 +35,21 @@ export default {
   data() {
     return {
       menus: ["产品分类", "标准分类", "指派类型"],
-      currentMenuName: "产品分类",
+      currentMenuName: "产品分类"
     };
   },
   components: {
     JqxMenu,
     BaseCategory,
     StandardCategory,
-    AssignType,
+    AssignType
   },
   methods: {
     onItemclick(event) {
       const menuName = event.args.textContent;
       this.currentMenuName = menuName;
-    },
-  },
+    }
+  }
 };
 </script>
 

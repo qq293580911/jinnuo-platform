@@ -4,15 +4,15 @@
 
 <script>
 export default {
-    name:'Welcom',
-    data(){
-        return {
-
-        }
-    },
-    created(){
+  name: 'Welcom',
+  data() {
+    return {
 
     }
+  },
+  created() {
+
+  }
 }
 </script>
 

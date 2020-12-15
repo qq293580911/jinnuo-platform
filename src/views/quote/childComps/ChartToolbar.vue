@@ -14,14 +14,13 @@
 
 <script>
 import JqxToolbar from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtoolbar.vue";
-import { formatDate } from "@/common/util";
 export default {
   components: {
-    JqxToolbar,
+    JqxToolbar
   },
   data() {
     return {
-      tools: "custom | custom | custom",
+      tools: "custom | custom | custom"
     };
   },
   created() {},
@@ -48,11 +47,11 @@ export default {
     });
   },
   methods: {
-    initTools: function (type, index, tool, menuToolIninitialization) {
+    initTools: function(type, index, tool, menuToolIninitialization) {
       if (menuToolIninitialization == false) {
         const that = this;
         switch (index) {
-          case 0:
+          case 0: {
             const period = document.createElement("div");
             // 开始日期
             const startDateContainer = document.createElement("div");
@@ -76,9 +75,9 @@ export default {
             period.appendChild(endDateContainer);
             tool[0].appendChild(period);
 
-            let date = new Date();
-            //初始化开始日期选择框
-            let startDate = new Date(
+            const date = new Date();
+            // 初始化开始日期选择框
+            const startDate = new Date(
               date.getFullYear(),
               date.getMonth(),
               1
@@ -90,13 +89,13 @@ export default {
               {
                 width: 110,
                 height: 25,
-                culture: "ja-JP",
+                culture: "zh-CN",
                 formatString: "yyyy-MM-dd",
-                value: new Date(startDate),
+                value: new Date(startDate)
               }
             );
             // 初始化结束日期选择框
-            let endDate = new Date(
+            const endDate = new Date(
               date.getFullYear(),
               date.getMonth() + 1,
               0
@@ -107,13 +106,15 @@ export default {
               {
                 width: 110,
                 height: 25,
-                culture: "ja-JP",
+                culture: "zh-CN",
                 formatString: "yyyy-MM-dd",
-                value: new Date(endDate),
+                value: new Date(endDate)
               }
             );
             break;
-          case 1:
+          }
+
+          case 1: {
             const subjectContainer = document.createElement("div");
             const subjectID = JQXLite.generateID();
             subjectContainer.id = subjectID;
@@ -129,11 +130,13 @@ export default {
                 width: 80,
                 height: 25,
                 displayMember: "emp_name",
-                valueMember: "emp_id",
+                valueMember: "emp_id"
               }
             );
             break;
-          case 2:
+          }
+
+          case 2: {
             const modelContainer = document.createElement("div");
             const modelID = JQXLite.generateID();
             modelContainer.id = modelID;
@@ -146,31 +149,32 @@ export default {
                 source: [
                   {
                     label: "按天数",
-                    value: "days",
+                    value: "days"
                   },
                   {
                     label: "按月份",
-                    value: "months",
+                    value: "months"
                   },
                   {
                     label: "按年份",
-                    value: "years",
-                  },
+                    value: "years"
+                  }
                 ],
                 width: 80,
                 height: 23,
                 displayMember: "label",
                 valueMember: "value",
-                selectedIndex: 0,
+                selectedIndex: 0
               }
             );
             break;
+          }
           default:
             break;
         }
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

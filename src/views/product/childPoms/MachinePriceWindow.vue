@@ -27,13 +27,13 @@ import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 import {
   Message,
   ADD_PRODUCT_PRICE,
-  EDIT_PRODUCT_PRICE,
+  EDIT_PRODUCT_PRICE
 } from "common/const.js";
 
 import {
   getAllMachineProduct,
   addMachinePrice,
-  updateMachinePrice,
+  updateMachinePrice
 } from "@/network/product.js";
 
 export default {
@@ -41,7 +41,7 @@ export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   data() {
     const that = this;
@@ -54,7 +54,7 @@ export default {
           labelWidth: "80px",
           rowHeight: "40px",
           required: true,
-          init: function (component) {
+          init: function(component) {
             getAllMachineProduct().then((res) => {
               res.map((item) => {
                 item[
@@ -69,10 +69,10 @@ export default {
                 source: res,
                 displayMember: "pnm_name",
                 valueMember: "pnm_id",
-                animationType: "none",
+                animationType: "none"
               });
             });
-          },
+          }
         },
         {
           name: "pricePlan",
@@ -81,7 +81,7 @@ export default {
           labelWidth: "80px",
           rowHeight: "40px",
           required: true,
-          init: function (component) {
+          init: function(component) {
             const pricePlan = that.$store.state.pricePlan;
             jqwidgets.createInstance(component, "jqxComboBox", {
               width: 250,
@@ -89,9 +89,9 @@ export default {
               source: pricePlan,
               displayMember: "rule",
               valueMember: "id",
-              animationType: "none",
+              animationType: "none"
             });
-          },
+          }
         },
         {
           name: "priceNonCcc",
@@ -100,15 +100,15 @@ export default {
           labelWidth: "80px",
           rowHeight: "40px",
           required: false,
-          init: function (component) {
+          init: function(component) {
             jqwidgets.createInstance(component, "jqxNumberInput", {
               width: 250,
               height: 30,
               inputMode: "simple",
               decimalDigits: 0,
-              spinButtons: true,
+              spinButtons: true
             });
-          },
+          }
         },
         {
           name: "priceCcc",
@@ -117,15 +117,15 @@ export default {
           labelWidth: "80px",
           rowHeight: "40px",
           required: false,
-          init: function (component) {
+          init: function(component) {
             jqwidgets.createInstance(component, "jqxNumberInput", {
               width: 250,
               height: 30,
               inputMode: "simple",
               decimalDigits: 0,
-              spinButtons: true,
+              spinButtons: true
             });
-          },
+          }
         },
         {
           columns: [
@@ -136,7 +136,7 @@ export default {
               width: "60px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -144,12 +144,12 @@ export default {
               text: "取消",
               width: "60px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
-        },
+              columnWidth: "50%"
+            }
+          ]
+        }
       ],
-      id: null,
+      id: null
     };
   },
   mounted() {
@@ -169,10 +169,10 @@ export default {
         input: $machine,
         message: "该项必选",
         action: "select",
-        rule: function (input) {
+        rule: function(input) {
           const index = that.machineInstance.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $pricePlan,
@@ -181,8 +181,8 @@ export default {
         rule(input) {
           const index = that.pricePlanInstance.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
-      },
+        }
+      }
     ];
     // 提交并验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
@@ -213,7 +213,7 @@ export default {
         psId: this.pricePlanInstance.val(),
         priceNonCcc: this.priceNonCCCInstance.val(),
         priceCcc: this.priceCCCInstance.val(),
-        priceId: this.id,
+        priceId: this.id
       };
       const title = this.$refs.myWindow.title;
       if (title == EDIT_PRODUCT_PRICE) {
@@ -231,7 +231,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addMachinePrice(params).then((res) => {
         this.$refs.myWindow.close();
@@ -240,17 +240,17 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateMachinePrice(params).then((res) => {
         this.$refs.myWindow.close();
         this.$parent.refresh();
       });
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close();
-  },
+  }
 };
 </script>
 

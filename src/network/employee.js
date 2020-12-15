@@ -53,11 +53,11 @@ export function getEmployeePosition(url, source, params) {
   })
 }
 
-export function assignPosition(param) {  
+export function assignPosition(param) {
   return request({
-    url:'/emp/assignEmployeePosition.do',
+    url: '/emp/assignEmployeePosition.do',
     method: 'Post',
-    data:param
+    data: param
   })
 }
 

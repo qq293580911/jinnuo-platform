@@ -1,6 +1,6 @@
 export default {
 
-  pricePlanList(state){
+  pricePlanList(state) {
     return state.pricePlanList
   }
 }

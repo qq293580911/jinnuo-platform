@@ -19,7 +19,7 @@ const logOutTip = debounce((msg) => {
     onOk() {
       context.$router.push('/login')
     },
-    class: "test",
+    class: "test"
   })
 }, 500)
 
@@ -27,13 +27,13 @@ export function request(config) {
   const instance = axios.create({
     baseURL: '/api',
     timeout: 5000,
-    transformRequest: [function (data, headers) {
+    transformRequest: [function(data, headers) {
       // 对请求头设置
-      if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {  
+      if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
         return qs.stringify(data)
       } else if (headers['Content-Type'] === 'multipart/form-data;charset=UTF-8') {
         return data
-      }else if(headers['Content-Type'] == 'application/json'){
+      } else if (headers['Content-Type'] == 'application/json') {
         return data
       } else {
         headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -42,7 +42,7 @@ export function request(config) {
         data = qs.stringify(data)
       }
       return data;
-    }],
+    }]
   })
 
   instance.interceptors.request.use(config => {
@@ -50,8 +50,8 @@ export function request(config) {
     // get参数编码
     if (config.method.toLowerCase() === 'get' && config.params) {
       url += '?'
-      let keys = Object.keys(config.params)
-      for (let key of keys) {
+      const keys = Object.keys(config.params)
+      for (const key of keys) {
         url += `${encodeURIComponent(key)}=${encodeURIComponent(config.params[key])}&`
       }
       url = url.substring(0, url.length - 1)

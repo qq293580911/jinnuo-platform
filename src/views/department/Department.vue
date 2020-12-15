@@ -5,7 +5,7 @@
       :hintType="'label'"
       @validationSuccess="onValidationSuccess($event)"
     >
-      <JqxForm #myForm ref="myForm" :template="template"> </JqxForm>
+      <JqxForm ref="myForm" :template="template"> </JqxForm>
     </JqxValidator>
     <JqxTree
       style="margin-left: 5px; float: left; margin-top: 5px"
@@ -43,28 +43,28 @@ import { Message } from "@/common/const.js";
 
 import {
   getDepartment,
-  addDepartment,
-  deleteDepartment,
-  updateDepartment,
+  addDepartment
+  // deleteDepartment,
+  // updateDepartment
 } from "@/network/department.js";
 export default {
   components: {
     JqxTree,
     JqxValidator,
     JqxForm,
-    JqxButton,
+    JqxButton
   },
   beforeCreate() {
     this.source = {
       datafields: [
         { name: "id", map: "deptId", type: "number" },
-        { name: "parentId",map:'parentId', type: "number" },
-        { name: "text", map: "deptName", type: "string" },
+        { name: "parentId", map: 'parentId', type: "number" },
+        { name: "text", map: "deptName", type: "string" }
       ],
       datatype: "json",
       id: "id",
       type: "get",
-      url: "/dept/getDepartmentSource.do",
+      url: "/dept/getDepartmentSource.do"
     };
   },
   created() {
@@ -73,7 +73,7 @@ export default {
       loadServerData(serverdata, source, callback) {
         getDepartment(source.url, source, serverdata).then((res) => {
           callback({
-            records: res.records,
+            records: res.records
           });
         });
       },
@@ -85,7 +85,7 @@ export default {
           [{ name: "text", map: "label" }]
         );
         that.$refs.myTree.source = that.records;
-      },
+      }
     });
     dataAdapter.dataBind();
   },
@@ -101,19 +101,19 @@ export default {
               type: "text",
               align: "left",
               width: "230px",
-              rowHeight: "40px",
+              rowHeight: "40px"
             },
             {
               name: "submitBtn",
               bind: "submitBtn",
               type: "button",
               text: "确认",
-              width: "60px",
-            },
-          ],
-        },
+              width: "60px"
+            }
+          ]
+        }
       ],
-      buttonGroup: ["添加", "编辑", "删除", "展开全部", "收起全部"],
+      buttonGroup: ["添加", "编辑", "删除", "展开全部", "收起全部"]
     };
   },
   methods: {
@@ -127,14 +127,15 @@ export default {
             this.addDepartment(null);
           }
           break;
-        case "编辑":
+        case "编辑": {
           if (!item) {
             this.$message.warning(Message.NO_NODE_SELECTED);
             return false;
           }
-          let $newName = this.$refs.myForm.getComponentByName("newName");
+          const $newName = this.$refs.myForm.getComponentByName("newName");
           $newName.val(item.label);
           break;
+        }
         case "删除":
           if (!item) {
             this.$message.warning(Message.NO_NODE_SELECTED);
@@ -158,7 +159,7 @@ export default {
     addDepartment(id) {
       const params = {
         pid: id,
-        name: "item",
+        name: "item"
       };
       addDepartment({ jsonParams: JSON.stringify(params) }).then((res) => {
         // 添加节点
@@ -166,7 +167,7 @@ export default {
         this.$refs.myTree.addTo(
           {
             label: "item",
-            id: id,
+            id: id
           },
           item == null ? null : item.element,
           false
@@ -175,8 +176,8 @@ export default {
         this.$refs.myTree.render();
         this.$message.success(Message.INSERT_SUCCESS);
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

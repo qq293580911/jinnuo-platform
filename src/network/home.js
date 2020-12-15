@@ -112,10 +112,10 @@ function getMenuComponent(munuName) {
   }
 }
 
-export function getPermissions(params){
+export function getPermissions(params) {
   return request({
-    url:'permission/findPermissionByUserId.do',
-    method:'Get',
+    url: 'permission/findPermissionByUserId.do',
+    method: 'Get',
     params
   })
 }

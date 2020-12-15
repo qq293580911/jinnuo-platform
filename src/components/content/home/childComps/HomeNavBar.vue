@@ -39,10 +39,10 @@ export default {
   name: "HomeNavBar",
   data() {
     return {
-      current: [""],
+      current: [""]
     };
   },
-  methods: {},
+  methods: {}
 };
 </script>
 

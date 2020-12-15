@@ -27,7 +27,7 @@ import {
   Message,
   ADD_PRODUCT,
   EDIT_PRODUCT,
-  CONFIRM_DELETE,
+  CONFIRM_DELETE
 } from "@/common/const.js";
 
 import { addVentilator, updateVentilator } from "@/network/product.js";
@@ -35,7 +35,7 @@ export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   beforeCreate() {
     this.dropDownButtonID = JQXLite.generateID();
@@ -53,7 +53,7 @@ export default {
           width: "250px",
           required: true,
           rowHeight: "40px",
-          options: ["管道式换气扇", "百叶窗式换气扇"],
+          options: ["管道式换气扇", "百叶窗式换气扇"]
         },
         {
           name: "category",
@@ -62,13 +62,13 @@ export default {
           type: "custom",
           required: true,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             // 下拉按钮
-            let dropDownButtonContainer = document.createElement("div");
+            const dropDownButtonContainer = document.createElement("div");
             dropDownButtonContainer.id = that.dropDownButtonID;
             component[0].appendChild(dropDownButtonContainer);
             // 下拉树
-            let treeContainer = document.createElement("div");
+            const treeContainer = document.createElement("div");
             treeContainer.id = that.treeID;
             treeContainer.style.cssText = "border: none;";
             dropDownButtonContainer.appendChild(treeContainer);
@@ -78,7 +78,7 @@ export default {
               "jqxDropDownButton",
               {
                 width: 250,
-                height: 30,
+                height: 30
               }
             );
 
@@ -88,10 +88,10 @@ export default {
                 { name: "id" },
                 { name: "parentid" },
                 { name: "text" },
-                { name: "value" },
+                { name: "value" }
               ],
               id: "id",
-              localdata: that.$store.state.productType,
+              localdata: that.$store.state.productType
             };
             const dataAdapter = new jqx.dataAdapter(source);
             dataAdapter.dataBind();
@@ -102,8 +102,8 @@ export default {
               [
                 {
                   name: "text",
-                  map: "label",
-                },
+                  map: "label"
+                }
               ]
             );
             that.treeInstance = jqwidgets.createInstance(
@@ -112,7 +112,7 @@ export default {
               {
                 source: records,
                 width: 250,
-                height: 300,
+                height: 300
               }
             );
 
@@ -131,7 +131,7 @@ export default {
               that.dropDownButtonInstance.setContent(dropDownContent);
               that.dropDownButtonInstance.close();
             });
-          },
+          }
         },
         {
           name: "specification",
@@ -140,7 +140,7 @@ export default {
           labelWidth: "110px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "holeSize",
@@ -149,7 +149,7 @@ export default {
           labelWidth: "110px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "airVolume",
@@ -164,9 +164,9 @@ export default {
               height: 30,
               inputMode: "simple",
               decimalDigits: 0,
-              spinButtons: true,
+              spinButtons: true
             });
-          },
+          }
         },
         {
           name: "panelMaterial",
@@ -176,7 +176,7 @@ export default {
           width: "250px",
           required: true,
           rowHeight: "40px",
-          options: ["普通", "pp面板", "abs面板"],
+          options: ["普通", "pp面板", "abs面板"]
         },
         {
           name: "remark",
@@ -185,7 +185,7 @@ export default {
           labelWidth: "110px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           columns: [
@@ -197,7 +197,7 @@ export default {
               height: "30px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -206,11 +206,11 @@ export default {
               width: "60px",
               height: "30px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
-        },
-      ],
+              columnWidth: "50%"
+            }
+          ]
+        }
+      ]
     };
   },
   mounted() {
@@ -240,42 +240,42 @@ export default {
         input: $name,
         message: "该项必选",
         action: "selecte",
-        rule: function (input) {
+        rule: function(input) {
           const selectedIndex = $name.jqxDropDownList("getSelectedIndex");
           return selectedIndex > -1;
-        },
+        }
       },
       {
         input: $category,
         message: "该项必选",
         action: "close",
-        rule: function (input) {
+        rule: function(input) {
           return input[0].textContent != "";
-        },
+        }
       },
       {
         input: $specification,
         message: "该项必填",
         action: "input,blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $holeSize,
         message: "该项必填",
         action: "input,blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $panelMaterial,
         message: "该项必选",
         action: "selecte",
-        rule: function (input) {
+        rule: function(input) {
           const selectedIndex = $panelMaterial.jqxDropDownList(
             "getSelectedIndex"
           );
           return selectedIndex > -1;
-        },
-      },
+        }
+      }
     ];
     // 提交并验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
@@ -300,8 +300,8 @@ export default {
         this.treeInstance.expandItem(item.element);
         this.specificationInstance.val(data['specification'])
         this.holeSizeInstance.val(data['hole_size'])
-        this.airVolumeInstance.jqxNumberInput('setDecimal',data['air_volume'])
-        this.panelMaterialInstance.jqxDropDownList('selectItem',data['panel_material'])
+        this.airVolumeInstance.jqxNumberInput('setDecimal', data['air_volume'])
+        this.panelMaterialInstance.jqxDropDownList('selectItem', data['panel_material'])
         this.remarkInstance.val(data['remark'])
       }
       this.$refs.myWindow.open();
@@ -336,7 +336,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addVentilator(params).then((res) => {
         this.$refs.myWindow.close();
@@ -345,17 +345,17 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateVentilator(params).then((res) => {
         this.$refs.myWindow.close();
         this.$parent.refresh();
       });
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close();
-  },
+  }
 };
 </script>
 

@@ -3,7 +3,6 @@
     <JqxWindow
       ref="myWindow"
       :width="'760px'"
-      :height="'670px'"
       :autoOpen="false"
       :position="{ x: '30%', y: '20%' }"
     >
@@ -24,13 +23,13 @@ import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 import { getProvince, getCity, getArea } from "@/common/util.js";
-import { Message, ADD_CONTRACT, EDIT_CONTRACT } from "@/common/const";
-import { addContract, updateContract } from "@/network/contract.js";
+import { EDIT_CONTRACT } from "@/common/const";
+import { checkDuplicate, addContract, updateContract } from "@/network/contract.js";
 export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   data() {
     const that = this;
@@ -49,7 +48,7 @@ export default {
               width: "250px",
               required: true,
               rowHeight: "40px",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "contractNumber",
@@ -59,22 +58,28 @@ export default {
               width: "250px",
               required: true,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
             {
               name: "createDate",
-              type: "date",
+              type: "custom",
               label: "创建日期",
               labelWidth: "100px",
-              width: "250px",
-              formatString: "yyyy-MM-dd",
               required: true,
               rowHeight: "40px",
               columnWidth: "50%",
+              init: function(component) {
+                jqwidgets.createInstance(component, 'jqxDateTimeInput', {
+                  width: 250,
+                  height: 30,
+                  culture: "zh-CN",
+                  formatString: "yyyy-MM-dd"
+                })
+              }
             },
             {
               name: "isRepeat",
@@ -87,10 +92,10 @@ export default {
               columnWidth: "50%",
               options: [
                 { label: "常规", value: 0 },
-                { label: "重复", value: 1 },
-              ],
-            },
-          ],
+                { label: "重复", value: 1 }
+              ]
+            }
+          ]
         },
         {
           columns: [
@@ -109,9 +114,9 @@ export default {
                   width: 250,
                   height: 30,
                   displayMember: "emp_name",
-                  valueMember: "emp_id",
+                  valueMember: "emp_id"
                 });
-              },
+              }
             },
             {
               name: "customerCompany",
@@ -121,9 +126,9 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -136,7 +141,7 @@ export default {
               rowHeight: "40px",
               columnWidth: "50%",
               init: (component) => {
-                let provinceSelector = jqwidgets.createInstance(
+                const provinceSelector = jqwidgets.createInstance(
                   component,
                   "jqxComboBox",
                   {
@@ -144,7 +149,7 @@ export default {
                     width: 250,
                     height: 30,
                     displayMember: "name",
-                    valueMember: "name",
+                    valueMember: "name"
                   }
                 );
                 // 省份绑定选择事件
@@ -153,17 +158,17 @@ export default {
                   // 当选择省份的时候，更新城市的数据
                   const $city = that.$refs.myForm.getComponentByName("city");
                   jqwidgets.createInstance($city, "jqxComboBox", {
-                    source: getCity(provinceValue),
+                    source: getCity(provinceValue)
                   });
                   // 重置县/区为空
                   const $county = that.$refs.myForm.getComponentByName(
                     "county"
                   );
                   jqwidgets.createInstance($county, "jqxComboBox", {
-                    source: [],
+                    source: []
                   });
                 });
-              },
+              }
             },
             {
               name: "signDate",
@@ -173,9 +178,9 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -188,7 +193,7 @@ export default {
               rowHeight: "40px",
               columnWidth: "50%",
               init: (component) => {
-                let citySelector = jqwidgets.createInstance(
+                const citySelector = jqwidgets.createInstance(
                   component,
                   "jqxComboBox",
                   {
@@ -196,7 +201,7 @@ export default {
                     width: 250,
                     height: 30,
                     displayMember: "name",
-                    valueMember: "name",
+                    valueMember: "name"
                   }
                 );
                 const $province = that.$refs.myForm.getComponentByName(
@@ -211,10 +216,10 @@ export default {
                     "county"
                   );
                   jqwidgets.createInstance($county, "jqxComboBox", {
-                    source: getArea(provinceValue, cityValue),
+                    source: getArea(provinceValue, cityValue)
                   });
                 });
-              },
+              }
             },
             {
               name: "signState",
@@ -228,10 +233,10 @@ export default {
               options: [
                 { value: "未签" },
                 { value: "已签" },
-                { value: "作废" },
-              ],
-            },
-          ],
+                { value: "作废" }
+              ]
+            }
+          ]
         },
         {
           columns: [
@@ -244,7 +249,7 @@ export default {
               rowHeight: "40px",
               columnWidth: "50%",
               init: (component) => {
-                const countySelector = jqwidgets.createInstance(
+                jqwidgets.createInstance(
                   component,
                   "jqxComboBox",
                   {
@@ -252,10 +257,10 @@ export default {
                     height: 30,
                     source: [],
                     displayMember: "name",
-                    valueMember: "name",
+                    valueMember: "name"
                   }
                 );
-              },
+              }
             },
             {
               name: "signBackDate",
@@ -265,9 +270,9 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -287,9 +292,9 @@ export default {
                   digits: 11,
                   spinButtons: true,
                   min: 0,
-                  decimalDigits: 0,
+                  decimalDigits: 0
                 });
-              },
+              }
             },
             {
               name: "discountPrice",
@@ -307,11 +312,11 @@ export default {
                   digits: 11,
                   spinButtons: true,
                   min: 0,
-                  decimalDigits: 0,
+                  decimalDigits: 0
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -331,9 +336,9 @@ export default {
                   digits: 11,
                   spinButtons: true,
                   min: 0,
-                  decimalDigits: 0,
+                  decimalDigits: 0
                 });
-              },
+              }
             },
             {
               name: "finalPrice",
@@ -351,11 +356,11 @@ export default {
                   digits: 11,
                   spinButtons: true,
                   min: 0,
-                  decimalDigits: 3,
+                  decimalDigits: 3
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -368,7 +373,7 @@ export default {
               height: 30,
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "freight",
@@ -379,9 +384,9 @@ export default {
               height: 30,
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -394,7 +399,7 @@ export default {
               height: 30,
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "warranty",
@@ -405,9 +410,9 @@ export default {
               height: 30,
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -427,11 +432,11 @@ export default {
                   decimalDigits: 0,
                   digits: 11,
                   spinButtons: true,
-                  min: 0,
+                  min: 0
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -451,9 +456,9 @@ export default {
                   decimalDigits: 4,
                   digits: 11,
                   spinButtons: true,
-                  min: 0,
+                  min: 0
                 });
-              },
+              }
             },
             {
               name: "performanceBonusReimbursement",
@@ -463,9 +468,9 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -484,11 +489,11 @@ export default {
                   height: 30,
                   displayMember: "rule",
                   valueMember: "rule",
-                  multiSelect: true,
+                  multiSelect: true
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -500,7 +505,7 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "overBudgetBear",
@@ -510,9 +515,9 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -523,7 +528,7 @@ export default {
               width: "60px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -531,18 +536,18 @@ export default {
               text: "取消",
               width: "60px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           name: "contrDtlId",
           type: "custom",
-          init: function (component) {
+          init: function(component) {
             component.append('<input id="contrDtlId" type="hidden"/>');
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
   },
   mounted() {
@@ -590,7 +595,6 @@ export default {
     const $overBudgetBear = this.$refs.myForm.getComponentByName(
       "overBudgetBear"
     );
-    const $contrDtlId = $("#contrDtlId");
 
     this.projectNameInstance = $projectName;
     this.contractNumberInstance = $contractNumber;
@@ -619,126 +623,138 @@ export default {
     this.riseDropPointInstance = $riseDropPoint;
     this.overBudgetBearInstance = $overBudgetBear;
 
+    this.projectNameInstance.on('blur', (event) => {
+      const projectName = event.target.value
+      const params = {
+        jsonParams: JSON.stringify({
+          projectName
+        })
+      }
+      checkDuplicate(params).then(res => {
+        this.isRepeatInstance.jqxDropDownList('selectItem', res['is_repeat'])
+      })
+    })
+
     // 验证规则
     this.$refs.myValidator.rules = [
       {
         input: $projectName,
         message: "不能为空",
         action: "keyup, blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $contractNumber,
         message: "不能为空",
         action: "keyup, blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $isRepeat,
         action: "change",
         message: "该项必选",
-        rule: function () {
+        rule: function() {
           const index = $isRepeat.jqxDropDownList("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $salesman,
         action: "change",
         message: "该项必选",
-        rule: function () {
+        rule: function() {
           const index = $salesman.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $province,
         action: "change",
         message: "该项必选!",
-        rule: function () {
+        rule: function() {
           const index = $province.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $city,
         action: "change",
         message: "该项必选",
-        rule: function () {
+        rule: function() {
           const index = $city.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $signState,
         action: "change",
         message: "该项必选",
-        rule: function () {
+        rule: function() {
           const index = $signState.jqxDropDownList("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $signDate,
         action: "keyup, blur",
         message: "不正确的日期格式",
-        rule: function () {
+        rule: function() {
           const value = $signDate.val();
           if (value == "" || value == null) {
             return true;
           }
           const r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/);
           return r != null;
-        },
+        }
       },
       {
         input: $logisticsManagementFee,
         action: "keyup,blur",
         message: "不正确的格式",
-        rule: function () {
+        rule: function() {
           const value = $logisticsManagementFee.val();
           if (value.length > 0) {
             const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
             return r;
           }
           return true;
-        },
+        }
       },
       {
         input: $tax,
         action: "keyup,blur",
         message: "不正确的格式",
-        rule: function () {
+        rule: function() {
           const value = $tax.val();
           if (value.length > 0) {
             const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
             return r;
           }
           return true;
-        },
+        }
       },
       {
         input: $warranty,
         action: "keyup,blur",
         message: "不正确的格式",
-        rule: function () {
+        rule: function() {
           const value = $warranty.val();
           if (value.length > 0) {
             const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
             return r;
           }
           return true;
-        },
+        }
       },
       {
         input: $formulaModel,
         action: "select",
         message: "该项必选",
-        rule: function () {
+        rule: function() {
           const index = $formulaModel.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
-      },
+        }
+      }
     ];
     // 提交并验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
@@ -810,7 +826,7 @@ export default {
         that.formulaModelInstance.jqxComboBox("clearSelection");
         setTimeout(() => {
           if (formulaModel.split(",").length > 1) {
-            formulaModel.split(",").forEach(function (value) {
+            formulaModel.split(",").forEach(function(value) {
               that.formulaModelInstance.jqxComboBox("selectItem", value);
             });
           } else {
@@ -820,7 +836,7 @@ export default {
 
         this.riseDropPointInstance.val(data["rise_drop_point"]);
         this.overBudgetBearInstance.val(data["over_budget_bear"]);
-        $("#contrDtlId").val(data["id"]);
+        this.id = data["id"]
       }
       this.$refs.myWindow.open();
     },
@@ -837,9 +853,10 @@ export default {
         "getSelectedItem"
       ).label;
       formData["city"] = this.cityInstance.jqxComboBox("getSelectedItem").label;
-      formData["county"] = this.countyInstance.jqxComboBox(
-        "getSelectedItem"
-      ).label;
+      const countyItem = this.countyInstance.jqxComboBox("getSelectedItem")
+      if (countyItem) {
+        formData["county"] = countyItem.label
+      }
       formData["originalPrice"] = this.originalPriceInstance.val();
       formData["discountPrice"] = this.discountPriceInstance.val();
       formData["finalPrice"] = this.finalPriceInstance.val();
@@ -857,7 +874,7 @@ export default {
       formData[
         "deductionBonusAmount"
       ] = this.deductionBonusAmountInstance.val();
-      formData["formulaModel"] = (function () {
+      formData["formulaModel"] = (function() {
         const items = that.formulaModelInstance.jqxComboBox("getSelectedItems");
         let selectedItems = "";
         items.forEach((item, index) => {
@@ -873,7 +890,7 @@ export default {
       ] = this.performanceBonusReimbursementInstance.val();
       formData["riseDropPoint"] = this.riseDropPointInstance.val();
       formData["overBudgetBear"] = this.overBudgetBearInstance.val();
-      formData["id"] = $("#contrDtlId").val();
+      formData["id"] = this.id;
       const title = this.$refs.myWindow.title;
       if (title == EDIT_CONTRACT) {
         this.update(formData);
@@ -883,7 +900,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addContract(params).then((res) => {
         this.$refs.myWindow.close();
@@ -893,7 +910,7 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateContract(params).then((res) => {
         this.$refs.myWindow.close();
@@ -927,12 +944,11 @@ export default {
       this.formulaModelInstance.jqxComboBox("clearSelection");
       this.riseDropPointInstance.val("");
       this.overBudgetBearInstance.val("");
-      $("#contrDtlId").val("");
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close();
-  },
+  }
 };
 </script>
 

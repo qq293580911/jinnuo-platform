@@ -16,18 +16,19 @@
 import ColumnChart from "@/views/quote/childComps/ColumnChart";
 export default {
   components: {
-    ColumnChart,
+    ColumnChart
   },
   created() {},
   data() {
+    console.log(11)
     return {
       dateMode: "days",
       startDate: "2020-7-01",
       endDate: "2020-7-31",
-      subject: 280,
+      subject: 280
     };
   },
-  methods: {},
+  methods: {}
 };
 </script>
 

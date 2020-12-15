@@ -32,8 +32,6 @@
 <script>
 import Vue from "vue";
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
-import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
-import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 
 import CustomUploader from "@/components/common/CustomUploader";
@@ -44,15 +42,13 @@ import {
   calc_misc_freight,
   calc_misc_tax,
   calc_misc_warranty,
-  calc_rsv_p,
+  calc_rsv_p
 } from "@/common/util";
 import { importOrder, batchUpdateOrderByOrderNumber } from "@/network/order";
 export default {
   components: {
     JqxWindow,
-    JqxValidator,
-    JqxForm,
-    JqxGrid,
+    JqxGrid
   },
   beforeCreate() {
     this.source = {
@@ -60,99 +56,99 @@ export default {
         {
           name: "product_type",
           map: "productType",
-          type: "string",
+          type: "string"
         },
         {
           name: "order_date",
           map: "orderDate",
-          type: "string",
+          type: "string"
         },
         {
           name: "salesman",
-          type: "number",
+          type: "number"
         },
         {
           name: "salesman_name",
           map: "salesmanName",
-          type: "string",
+          type: "string"
         },
         {
           name: "contract_number",
           map: "contractNumber",
-          type: "string",
+          type: "string"
         },
         {
           name: "order_number",
           map: "orderNumber",
-          type: "number",
+          type: "number"
         },
         {
           name: "project_name",
           map: "projectName",
-          type: "string",
+          type: "string"
         },
         {
           name: "order_amount",
           map: "orderAmount",
-          type: "number",
+          type: "number"
         },
         {
           name: "consideration_commission_order_amount",
           map: "considerationCommissionOrderAmount",
-          type: "number",
+          type: "number"
         },
         {
           name: "not_consideration_commission_order_amount",
           map: "notConsiderationCommissionOrderAmount",
-          type: "number",
+          type: "number"
         },
         {
           name: "logistics_management_fee",
           map: "logisticsManagementFee",
-          type: "string",
+          type: "string"
         },
         {
           name: "freight",
           map: "freight",
-          type: "string",
+          type: "string"
         },
         {
           name: "tax",
           map: "tax",
-          type: "string",
+          type: "string"
         },
         {
           name: "warranty",
           map: "warranty",
-          type: "string",
+          type: "string"
         },
         {
           name: "install_fee",
           map: "installFee",
-          type: "string",
+          type: "string"
         },
         {
           name: "order_reserve_price",
-          type: "number",
+          type: "number"
         },
         {
           name: "consideration_commission_status",
           map: "considerationCommissionStatus",
-          type: "string",
+          type: "string"
         },
         {
           name: "remark",
           map: "remark",
-          type: "string",
+          type: "string"
         },
         {
           name: "actual_freight",
           map: "actualFreight",
-          type: "string",
-        },
+          type: "string"
+        }
       ],
       dataType: "json",
-      localdata: [],
+      localdata: []
     };
   },
   data() {
@@ -199,7 +195,7 @@ export default {
               installFee
             );
             item["order_reserve_price"] = ordRsvP;
-            //放入业务员ID
+            // 放入业务员ID
             const salesman = salesmans.find((salesman) => {
               return salesman["emp_name"] == item["salesman_name"];
             });
@@ -207,7 +203,7 @@ export default {
               item["salesman"] = salesman["emp_id"];
             }
           });
-        },
+        }
       }),
       columns: [
         {
@@ -216,13 +212,13 @@ export default {
           cellsAlign: "center",
           align: "center",
           width: 100,
-          cellclassname: function (row, columnfield, value, data) {
+          cellclassname: function(row, columnfield, value, data) {
             if (/^设备$/.test(value) == false) {
               that.allowedFormat = false;
               return "yellow";
             }
             return "";
-          },
+          }
         },
         {
           text: "下单日期",
@@ -230,14 +226,14 @@ export default {
           cellsAlign: "center",
           align: "center",
           width: 100,
-          cellclassname: function (row, columnfield, value, data) {
-            let r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/);
+          cellclassname: function(row, columnfield, value, data) {
+            const r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/);
             if (r == null) {
               that.allowedFormat = false;
               return "yellow";
             }
             return "";
-          },
+          }
         },
         {
           text: "业务员",
@@ -245,124 +241,124 @@ export default {
           cellsAlign: "center",
           align: "center",
           width: 80,
-          cellclassname: function (row, columnfield, value, data) {
+          cellclassname: function(row, columnfield, value, data) {
             if (data["salesman"] == null) {
               that.allowedFormat = false;
               return "yellow";
             }
             return "";
-          },
+          }
         },
         {
           text: "合同编号",
           dataField: "contract_number",
           cellsAlign: "center",
           align: "center",
-          width: 150,
+          width: 150
         },
         {
           text: "下单编号",
           dataField: "order_number",
           cellsAlign: "center",
           align: "center",
-          width: 150,
+          width: 150
         },
         {
           text: "项目名称",
           dataField: "project_name",
           cellsAlign: "center",
           align: "center",
-          width: 300,
+          width: 300
         },
         {
           text: "下单金额",
           dataField: "order_amount",
           cellsAlign: "center",
           align: "center",
-          width: 120,
+          width: 120
         },
         {
           text: "计提成下单金额",
           dataField: "consideration_commission_order_amount",
           cellsAlign: "center",
           align: "center",
-          width: 120,
+          width: 120
         },
         {
           text: "非3C风阀下单金额",
           dataField: "not_consideration_commission_order_amount",
           cellsAlign: "center",
           align: "center",
-          width: 120,
+          width: 120
         },
         {
           text: "物流管理费",
           dataField: "logistics_management_fee",
           cellsAlign: "center",
           align: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "运费",
           dataField: "freight",
           cellsAlign: "center",
           align: "center",
-          width: 80,
+          width: 80
         },
         {
           text: "税金",
           dataField: "tax",
           cellsAlign: "center",
           align: "center",
-          width: 80,
+          width: 80
         },
         {
           text: "质保金",
           dataField: "warranty",
           cellsAlign: "center",
           align: "center",
-          width: 80,
+          width: 80
         },
         {
           text: "安装费",
           dataField: "install_fee",
           cellsAlign: "center",
           align: "center",
-          width: 80,
+          width: 80
         },
         {
           text: "下单底价",
           dataField: "order_reserve_price",
           cellsAlign: "center",
           align: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "备注",
           dataField: "remark",
           cellsAlign: "center",
           align: "center",
-          width: 150,
+          width: 150
         },
         {
           text: "计提成状态",
           dataField: "consideration_commission_status",
           cellsAlign: "center",
           align: "center",
-          width: 110,
+          width: 110
         },
         {
           text: "实际运费",
           dataField: "actual_freight",
           cellsAlign: "center",
           align: "center",
-          width: 80,
-        },
+          width: 80
+        }
       ],
       fileContent: [],
       startRow: 0,
       endRow: 0,
-      allowedFormat: true,
+      allowedFormat: true
     };
   },
   watch: {
@@ -385,15 +381,15 @@ export default {
         this.source.localdata = data;
         this.$refs.myGrid.updatebounddata();
       }
-    },
+    }
   },
   mounted() {
     const that = this;
     // 上传器绑定值改变事件
     this.uploaderInstance.$off("changed").$on("changed", (data) => {
-      let sheetName = Object.keys(data[0])[0];
+      const sheetName = Object.keys(data[0])[0];
       const fileContent = data[0][sheetName];
-      fileContent.forEach(function (value, index) {
+      fileContent.forEach(function(value, index) {
         if (index > 0) {
           value["orderDate"] = LAY_EXCEL.dateCodeFormat(
             value["orderDate"],
@@ -431,13 +427,13 @@ export default {
         okText: "确认",
         cancelText: "取消",
         centered: true,
-        content: (h) => <div style="color:red;"></div>,
+        content: (h) => <div style='color:red;'></div>,
         onOk() {
           that.importOrder();
         },
         onCancel() {},
         class: "test",
-        zIndex: 1500,
+        zIndex: 1500
       });
     });
     // 批量修改按钮绑定点击事件
@@ -446,8 +442,8 @@ export default {
     });
   },
   methods: {
-    createButtonsContainers: function (toolbar) {
-      let buttonsContainer = document.createElement("div");
+    createButtonsContainers: function(toolbar) {
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
       toolbar[0].appendChild(buttonsContainer);
@@ -459,7 +455,7 @@ export default {
       const uploaderID = JQXLite.generateID();
       uploader.id = uploaderID;
       uploadContainer.appendChild(uploader);
-      let uploaderComponent = Vue.extend(CustomUploader);
+      const uploaderComponent = Vue.extend(CustomUploader);
       this.uploaderInstance = new uploaderComponent({
         propsData: {
           width: 190,
@@ -484,10 +480,10 @@ export default {
               installFee: "N",
               remark: "O",
               considerationCommissionStatus: "P",
-              actualFreight: "Q",
-            },
-          },
-        },
+              actualFreight: "Q"
+            }
+          }
+        }
       }).$mount(`#${uploaderID}`);
       // 开始行
       let spanContainer = document.createElement("span");
@@ -508,7 +504,7 @@ export default {
           min: 0,
           decimalDigits: 0,
           digits: 5,
-          spinButtons: true,
+          spinButtons: true
         }
       );
       // 结束行
@@ -530,14 +526,14 @@ export default {
           min: 0,
           decimalDigits: 0,
           digits: 5,
-          spinButtons: true,
+          spinButtons: true
         }
       );
 
       // 确认导入按钮
-      let confirmContainer = document.createElement("div");
+      const confirmContainer = document.createElement("div");
       confirmContainer.classList.add("tool-item");
-      let confirmButtonID = JQXLite.generateID();
+      const confirmButtonID = JQXLite.generateID();
       confirmContainer.id = confirmButtonID;
       buttonsContainer.appendChild(confirmContainer);
       this.importInstance = jqwidgets.createInstance(
@@ -547,13 +543,13 @@ export default {
       );
       jqwidgets.createInstance(`#${confirmButtonID}`, "jqxTooltip", {
         content: "确认导入",
-        position: "bottom",
+        position: "bottom"
       });
 
       // 批量修改按钮
-      let batchUpdateContainer = document.createElement("div");
+      const batchUpdateContainer = document.createElement("div");
       batchUpdateContainer.classList.add("tool-item");
-      let batchUpdateButtonID = JQXLite.generateID();
+      const batchUpdateButtonID = JQXLite.generateID();
       batchUpdateContainer.id = batchUpdateButtonID;
       buttonsContainer.appendChild(batchUpdateContainer);
       this.batchUpdateInstance = jqwidgets.createInstance(
@@ -563,11 +559,11 @@ export default {
       );
       jqwidgets.createInstance(`#${batchUpdateButtonID}`, "jqxTooltip", {
         content: "批量更新",
-        position: "bottom",
+        position: "bottom"
       });
       // 字段选择
-      let fieldSelection = document.createElement("div");
-      let fieldSelectionID = JQXLite.generateID();
+      const fieldSelection = document.createElement("div");
+      const fieldSelectionID = JQXLite.generateID();
       fieldSelection.id = fieldSelectionID;
       fieldSelection.classList.add("tool-item");
       buttonsContainer.appendChild(fieldSelection);
@@ -577,7 +573,7 @@ export default {
         {
           source: ["实际运费", "计提成状态"],
           width: 100,
-          height: 23,
+          height: 23
         }
       );
     },
@@ -590,8 +586,8 @@ export default {
       const rowsData = this.$refs.myGrid.getrows();
       const params = {
         jsonParams: JSON.stringify({
-          items: rowsData,
-        }),
+          items: rowsData
+        })
       };
       importOrder(params).then((res) => {
         this.$refs.myWindow.close();
@@ -602,15 +598,15 @@ export default {
       const rowsData = this.$refs.myGrid.getrows();
       const params = {
         jsonParams: JSON.stringify({
-          items: rowsData,
-        }),
+          items: rowsData
+        })
       };
       batchUpdateOrderByOrderNumber(params).then((res) => {
         this.$refs.myWindow.close();
         this.$parent.refresh();
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -23,15 +23,14 @@ import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
-import { debounce } from "@/common/util.js";
-import { ADD_CONTRACT_INVOICE, EDIT_CONTRACT_INVOICE } from "@/common/const";
+import { EDIT_CONTRACT_INVOICE } from "@/common/const";
 import { checkContractNumberExist } from "@/network/contract";
 import { addContractInvoice, updateContractInvoice } from "@/network/invoice";
 export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   data() {
     return {
@@ -43,14 +42,14 @@ export default {
           labelWidth: "110px",
           align: "right",
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             component.jqxDateTimeInput({
               width: 250,
               height: 30,
               // culture: "zh-CN",
-              formatString: "yyyy-MM-dd",
+              formatString: "yyyy-MM-dd"
             });
-          },
+          }
         },
         {
           name: "contractNumber",
@@ -59,7 +58,7 @@ export default {
           labelWidth: "110px",
           width: "250px",
           align: "right",
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "invoiceAmount",
@@ -68,16 +67,16 @@ export default {
           labelWidth: "110px",
           required: true,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             component.jqxNumberInput({
               width: "250px",
               height: "30px",
               digits: 11,
               decimalDigits: 2,
               inputMode: "simple",
-              spinButtons: true,
+              spinButtons: true
             });
-          },
+          }
         },
         {
           name: "sendDate",
@@ -86,7 +85,7 @@ export default {
           labelWidth: "110px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "trackNumber",
@@ -95,7 +94,7 @@ export default {
           labelWidth: "110px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "sendAddress",
@@ -104,7 +103,7 @@ export default {
           labelWidth: "110px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "remark",
@@ -113,7 +112,7 @@ export default {
           labelWidth: "110px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           columns: [
@@ -124,7 +123,7 @@ export default {
               width: "60px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -132,17 +131,15 @@ export default {
               text: "取消",
               width: "60px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
-        },
+              columnWidth: "50%"
+            }
+          ]
+        }
       ],
-      id:null
+      id: null
     };
   },
   mounted() {
-    const that = this;
-
     const $contractNumber = this.$refs.myForm.getComponentByName(
       "contractNumber"
     );
@@ -168,31 +165,31 @@ export default {
         input: $contractNumber,
         message: "该项必填",
         action: "keyup,blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $contractNumber,
         message: "该项必填",
         action: "input,blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $contractNumber,
         message: "未找到此合同编号",
         action: "blur",
-        rule: function (input) {
+        rule: function(input) {
           let isExists = false
           const contractNumber = input.val();
           const jsonParams = {
-            contractNumber,
+            contractNumber
           };
-          let xhr = new XMLHttpRequest();
+          const xhr = new XMLHttpRequest();
           xhr.open(
             "Get",
-            `/api/contrDtl/checkContractNumberExists.do?jsonParams=${encodeURIComponent(JSON.stringify(jsonParams)) }`,
+            `/api/contrDtl/checkContractNumberExists.do?jsonParams=${encodeURIComponent(JSON.stringify(jsonParams))}`,
             false
-          ); //false表示同步请求
-          xhr.onreadystatechange = function () {
+          ); // false表示同步请求
+          xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
               const res = JSON.parse(xhr.responseText);
               isExists = res
@@ -202,21 +199,21 @@ export default {
           };
           xhr.send(null);
           return isExists;
-        },
+        }
       },
       {
         input: $sendDate,
         message: "日期格式不正确",
         action: "keyup",
-        rule: function () {
+        rule: function() {
           const value = $sendDate.val();
           if (value == "" || value == null) {
             return true;
           }
-          let r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/);
+          const r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/);
           return r != null;
-        },
-      },
+        }
+      }
     ];
 
     // 提交并验证表单
@@ -251,14 +248,13 @@ export default {
       }
       this.$refs.myWindow.open();
     },
-    checkNumberExist: async function (contractNumber) {
+    checkNumberExist: async function(contractNumber) {
       const params = {
-        jsonParams: JSON.stringify({ contractNumber }),
+        jsonParams: JSON.stringify({ contractNumber })
       };
       await checkContractNumberExist(params).then((res) => {});
     },
     onValidationSuccess(event) {
-      const that = this;
       const formData = {};
       formData["applyDate"] = this.applyDateInstance.val();
       formData["contractNumber"] = this.contractNumberInstance.val();
@@ -277,7 +273,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addContractInvoice(params).then((res) => {
         this.$refs.myWindow.close();
@@ -287,7 +283,7 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateContractInvoice(params).then((res) => {
         this.$refs.myWindow.close();
@@ -303,11 +299,11 @@ export default {
       this.trackNumberInstance.val("");
       this.sendAddressInstance.val("");
       this.remarkInstance.val("");
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close();
-  },
+  }
 };
 </script>
 

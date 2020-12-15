@@ -176,10 +176,10 @@ export default {
     JqxLoader,
     QuotationItem,
     QuotationUploadWindow,
-    QuotationDetailWindow,
+    QuotationDetailWindow
   },
   beforeCreate() {},
-  data: function () {
+  data: function() {
     return {
       tools: "custom | custom",
       toolsIndex: -1,
@@ -189,7 +189,7 @@ export default {
       current: 1,
       pageSize: 10,
       total: 0,
-      selectCardId: 0,
+      selectCardId: 0
     };
   },
   created() {
@@ -198,37 +198,42 @@ export default {
   computed: {
     pageTotal() {
       return this.total / this.pageSize + (this.total % 10);
-    },
+    }
   },
   mounted() {
     const that = this;
-    // 绑定事件
-    this.uploadButtonInstance.addEventHandler("click", (event) => {
-      this.$refs.uploadWindow.open("选择文件");
-    });
-
-    this.deleteButtonInstance.addEventHandler("click", (event) => {
-      const selectedClass = document.querySelector(".selected");
-      if (selectedClass == null) {
-        this.$message.warning(Message.NO_OBJECT_SELECTED);
-        return false;
-      }
-      this.$confirm({
-        title: `${Message.CONFIRM_DELETE}`,
-        okText: "确认",
-        okType: "danger",
-        cancelText: "取消",
-        centered: true,
-        okType: "danger",
-        content: (h) => <div style="color:red;">将连关联文件一并删除</div>,
-        onOk() {
-          that.deleteCard(that.selectCardId);
-        },
-        onCancel() {},
-        class: "test",
+    // 绑定上传事件
+    if (this.uploadButtonInstance) {
+      this.uploadButtonInstance.addEventHandler("click", (event) => {
+        this.$refs.uploadWindow.open("选择文件");
       });
-    });
-
+    }
+    // 绑定删除事件
+    if (this.deleteButtonInstance) {
+      this.deleteButtonInstance.addEventHandler("click", (event) => {
+        const selectedClass = document.querySelector(".selected");
+        if (selectedClass == null) {
+          this.$message.warning(Message.NO_OBJECT_SELECTED);
+          return false;
+        }
+        this.$confirm({
+          title: `${Message.CONFIRM_DELETE}`,
+          okText: "确认",
+          okType: "danger",
+          cancelText: "取消",
+          centered: true,
+          // eslint-disable-next-line no-dupe-keys
+          okType: "danger",
+          content: (h) => <div style='color:red;'>将连关联文件一并删除</div>,
+          onOk() {
+            that.deleteCard(that.selectCardId);
+          },
+          onCancel() {},
+          class: "test"
+        });
+      });
+    }
+    // 绑定条件选择事件
     this.conditionSelectorInstance.addEventHandler("select", (event) => {
       this.queryParams.paramsCondition = event.args.item.value;
     });
@@ -237,7 +242,6 @@ export default {
       this.queryParams.param = event.target.value;
     });
 
-    // let searchBtn = document.getElementById("searchBtn");
     this.searchButtonInstance.addEventListener("click", (event) => {
       this.render();
     });
@@ -257,7 +261,7 @@ export default {
       const params = {
         page,
         rows,
-        jsonParams: JSON.stringify(this.queryParams),
+        jsonParams: JSON.stringify(this.queryParams)
       };
       getQuotationList(params).then((res) => {
         this.cards = res.rows;
@@ -265,93 +269,94 @@ export default {
         this.$refs.jqxLoader.close();
       });
     },
-    initTools: function (type, index, tool, menuToolIninitialization) {
+    initTools: function(type, index, tool, menuToolIninitialization) {
       if (this.toolsIndex < index) {
-        const that = this
+        const that = this;
         switch (index) {
-          case 0:
-            let buttonsContainer = document.createElement("div");
+          case 0: {
+            const buttonsContainer = document.createElement("div");
             buttonsContainer.style.cssText =
               "overflow: hidden; position: relative;";
             tool[0].appendChild(buttonsContainer);
             if (this.hasAuthority(this, "quotation:upload")) {
-              let uploadButtonContainer = document.createElement("div");
-              let uploadButtonID = JQXLite.generateID();
+              const uploadButtonContainer = document.createElement("div");
+              const uploadButtonID = JQXLite.generateID();
               uploadButtonContainer.id = uploadButtonID;
               uploadButtonContainer.style.cssText =
-                "float: left; margin-left: 5px;";
+                "float: left; margin-left: 5px;cursor:pointer;";
               buttonsContainer.appendChild(uploadButtonContainer);
               this.uploadButtonInstance = jqwidgets.createInstance(
                 `#${uploadButtonID}`,
                 "jqxButton",
                 {
-                  imgSrc: require(`@/assets/iconfont/custom/upload.svg`),
+                  imgSrc: require(`@/assets/iconfont/custom/upload.svg`)
                 }
               );
               jqwidgets.createInstance(`#${uploadButtonID}`, "jqxTooltip", {
                 content: "上传",
-                position: "bottom",
+                position: "bottom"
               });
             }
 
             if (this.hasAuthority(this, "quotation:delete")) {
-              let deleteButtonContainer = document.createElement("div");
-              let deleteButtonID = JQXLite.generateID();
+              const deleteButtonContainer = document.createElement("div");
+              const deleteButtonID = JQXLite.generateID();
               deleteButtonContainer.id = deleteButtonID;
               deleteButtonContainer.style.cssText =
-                "float: left; margin-left: 5px;";
+                "float: left; margin-left: 5px;cursor:pointer;";
               buttonsContainer.appendChild(deleteButtonContainer);
               this.deleteButtonInstance = jqwidgets.createInstance(
                 `#${deleteButtonID}`,
                 "jqxButton",
                 {
-                  imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+                  imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`)
                 }
               );
               jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
                 content: "删除",
-                position: "bottom",
+                position: "bottom"
               });
             }
 
             break;
-          case 1:
+          }
+          case 1: {
             tool[0].style.float = "right";
-            let buttonsContainer2 = document.createElement("div");
+            const buttonsContainer2 = document.createElement("div");
             // 查询条件选择器
-            let selectorContainer = document.createElement("div");
-            let conditionSelectorID = JQXLite.generateID();
+            const selectorContainer = document.createElement("div");
+            const conditionSelectorID = JQXLite.generateID();
             selectorContainer.id = conditionSelectorID;
             selectorContainer.style.cssText =
               "float: right; margin-right: 5px;";
             // 查询输入框和点击按钮
-            let searchBarContainer = document.createElement("div");
-            let searchBarID = JQXLite.generateID();
+            const searchBarContainer = document.createElement("div");
+            const searchBarID = JQXLite.generateID();
             searchBarContainer.id = searchBarID;
             searchBarContainer.style.cssText =
               "float: right; margin-right: 5px;";
 
-            let searchInputContainer = document.createElement("input");
-            let parameterID = JQXLite.generateID();
+            const searchInputContainer = document.createElement("input");
+            const parameterID = JQXLite.generateID();
             searchInputContainer.id = parameterID;
 
-            let searchBtn = document.createElement("div");
-            let searchButtonID = JQXLite.generateID();
+            const searchBtn = document.createElement("div");
+            const searchButtonID = JQXLite.generateID();
             searchBtn.id = searchButtonID;
             searchBtn.style.cssText = "cursor: pointer;";
 
-            let searchImgContainer = document.createElement("img");
+            const searchImgContainer = document.createElement("img");
             searchImgContainer.style.cssText = "width:16px;height:16px";
             searchImgContainer.src = require(`@/assets/iconfont/custom/search_lg.png`);
             searchBtn.appendChild(searchImgContainer);
 
             searchBarContainer.appendChild(searchInputContainer);
             searchBarContainer.appendChild(searchBtn);
-            that.searchButtonInstance = searchBtn
+            that.searchButtonInstance = searchBtn;
 
             // 刷新按钮
-            let refreshButtonContainer = document.createElement("div");
-            let refreshButtonID = JQXLite.generateID();
+            const refreshButtonContainer = document.createElement("div");
+            const refreshButtonID = JQXLite.generateID();
             refreshButtonContainer.id = refreshButtonID;
             refreshButtonContainer.style.cssText =
               "float: right; margin-right: 5px;";
@@ -372,10 +377,10 @@ export default {
                   { label: "底价名称", value: "file_name_reserve_price" },
                   { label: "报价名称", value: "file_name_quote_price" },
                   { label: "报价人", value: "quoter_name" },
-                  { label: "业务员", value: "salesman_name" },
+                  { label: "业务员", value: "salesman_name" }
                 ],
                 displayMember: "label",
-                valueMember: "value",
+                valueMember: "value"
               }
             );
 
@@ -386,7 +391,7 @@ export default {
                 placeHolder: "选择查找条件输入参数进行查询",
                 height: 25,
                 width: 250,
-                minLength: 1,
+                minLength: 1
               }
             );
 
@@ -394,11 +399,12 @@ export default {
               `#${refreshButtonID}`,
               "jqxButton",
               {
-                imgSrc: require(`@/assets/iconfont/custom/refresh.svg`),
+                imgSrc: require(`@/assets/iconfont/custom/refresh.svg`)
               }
             );
-
             break;
+          }
+
           default:
             break;
         }
@@ -420,11 +426,11 @@ export default {
       const params = {
         jsonParams: JSON.stringify({
           id,
-          type,
-        }),
+          type
+        })
       };
       download(params).then((res) => {
-        let a = document.createElement("a");
+        const a = document.createElement("a");
         a.href = res.url;
         a.download = name;
         document.body.appendChild(a);
@@ -442,8 +448,8 @@ export default {
     deleteCard(id) {
       const params = {
         jsonParams: JSON.stringify({
-          id,
-        }),
+          id
+        })
       };
       deleteCard(params).then((res) => {
         const lastSelectedElement = document.getElementById(
@@ -455,8 +461,8 @@ export default {
         this.selectCardId = 0;
         this.render();
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

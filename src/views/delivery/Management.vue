@@ -26,12 +26,12 @@ export default {
   components: {
     JqxMenu,
     BaseManagement,
-    Detail,
+    Detail
   },
   data() {
     return {
       menus: ["数据管理", "数据汇总"],
-      currentMenuName: "数据汇总",
+      currentMenuName: "数据汇总"
     };
   },
   created() {},
@@ -39,8 +39,8 @@ export default {
     onItemclick(event) {
       const menuName = event.args.textContent;
       this.currentMenuName = menuName;
-    },
-  },
+    }
+  }
 };
 </script>
 

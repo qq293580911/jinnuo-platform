@@ -29,7 +29,7 @@
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
-//import MachineWindow from "./MachineWindow";
+// import MachineWindow from "./MachineWindow";
 
 import { formatFilter } from "@/common/util.js";
 import { Message } from "@/common/const.js";
@@ -38,7 +38,7 @@ import { showStatisticsList } from "@/network/supplies.js";
 export default {
   components: {
     JqxGrid,
-    JqxTooltip,
+    JqxTooltip
   },
   beforeCreate() {
     this.source = {
@@ -55,7 +55,7 @@ export default {
         { name: "current_month_purchase_quantity", type: "number" },
         { name: "current_month_receive_quantity", type: "number" },
         { name: "total_purchase_quantity", type: "number" },
-        { name: "total_receive_quantity", type: "number" },
+        { name: "total_receive_quantity", type: "number" }
       ],
       type: "get",
       datatype: "json",
@@ -63,29 +63,29 @@ export default {
       sortcolumn: "id",
       sortdirection: "desc",
       id: "id",
-      url: `/supplies/showOfficeSuppliesStatistics.do`,
+      url: `/supplies/showOfficeSuppliesStatistics.do`
     };
   },
   data() {
     return {
-      //数据网格
+      // 数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           showStatisticsList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
         },
-        beforeLoadComplete(records) {},
+        beforeLoadComplete(records) {}
       }),
-      rendergridrows: function (obj) {
+      rendergridrows: function(obj) {
         return obj.data;
       },
       columns: [
@@ -100,33 +100,33 @@ export default {
           datafield: "",
           columntype: "number",
           width: 50,
-          cellsrenderer: function (row, column, value) {
+          cellsrenderer: function(row, column, value) {
             return (
               "<div class='jqx-grid-cell-middle-align' style='margin-top: 6px;'>" +
               (value + 1) +
               "</div>"
             );
-          },
+          }
         },
 
         {
           text: "用品名称",
           cellsAlign: "center",
           align: "center",
-          datafield: "supplies_name",
+          datafield: "supplies_name"
         },
         {
           text: "规格型号",
           cellsAlign: "center",
           align: "center",
-          datafield: "specification_model",
+          datafield: "specification_model"
         },
         {
           text: "颜色",
           cellsAlign: "center",
           align: "center",
           datafield: "supplies_color",
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -142,13 +142,13 @@ export default {
               value +
               "</span>"
             );
-          },
+          }
         },
         {
           text: "单位",
           cellsAlign: "center",
           align: "center",
-          datafield: "supplies_unit",
+          datafield: "supplies_unit"
         },
         {
           text: "单价",
@@ -156,7 +156,7 @@ export default {
           align: "center",
           datafield: "purchase_unit_price",
           aggregates: ["sum"],
-           aggregatesRenderer:this.aggregatesRenderer
+          aggregatesRenderer: this.aggregatesRenderer
         },
         {
           text: "数量",
@@ -165,7 +165,7 @@ export default {
           datafield: "current_month_purchase_quantity",
           columngroup: "currentMonthPurchase",
           aggregates: ["sum"],
-           aggregatesRenderer:this.aggregatesRenderer
+          aggregatesRenderer: this.aggregatesRenderer
         },
         {
           text: "金额",
@@ -174,7 +174,7 @@ export default {
           datafield: "current_month_purchase_amount",
           columngroup: "currentMonthPurchase",
           aggregates: ["sum"],
-           aggregatesRenderer:this.aggregatesRenderer
+          aggregatesRenderer: this.aggregatesRenderer
         },
 
         {
@@ -184,7 +184,7 @@ export default {
           datafield: "current_month_receive_quantity",
           columngroup: "currentMonthReseive",
           aggregates: ["sum"],
-           aggregatesRenderer:this.aggregatesRenderer
+          aggregatesRenderer: this.aggregatesRenderer
         },
         {
           text: "金额",
@@ -193,7 +193,7 @@ export default {
           datafield: "current_month_receive_amount",
           columngroup: "currentMonthReseive",
           aggregates: ["sum"],
-          aggregatesRenderer:this.aggregatesRenderer
+          aggregatesRenderer: this.aggregatesRenderer
         },
         {
           text: "数量",
@@ -202,7 +202,7 @@ export default {
           datafield: "remainder_stock_quantity",
           columngroup: "currentMonthStock",
           aggregates: ["sum"],
-           aggregatesRenderer:this.aggregatesRenderer
+          aggregatesRenderer: this.aggregatesRenderer
         },
         {
           text: "金额",
@@ -211,8 +211,8 @@ export default {
           datafield: "remainder_stock_amount",
           columngroup: "currentMonthStock",
           aggregates: ["sum"],
-           aggregatesRenderer:this.aggregatesRenderer
-        },
+          aggregatesRenderer: this.aggregatesRenderer
+        }
       ],
       columngroups: [
         { text: "本月购入", align: "center", name: "currentMonthPurchase" },
@@ -220,21 +220,21 @@ export default {
           text: "本月发出",
           parentgroup: "ProductDetails",
           align: "center",
-          name: "currentMonthReseive",
+          name: "currentMonthReseive"
         },
-        { text: "剩余库存", align: "center", name: "currentMonthStock" },
-      ],
+        { text: "剩余库存", align: "center", name: "currentMonthStock" }
+      ]
     };
   },
   methods: {
-    createButtonsContainers: function (toolbar) {
-      let buttonsContainer = document.createElement("div");
+    createButtonsContainers: function(toolbar) {
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
-      let addButtonContainer = document.createElement("div");
-      let deleteButtonContainer = document.createElement("div");
-      let exportButtonContainer = document.createElement("div");
-      let reloadButtonContainer = document.createElement("div");
+      const addButtonContainer = document.createElement("div");
+      const deleteButtonContainer = document.createElement("div");
+      const exportButtonContainer = document.createElement("div");
+      const reloadButtonContainer = document.createElement("div");
       addButtonContainer.id = "addButton";
       deleteButtonContainer.id = "deleteButton";
       exportButtonContainer.id = "exportButton";
@@ -252,58 +252,58 @@ export default {
       buttonsContainer.appendChild(exportButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
       toolbar[0].appendChild(buttonsContainer);
-      //创建按钮
-      let addButton = jqwidgets.createInstance("#addButton", "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+      // 创建按钮
+      const addButton = jqwidgets.createInstance("#addButton", "jqxButton", {
+        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`)
       });
       jqwidgets.createInstance("#addButton", "jqxTooltip", {
         content: "添加",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let deleteButton = jqwidgets.createInstance(
+      const deleteButton = jqwidgets.createInstance(
         "#deleteButton",
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`)
         }
       );
       jqwidgets.createInstance("#deleteButton", "jqxTooltip", {
         content: "删除",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let exportButton = jqwidgets.createInstance(
+      const exportButton = jqwidgets.createInstance(
         "#exportButton",
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/export.svg`)
         }
       );
       jqwidgets.createInstance("#exportButton", "jqxTooltip", {
         content: "导出",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let reloadButton = jqwidgets.createInstance(
+      const reloadButton = jqwidgets.createInstance(
         "#reloadButton",
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       jqwidgets.createInstance("#reloadButton", "jqxTooltip", {
         content: "刷新",
-        position: "bottom",
+        position: "bottom"
       });
 
-      //绑定事件
+      // 绑定事件
 
       deleteButton.addEventHandler("click", (event) => {
-        let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+        const selectedrowindex = this.$refs.myGrid.getselectedrowindex();
         if (selectedrowindex < 0) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
           return false;
         }
-        let id = this.$refs.myGrid.getrowid(selectedrowindex);
+        const id = this.$refs.myGrid.getrowid(selectedrowindex);
         this.$refs.myGrid.deleterow(id);
       });
 
@@ -313,7 +313,7 @@ export default {
     },
     aggregatesRenderer(aggregates, column, element) {
       var renderString = "";
-      $.each(aggregates, function (key, value) {
+      $.each(aggregates, function(key, value) {
         switch (key) {
           case "sum":
             renderString +=
@@ -326,8 +326,8 @@ export default {
         }
       });
       return renderString;
-    },
-  },
+    }
+  }
 };
 </script>
 

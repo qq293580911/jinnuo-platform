@@ -33,26 +33,26 @@ import {
   DUCT_BLOWER,
   MUTE_BLOWER,
   SIDE_WALL_BLOWER,
-  SIDE_WALL_BLOWER_EP,
+  SIDE_WALL_BLOWER_EP
 } from "@/common/const.js";
 export default {
   components: {
-    JqxGrid,
+    JqxGrid
   },
   props: {
     selectionType: {
       type: String,
-      default: null,
+      default: null
     },
     columnGroupName: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   beforeCreate() {
     this.source = {
       datafields: [],
-      localdata: [],
+      localdata: []
     };
   },
 
@@ -65,17 +65,16 @@ export default {
       columngroups: [
         {
           text: that.columnGroupName,
-          align: "center",
           name: "SelectionDetails",
-          align: "left",
-        },
-      ],
+          align: "left"
+        }
+      ]
     };
   },
   watch: {
     selectionType() {
-      //console.log(this.selectionType);
-    },
+      // console.log(this.selectionType);
+    }
   },
   mounted() {
     const that = this;
@@ -83,26 +82,26 @@ export default {
       case GENERAL_BLOWER:
         that.source.datafields.push({
           name: "pm_name",
-          type: "string",
+          type: "string"
         });
 
         that.source.datafields.push({
           name: "min_air_volume",
-          type: "number",
+          type: "number"
         });
         that.source.datafields.push({
           name: "max_air_volume",
-          type: "number",
+          type: "number"
         });
         if (that.columnGroupName == "非3C") {
           that.source.datafields.push({
             name: "price_non_ccc",
-            type: "number",
+            type: "number"
           });
         } else {
           that.source.datafields.push({
             name: "price_ccc",
-            type: "number",
+            type: "number"
           });
         }
         that.source.datafields.push({ name: "power", type: "string" });
@@ -113,28 +112,28 @@ export default {
           columngroup: "SelectionDetails",
           datafield: "pm_name",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "最低风量",
           columngroup: "SelectionDetails",
           datafield: "min_air_volume",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "最高风量",
           columngroup: "SelectionDetails",
           datafield: "max_air_volume",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "功率",
           columngroup: "SelectionDetails",
           datafield: "power",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         if (that.columnGroupName == "非3C") {
           that.columns.push({
@@ -142,7 +141,7 @@ export default {
             columngroup: "SelectionDetails",
             datafield: "price_non_ccc",
             align: "center",
-            cellsalign: "center",
+            cellsalign: "center"
           });
         } else {
           that.columns.push({
@@ -150,7 +149,7 @@ export default {
             columngroup: "SelectionDetails",
             datafield: "price_ccc",
             align: "center",
-            cellsalign: "center",
+            cellsalign: "center"
           });
         }
 
@@ -160,32 +159,32 @@ export default {
           datafield: "remark",
           align: "center",
           cellsalign: "center",
-          hidden: true,
+          hidden: true
         });
         break;
       case OUTSIDE_BUY:
         that.source.datafields.push({
           name: "pm_name",
-          type: "string",
+          type: "string"
         });
 
         that.source.datafields.push({
           name: "min_air_volume",
-          type: "number",
+          type: "number"
         });
         that.source.datafields.push({
           name: "max_air_volume",
-          type: "number",
+          type: "number"
         });
         if (that.columnGroupName == "非3C") {
           that.source.datafields.push({
             name: "price_non_ccc",
-            type: "number",
+            type: "number"
           });
         } else {
           that.source.datafields.push({
             name: "price_ccc",
-            type: "number",
+            type: "number"
           });
         }
         that.source.datafields.push({ name: "power", type: "string" });
@@ -196,28 +195,28 @@ export default {
           columngroup: "SelectionDetails",
           datafield: "pm_name",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "最低风量",
           columngroup: "SelectionDetails",
           datafield: "min_air_volume",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "最高风量",
           columngroup: "SelectionDetails",
           datafield: "max_air_volume",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "功率",
           columngroup: "SelectionDetails",
           datafield: "power",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         if (that.columnGroupName == "非3C") {
           that.columns.push({
@@ -225,7 +224,7 @@ export default {
             columngroup: "SelectionDetails",
             datafield: "price_non_ccc",
             align: "center",
-            cellsalign: "center",
+            cellsalign: "center"
           });
         } else {
           that.columns.push({
@@ -233,7 +232,7 @@ export default {
             columngroup: "SelectionDetails",
             datafield: "price_ccc",
             align: "center",
-            cellsalign: "center",
+            cellsalign: "center"
           });
         }
 
@@ -243,7 +242,7 @@ export default {
           datafield: "remark",
           align: "center",
           cellsalign: "center",
-          hidden: true,
+          hidden: true
         });
         break;
       case CONTROL_BOX:
@@ -251,7 +250,7 @@ export default {
         if (that.columnGroupName == "非3C") {
           that.source.datafields.push({
             name: "price_non_ccc",
-            type: "number",
+            type: "number"
           });
         } else {
           that.source.datafields.push({ name: "price_ccc", type: "number" });
@@ -263,14 +262,14 @@ export default {
           columngroup: "SelectionDetails",
           datafield: "pm_name",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "功率",
           columngroup: "SelectionDetails",
           datafield: "power",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         if (that.columnGroupName == "非3C") {
           that.columns.push({
@@ -278,7 +277,7 @@ export default {
             columngroup: "SelectionDetails",
             datafield: "price_non_ccc",
             align: "center",
-            cellsalign: "center",
+            cellsalign: "center"
           });
         } else {
           that.columns.push({
@@ -286,7 +285,7 @@ export default {
             columngroup: "SelectionDetails",
             datafield: "price_ccc",
             align: "center",
-            cellsalign: "center",
+            cellsalign: "center"
           });
         }
         break;
@@ -301,31 +300,31 @@ export default {
           text: "名称",
           datafield: "name",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "风量",
           datafield: "air_volume",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "单价",
           datafield: "price",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "规格",
           datafield: "specification",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "材质",
           datafield: "panel_material",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         break;
       default:
@@ -344,37 +343,37 @@ export default {
           text: "名称",
           datafield: "pm_name",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "最低风量",
           datafield: "min_air_volume",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "最高风量",
           datafield: "max_air_volume",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "功率",
           datafield: "power",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "单价",
           datafield: "price_non_ccc",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         that.columns.push({
           text: "型号",
           datafield: "model",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         });
         break;
     }
@@ -397,8 +396,7 @@ export default {
       this.$emit('rowselect')
     },
     getSelectionRarams(rowData) {
-      let machineName = rowData["pm_name"];
-      let power = "";
+      const machineName = rowData["pm_name"];
       let price = 0;
       if (rowData["price_non_ccc"]) {
         price = rowData["price_non_ccc"];
@@ -414,6 +412,7 @@ export default {
       let addControlBox = false;
       switch (this.selectionType) {
         case GENERAL_BLOWER:
+        {
           addControlBox = true;
           if (rowData["price_ccc"]) {
             remark = "3C";
@@ -424,20 +423,24 @@ export default {
             remark += "柜机";
           }
           selection += machineName.substring(0, machineName.indexOf("#") + 1);
-          let power = rowData["power"];
+          const power = rowData["power"];
           selection += `${power}KW`;
           if (/SWF/.test(machineName)) {
             remark += "（SWF）";
           }
           break;
+        }
         case OUTSIDE_BUY:
+        {
           remark += "圆机";
           selection += machineName.substring(0, machineName.indexOf("#") + 1);
           selection = `外购${selection}`;
-          power = rowData["power"];
+          const power = rowData["power"];
           selection += `${power}KW`;
           break;
+        }
         case CONTROL_BOX:
+        {
           if (rowData["price_ccc"]) {
             remark = "3C";
           }
@@ -447,47 +450,59 @@ export default {
             powerSupply = "双电源";
           }
           remark += powerSupply;
-          power = rowData["power"];
+          const power = rowData["power"];
           selection += `${power}KW`;
           break;
+        }
         case VENTILATOR:
           selection = rowData["specification"];
           break;
         case WALL_BLOWER:
+        {
           remark += "圆机";
-          power = rowData["power"];
+          const power = rowData["power"];
           selection += `${power}KW`;
           spec = rowData["model"];
           selection += " " + spec;
           break;
+        }
         case DUCT_BLOWER:
+        {
           remark += "圆机";
-          power = rowData["power"];
+          const power = rowData["power"];
           selection += `${power}KW`;
           spec = rowData["model"];
           selection += " " + spec;
           break;
+        }
         case MUTE_BLOWER:
+        {
           remark += "圆机";
-          power = rowData["power"];
+          const power = rowData["power"];
           selection += `${power}KW`;
           spec = rowData["model"];
           selection += " " + spec;
           break;
+        }
+
         case SIDE_WALL_BLOWER:
+        {
           remark += "圆机";
-          power = rowData["power"];
+          const power = rowData["power"];
           selection += `${power}KW`;
           spec = rowData["model"];
           selection += " " + spec;
           break;
+        }
         case SIDE_WALL_BLOWER_EP:
+        {
           remark += "圆机";
-          power = rowData["power"];
+          const power = rowData["power"];
           selection += `${power}KW`;
           spec = rowData["model"];
           selection += " " + spec;
           break;
+        }
         default:
           break;
       }
@@ -495,17 +510,17 @@ export default {
         addControlBox,
         price,
         remark,
-        selection,
+        selection
       };
       return map
     },
     selectrow(rowIndex) {
       this.$refs.myGrid.selectrow(rowIndex);
     },
-    clearselection(){
+    clearselection() {
       this.$refs.myGrid.clearselection()
     }
-  },
+  }
 };
 </script>
 

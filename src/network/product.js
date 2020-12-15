@@ -141,7 +141,7 @@ export function updateMachineProduct(params) {
 export function getAllMachineProduct() {
   return request({
     url: '/productManage/getAllMachineProduct.do',
-    method:'Get'
+    method: 'Get'
   })
 }
 

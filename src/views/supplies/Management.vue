@@ -29,20 +29,20 @@ export default {
     JqxMenu,
     Statistics,
     Purchase,
-    Receive,
+    Receive
   },
-  data: function () {
+  data: function() {
     return {
-      menus: ["统计", "采购","领用"],
-      currentMenuName: "统计",
+      menus: ["统计", "采购", "领用"],
+      currentMenuName: "统计"
     };
   },
   methods: {
     onItemclick(event) {
       const menuName = event.args.textContent;
       this.currentMenuName = menuName;
-    },
-  },
+    }
+  }
 };
 </script>
 

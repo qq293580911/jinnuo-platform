@@ -25,27 +25,27 @@
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 export default {
   components: {
-    JqxWindow,
+    JqxWindow
   },
   props: {
     src: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   data() {
     return {
       width: "99.9%",
       height: "99%",
-      frameborder: 0,
+      frameborder: 0
     };
   },
   methods: {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
       this.$refs.myWindow.open();
-    },
-  },
+    }
+  }
 };
 </script>
 

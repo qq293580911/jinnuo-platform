@@ -50,38 +50,38 @@ export default {
   name: "CustomUploder",
   components: {
     JqxTooltip,
-    JqxButton,
+    JqxButton
   },
   data() {
     return {
       inputValue: "",
       fileContent: {},
-      file: null,
+      file: null
     };
   },
   props: {
     type: {
       type: String,
-      default: "",
+      default: ""
     },
     width: {
       type: Number,
-      default: 0,
+      default: 0
     },
     height: {
       type: Number,
-      default: 0,
+      default: 0
     },
     showUploadButton: {
       type: Boolean,
-      default: false,
+      default: false
     },
     fieldsCofig: {
       type: Object,
       default: () => {
         return {};
-      },
-    },
+      }
+    }
   },
   created() {
     this.textId = "textInput" + JQXLite.generateID();
@@ -93,18 +93,21 @@ export default {
     },
     getHeight() {
       return this.height + "px";
-    },
+    }
   },
   mounted() {
     const that = this;
     // 创建自定义风格input
     switch (this.type) {
-      case "jqxInput":
+      case "jqxInput": {
         const input = document.getElementById(that.textId);
-        let jqxInput = jqwidgets.createInstance(input, "jqxInput", {
+        jqwidgets.createInstance(input, "jqxInput", {
           width: this.width,
-          height: this.height,
+          height: this.height
         });
+        break;
+      }
+      default:
         break;
     }
   },
@@ -128,15 +131,13 @@ export default {
       this.inputValue = fileName;
       // 文件内容
       const files = event.target.files;
-      LAY_EXCEL.importExcel(files, that.fieldsCofig, function (data, book) {
-        event.srcElement.value = ""; //及时清空,避免下次选择相同的文件无法触发事件
+      LAY_EXCEL.importExcel(files, that.fieldsCofig, function(data, book) {
+        event.srcElement.value = ""; // 及时清空,避免下次选择相同的文件无法触发事件
         that.fileContent = data;
         that.$emit("changed", data);
       });
-      
-      
-    },
-  },
+    }
+  }
 };
 </script>
 

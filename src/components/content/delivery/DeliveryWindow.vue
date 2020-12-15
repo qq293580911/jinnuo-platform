@@ -30,17 +30,17 @@ import {
   calc_misc_freight,
   calc_misc_tax,
   calc_misc_warranty,
-  calc_rsv_p,
+  calc_rsv_p
 } from "@/common/util";
 import { addDelivery, updateDelivery } from "@/network/delivery";
 export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   props: {
-    installFeeDisabled: false,
+    installFeeDisabled: false
   },
   data() {
     const that = this;
@@ -53,7 +53,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "projectName",
@@ -62,7 +62,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "deliveryAmount",
@@ -78,9 +78,9 @@ export default {
               inputMode: "simple",
               digits: 11,
               spinButtons: true,
-              decimalDigits: 2,
+              decimalDigits: 2
             });
-          },
+          }
         },
         {
           name: "deliveryDate",
@@ -90,7 +90,7 @@ export default {
           width: "250px",
           required: true,
           rowHeight: "40px",
-          formatString: "yyyy-MM-dd",
+          formatString: "yyyy-MM-dd"
         },
         {
           name: "logisticsManagementFee",
@@ -99,7 +99,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "freight",
@@ -109,7 +109,7 @@ export default {
           width: "250px",
           required: false,
           rowHeight: "40px",
-          columnWidth: "50%",
+          columnWidth: "50%"
         },
         {
           name: "tax",
@@ -118,7 +118,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "warranty",
@@ -127,7 +127,7 @@ export default {
           labelWidth: "100px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "installFee",
@@ -145,9 +145,9 @@ export default {
               spinButtons: true,
               decimalDigits: 0,
               disabled: that.installFeeDisabled,
-              allowNull: true,
+              allowNull: true
             });
-          },
+          }
         },
         {
           name: "deliveryReservePrice",
@@ -163,9 +163,9 @@ export default {
               inputMode: "simple",
               digits: 11,
               spinButtons: true,
-              decimalDigits: 2,
+              decimalDigits: 2
             });
-          },
+          }
         },
         {
           columns: [
@@ -176,7 +176,7 @@ export default {
               width: "60px",
               rowHeight: "50px",
               columnWidth: "50%",
-              align: "right",
+              align: "right"
             },
             {
               name: "cancelButton",
@@ -184,18 +184,18 @@ export default {
               text: "取消",
               width: "60px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           name: "id",
           type: "custom",
           init: (component) => {
             component.append('<input type="hidden" id="dlvDtlId"/>');
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
   },
   mounted() {
@@ -247,54 +247,54 @@ export default {
         input: $logManageFee,
         message: "不正确的格式",
         action: "keyup, blur",
-        rule: function (input) {
+        rule: function(input) {
           const value = $(input).val();
           if (value.length > 0) {
             const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
             return r;
           }
           return true;
-        },
+        }
       },
       {
         input: $freight,
         message: "不正确的格式",
         action: "keyup, blur",
-        rule: function (input) {
+        rule: function(input) {
           const value = $(input).val();
           if (value.length > 0) {
             const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
             return r;
           }
           return true;
-        },
+        }
       },
       {
         input: $tax,
         message: "不正确的格式",
         action: "keyup, blur",
-        rule: function (input) {
+        rule: function(input) {
           const value = $(input).val();
           if (value.length > 0) {
             const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
             return r;
           }
           return true;
-        },
+        }
       },
       {
         input: $warranty,
         message: "不正确的格式",
         action: "keyup, blur",
-        rule: function (input) {
+        rule: function(input) {
           const value = $(input).val();
           if (value.length > 0) {
             const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
             return r;
           }
           return true;
-        },
-      },
+        }
+      }
     ];
     $deliveryAmount
       .add($logManageFee)
@@ -302,7 +302,7 @@ export default {
       .add($tax)
       .add($warranty)
       .add($installFee)
-      .on("change", function () {
+      .on("change", function() {
         const deliveryAmount = $deliveryAmount.val();
         const logManageFee = $logManageFee.val();
         const freight = $freight.val();
@@ -310,14 +310,14 @@ export default {
         const warranty = $warranty.val();
         const installFee = $installFee.val();
 
-        let dlvManageFee = calc_misc_log_manage_fee(
+        const dlvManageFee = calc_misc_log_manage_fee(
           deliveryAmount,
           installFee,
           logManageFee
         );
-        let dlvTax = calc_misc_tax(deliveryAmount, installFee, tax);
-        let dlvWarranty = calc_misc_warranty(deliveryAmount, installFee, warranty);
-        let dlvFreight = calc_misc_freight(
+        const dlvTax = calc_misc_tax(deliveryAmount, installFee, tax);
+        const dlvWarranty = calc_misc_warranty(deliveryAmount, installFee, warranty);
+        const dlvFreight = calc_misc_freight(
           deliveryAmount,
           installFee,
           dlvManageFee,
@@ -326,7 +326,7 @@ export default {
           freight
         );
 
-        let dlvRsvP = calc_rsv_p(
+        const dlvRsvP = calc_rsv_p(
           deliveryAmount,
           dlvManageFee,
           dlvFreight,
@@ -413,7 +413,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addDelivery(params).then((res) => {
         this.$refs.myWindow.close();
@@ -422,7 +422,7 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateDelivery(params).then((res) => {
         this.$refs.myWindow.close();
@@ -441,8 +441,8 @@ export default {
       this.installFeeInstance.jqxNumberInput("setDecimal", 0);
       this.deliveryReservePriceInstance.jqxNumberInput("setDecimal", 0);
       $("#dlvDtlId").val("");
-    },
-  },
+    }
+  }
 };
 </script>
 

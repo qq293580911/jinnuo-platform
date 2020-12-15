@@ -101,7 +101,6 @@
 import JqxSwitchButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxswitchbutton.vue";
 import JqxInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxinput.vue";
 import JqxComboBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxcombobox.vue";
-import JqxNumberInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxnumberinput.vue";
 import JqxButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue";
 import {
   GENERAL_BLOWER,
@@ -112,7 +111,7 @@ import {
   DUCT_BLOWER,
   MUTE_BLOWER,
   SIDE_WALL_BLOWER,
-  SIDE_WALL_BLOWER_EP,
+  SIDE_WALL_BLOWER_EP
 } from "@/common/const.js";
 import {
   filterSelectionParams,
@@ -120,21 +119,20 @@ import {
   getOutsideBuyList,
   getVentilatorList,
   getControlBoxList,
-  getSmallBlowerList,
+  getSmallBlowerList
 } from "@/network/quote.js";
 export default {
   components: {
     JqxSwitchButton,
     JqxInput,
     JqxComboBox,
-    JqxNumberInput,
-    JqxButton,
+    JqxButton
   },
   props: {
     selectionType: {
       type: String,
-      default: "常规风机",
-    },
+      default: "常规风机"
+    }
   },
   data() {
     return {
@@ -143,7 +141,7 @@ export default {
       speeds: ["单速", "双速"],
       powerSupply: ["单电源", "双电源"],
       imgSrc: require("@/assets/iconfont/custom/confirm.svg"),
-      certificate:false,
+      certificate: false,
       showSwitchButton: true,
       showMachineNumber: true,
       showMachineType: true,
@@ -151,7 +149,7 @@ export default {
       showAirVolume: true,
       showPowerSupply: false,
       showPower: true,
-      showConfirm: true,
+      showConfirm: true
     };
   },
   watch: {
@@ -261,10 +259,9 @@ export default {
           break;
       }
       that.$refs.confirmButton.render();
-    },
+    }
   },
   mounted() {
-    const that = this;
     this.$bus
       .$off("setSelectionParams")
       .$on("setSelectionParams", (rowData) => {
@@ -292,8 +289,8 @@ export default {
       const jsonParams = {};
       jsonParams["priceSchemeId"] = this.$store.state.currentQuote.pricePlan.id;
       const existParams = {
-        selectionType:this.selectionType,
-        certificate:this.certificate
+        selectionType: this.selectionType,
+        certificate: this.certificate
       }
       switch (this.selectionType) {
         case "常规风机":
@@ -340,7 +337,7 @@ export default {
             "pricePlan"
           ] = this.$store.state.currentQuote.pricePlan.rule;
           getVentilatorList({
-            jsonParams: JSON.stringify(jsonParams),
+            jsonParams: JSON.stringify(jsonParams)
           }).then((res) => {
             this.$bus.$emit("renderSelectionList", existParams, res);
           });
@@ -361,9 +358,9 @@ export default {
           );
           break;
       }
-    },
+    }
   },
-  destroyed() {},
+  destroyed() {}
 };
 </script>
 

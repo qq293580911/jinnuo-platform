@@ -25,13 +25,13 @@ import { Message, ADD_PRODUCT, EDIT_PRODUCT } from "@/common/const";
 import {
   getCategory,
   addNonMachineProduct,
-  updateNonMachineProduct,
+  updateNonMachineProduct
 } from "@/network/product.js";
 export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   beforeCreate() {
     this.dropDownButtonID = JQXLite.generateID();
@@ -48,7 +48,7 @@ export default {
           labelWidth: "80px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "category",
@@ -57,14 +57,14 @@ export default {
           type: "custom",
           required: true,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             // 按钮
-            let dropDownButtonContainer = document.createElement("div");
+            const dropDownButtonContainer = document.createElement("div");
             dropDownButtonContainer.id = that.dropDownButtonID;
             component[0].appendChild(dropDownButtonContainer);
             // 树
-            let treeContainer = document.createElement("div");
-            let treeID = JQXLite.generateID();
+            const treeContainer = document.createElement("div");
+            const treeID = JQXLite.generateID();
             treeContainer.id = that.treeID;
             treeContainer.style.cssText = "border: none;";
             dropDownButtonContainer.appendChild(treeContainer);
@@ -74,7 +74,7 @@ export default {
               "jqxDropDownButton",
               {
                 width: 250,
-                height: 30,
+                height: 30
               }
             );
             const source = {
@@ -82,9 +82,9 @@ export default {
               dataFields: [
                 { name: "id", type: "number" },
                 { name: "parentid", type: "number" },
-                { name: "text", type: "string" },
+                { name: "text", type: "string" }
               ],
-              localdata: that.$store.state.productType.records,
+              localdata: that.$store.state.productType.records
             };
             const dataAdapter = new jqx.dataAdapter(source);
             dataAdapter.dataBind();
@@ -95,8 +95,8 @@ export default {
               [
                 {
                   name: "text",
-                  map: "label",
-                },
+                  map: "label"
+                }
               ]
             );
 
@@ -106,11 +106,11 @@ export default {
               {
                 source: records,
                 width: 250,
-                height: 250,
+                height: 250
               }
             );
 
-            //树绑定选择事件
+            // 树绑定选择事件
             that.treeInstance.addEventHandler("select", (event) => {
               const selectedItem = that.treeInstance.getSelectedItem();
               // 不能选择包含儿子的节点
@@ -126,7 +126,7 @@ export default {
               that.dropDownButtonInstance.setContent(dropDownContent);
               that.dropDownButtonInstance.close();
             });
-          },
+          }
         },
         {
           name: "limitSize",
@@ -135,7 +135,7 @@ export default {
           labelWidth: "80px",
           required: false,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             component.append(
               '<div style="display:inline-block;vertical-align: middle;" id="limitSizeLong"></div>'
             );
@@ -150,16 +150,16 @@ export default {
               height: 30,
               inputMode: "simple",
               decimalDigits: 0,
-              spinButtons: true,
+              spinButtons: true
             });
             jqwidgets.createInstance("#limitSizeShort", "jqxNumberInput", {
               width: 120,
               height: 30,
               inputMode: "simple",
               decimalDigits: 0,
-              spinButtons: true,
+              spinButtons: true
             });
-          },
+          }
         },
         {
           name: "minSizeRound",
@@ -170,15 +170,15 @@ export default {
           rowHeight: "40px",
           info: "圆形的最小尺寸",
           infoPosition: "right",
-          init: function (component) {
+          init: function(component) {
             jqwidgets.createInstance(component, "jqxNumberInput", {
               width: 250,
               height: 30,
               inputMode: "simple",
               decimalDigits: 0,
-              spinButtons: true,
+              spinButtons: true
             });
-          },
+          }
         },
         {
           name: "maxSizeRound",
@@ -189,15 +189,15 @@ export default {
           rowHeight: "40px",
           info: "圆形的最大尺寸",
           infoPosition: "right",
-          init: function (component) {
+          init: function(component) {
             jqwidgets.createInstance(component, "jqxNumberInput", {
               width: 250,
               height: 30,
               inputMode: "simple",
               decimalDigits: 0,
-              spinButtons: true,
+              spinButtons: true
             });
-          },
+          }
         },
         {
           name: "formula",
@@ -206,14 +206,14 @@ export default {
           labelWidth: "80px",
           required: true,
           rowHeight: "40px",
-          init: function (component) {
+          init: function(component) {
             const formulas = that.$store.state.formula;
-            let comboBox = jqwidgets.createInstance(component, "jqxComboBox", {
+            const comboBox = jqwidgets.createInstance(component, "jqxComboBox", {
               width: 250,
               height: 30,
-              source: formulas,
+              source: formulas
             });
-          },
+          }
         },
         {
           name: "unit",
@@ -223,7 +223,7 @@ export default {
           width: "250px",
           required: true,
           rowHeight: "40px",
-          options: [{ label: "个" }],
+          options: [{ label: "个" }]
         },
         {
           name: "isCCC",
@@ -235,8 +235,8 @@ export default {
           rowHeight: "40px",
           options: [
             { label: "是", value: 1 },
-            { label: "否", value: 0 },
-          ],
+            { label: "否", value: 0 }
+          ]
         },
         {
           name: "remark",
@@ -245,7 +245,7 @@ export default {
           labelWidth: "80px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           columns: [
@@ -256,7 +256,7 @@ export default {
               width: "60px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -264,11 +264,11 @@ export default {
               text: "取消",
               width: "60px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
-        },
-      ],
+              columnWidth: "50%"
+            }
+          ]
+        }
+      ]
     };
   },
   mounted() {
@@ -301,63 +301,63 @@ export default {
         input: $name,
         message: "该项必填",
         action: "keyup,blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: `#${that.dropDownButtonID}`,
         message: "该项必选",
         action: "close",
-        rule: function (input) {
+        rule: function(input) {
           return input[0].textContent != "";
-        },
+        }
       },
       {
         input: $limitSizeLong,
         message: "必须左长右短",
         action: "valueChanged",
-        rule: function () {
+        rule: function() {
           const limitSizeLong = $limitSizeLong.val();
           const limitSizeShort = $limitSizeShort.val();
           return limitSizeLong >= limitSizeShort;
-        },
+        }
       },
       {
         input: $limitSizeShort,
         message: "必须左长右短",
         action: "valueChanged",
-        rule: function () {
+        rule: function() {
           const limitSizeLong = $limitSizeLong.val();
           const limitSizeShort = $limitSizeShort.val();
           return limitSizeLong >= limitSizeShort;
-        },
+        }
       },
       {
         input: $formula,
         message: "该项必选",
         action: "select",
-        rule: function () {
+        rule: function() {
           const index = $formula.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $unit,
         message: "该项必选",
         action: "select",
-        rule: function () {
+        rule: function() {
           const index = $unit.jqxDropDownList("getSelectedIndex");
           return index > -1;
-        },
+        }
       },
       {
         input: $isCCC,
         message: "该项必选",
         action: "select",
-        rule: function () {
+        rule: function() {
           const index = $isCCC.jqxDropDownList("getSelectedIndex");
           return index > -1;
-        },
-      },
+        }
+      }
     ];
     // 提交并验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
@@ -373,18 +373,18 @@ export default {
         const data = params[1];
         this.nameInstance.val(data["pnm_name"]);
         const items = this.treeInstance.getItems();
-        const item = items.find(item=>{
+        const item = items.find(item => {
           return item['id'] == data["pc_id"]
         })
         this.treeInstance.selectItem(item.element);
         this.treeInstance.expandItem(item.element);
-        this.limitSizeLongInstance.jqxNumberInput('setDecimal',data['limit_size_long'])
-        this.limitSizeShortInstance.jqxNumberInput('setDecimal',data['limit_size_short'])
-        this.minSizeRoundInstance.jqxNumberInput('setDecimal',data['round_min_size'])
-        this.maxSizeRoundInstance.jqxNumberInput('setDecimal',data['round_max_size'])
-        this.formulaInstance.jqxComboBox('selectItem',data['formula'])
-        this.unitInstance.jqxDropDownList('selectItem',data['unit'])
-        this.isCCCInstance.jqxDropDownList('selectItem',data['is_ccc']=='是'?1:0)
+        this.limitSizeLongInstance.jqxNumberInput('setDecimal', data['limit_size_long'])
+        this.limitSizeShortInstance.jqxNumberInput('setDecimal', data['limit_size_short'])
+        this.minSizeRoundInstance.jqxNumberInput('setDecimal', data['round_min_size'])
+        this.maxSizeRoundInstance.jqxNumberInput('setDecimal', data['round_max_size'])
+        this.formulaInstance.jqxComboBox('selectItem', data['formula'])
+        this.unitInstance.jqxDropDownList('selectItem', data['unit'])
+        this.isCCCInstance.jqxDropDownList('selectItem', data['is_ccc'] == '是' ? 1 : 0)
         this.remarkInstance.val(data['remark'])
         this.id = data['pnm_id']
       }
@@ -412,7 +412,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addNonMachineProduct(params).then((res) => {
         this.$refs.myWindow.close();
@@ -421,7 +421,7 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateNonMachineProduct(params).then((res) => {
         this.$refs.myWindow.close();
@@ -440,11 +440,11 @@ export default {
       this.unitInstance.jqxDropDownList("clearSelection");
       this.isCCCInstance.jqxDropDownList("clearSelection");
       this.remarkInstance.val("");
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close();
-  },
+  }
 };
 </script>
 

@@ -40,7 +40,7 @@ export default {
   name: "Detail",
   components: {
     JqxGrid,
-    JqxTooltip,
+    JqxTooltip
   },
   beforeCreate() {
     this.source = {
@@ -74,7 +74,7 @@ export default {
         { name: "consideration_commission_status", type: "string" },
         { name: "remark", type: "string" },
         { name: "order_area", type: "float" },
-        { name: "delivery_area", type: "float" },
+        { name: "delivery_area", type: "float" }
       ],
       type: "get",
       datatype: "json",
@@ -82,27 +82,27 @@ export default {
       sortcolumn: "id",
       sortdirection: "desc",
       id: "id",
-      url: `/dlvDtl/showDeliveryDetailList.do`,
+      url: `/dlvDtl/showDeliveryDetailList.do`
     };
   },
   data() {
     return {
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           showDeliveryDetailList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
         },
         beforeLoadComplete(records) {
-          records.forEach(function (value, index, array) {
+          records.forEach(function(value, index, array) {
             const ordAmt = value["order_amount"];
             const dlvAmt = value["delivery_amount"];
             const logManageFee = value["logistics_management_fee"];
@@ -126,7 +126,7 @@ export default {
               warranty = parseFloat(warranty) / 100;
             }
 
-            //计算送货物流管理费
+            // 计算送货物流管理费
             if (ordAmt == 0) {
               value["delivery_logistics_management_fee"] = 0;
             } else if (logManageFee % 1 === 0) {
@@ -135,19 +135,19 @@ export default {
               isNaN(dlvLogManageFee)
                 ? (value["delivery_logistics_management_fee"] = 0)
                 : (value[
-                    "delivery_logistics_management_fee"
-                  ] = dlvLogManageFee);
+                  "delivery_logistics_management_fee"
+                ] = dlvLogManageFee);
             } else {
               var dlvLogManageFee = dlvAmt * logManageFee;
               dlvLogManageFee = Math.round(dlvLogManageFee);
               isNaN(dlvLogManageFee)
                 ? (value["delivery_logistics_management_fee"] = 0)
                 : (value[
-                    "delivery_logistics_management_fee"
-                  ] = dlvLogManageFee);
+                  "delivery_logistics_management_fee"
+                ] = dlvLogManageFee);
             }
 
-            //计算送货运费
+            // 计算送货运费
             if (ordAmt == 0) {
               value["delivery_freight"] = 0;
             } else if (freight % 1 === 0) {
@@ -162,7 +162,7 @@ export default {
                 ? (value["delivery_freight"] = 0)
                 : (value["delivery_freight"] = Math.round(dlvFreight));
             }
-            //计算送货税金
+            // 计算送货税金
             if (ordAmt == 0) {
               value["delivery_tax"] = 0;
             } else if (tax % 1 === 0) {
@@ -177,7 +177,7 @@ export default {
                 ? (value["delivery_tax"] = 0)
                 : (value["delivery_tax"] = Math.round(dlvTax));
             }
-            //计算送货质保金
+            // 计算送货质保金
             if (ordAmt == 0) {
               value["delivery_warranty"] = 0;
             } else if (warranty % 1 === 0) {
@@ -193,7 +193,7 @@ export default {
                 : (value["delivery_warranty"] = Math.round(dlvWrt));
             }
 
-            //计算送货底价
+            // 计算送货底价
             var dlvLogManageFee = value["delivery_logistics_management_fee"];
             var dlvFreight = value["delivery_freight"];
             var dlvTax = value["delivery_tax"];
@@ -209,9 +209,9 @@ export default {
               ? (value["undelivered_amount"] = ordAmt)
               : (value["undelivered_amount"] = unDlvAmt);
           });
-        },
+        }
       }),
-      rendergridrows: function (obj) {
+      rendergridrows: function(obj) {
         return obj.data;
       },
       columns: [
@@ -220,77 +220,77 @@ export default {
           datafield: "delivery_date",
           cellsAlign: "center",
           align: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "大区",
           datafield: "salesman_company",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "办事处",
           datafield: "salesman_agency",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "业务员",
           datafield: "salesman_name",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "省",
           datafield: "province",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "市",
           datafield: "city",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "县",
           datafield: "county",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "合同编号",
           datafield: "contract_number",
           align: "center",
           cellsalign: "center",
-          width: 150,
+          width: 150
         },
         {
           text: "合同金额",
           datafield: "contract_amount",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "下单编号",
           datafield: "order_number",
           align: "center",
           cellsalign: "center",
-          width: 150,
+          width: 150
         },
         {
           text: "项目名称",
           datafield: "project_name",
           align: "center",
           cellsalign: "center",
-          width: 180,
+          width: 180
         },
         {
           text: "下单金额",
@@ -299,7 +299,7 @@ export default {
           cellsalign: "center",
           width: 100,
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "送货金额",
@@ -308,7 +308,7 @@ export default {
           align: "center",
           width: 125,
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
 
         {
@@ -316,14 +316,14 @@ export default {
           datafield: "tax",
           cellsAlign: "center",
           align: "center",
-          width: 80,
+          width: 80
         },
         {
           text: "物流管理费",
           datafield: "logistics_management_fee",
           cellsAlign: "center",
           align: "center",
-          width: 80,
+          width: 80
         },
         {
           text: "质保金",
@@ -331,14 +331,14 @@ export default {
           cellsAlign: "center",
           align: "center",
           width: 80,
-          editable: false,
+          editable: false
         },
         {
           text: "运费",
           datafield: "freight",
           cellsAlign: "center",
           align: "center",
-          width: 80,
+          width: 80
         },
 
         {
@@ -346,28 +346,28 @@ export default {
           datafield: "delivery_tax",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 125
         },
         {
           text: "送货物流管理费",
           datafield: "delivery_logistics_management_fee",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 125
         },
         {
           text: "送货质保金",
           datafield: "delivery_warranty",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 125
         },
         {
           text: "送货运费",
           datafield: "delivery_freight",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 125
         },
         {
           text: "送货底价",
@@ -376,28 +376,28 @@ export default {
           align: "center",
           width: 125,
           aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer,
+          aggregatesrenderer: this.aggregatesRenderer
         },
         {
           text: "超点承担",
           datafield: "over_budget_bear",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 125
         },
         {
           text: "实际运费",
           datafield: "actual_freight",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 125
         },
         {
           text: "未送货金额",
           datafield: "undelivered_amount",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 125
         },
         {
           text: "计提成状态",
@@ -405,7 +405,7 @@ export default {
           cellsAlign: "center",
           align: "center",
           width: 125,
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -438,41 +438,41 @@ export default {
               value +
               "</span>"
             );
-          },
+          }
         },
         {
           text: "备注",
           datafield: "remark",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 125
         },
         {
           text: "下单面积",
           datafield: "order_area",
           cellsAlign: "center",
           align: "center",
-          width: 125,
+          width: 125
         },
         {
           text: "送货面积",
           datafield: "delivery_area",
           cellsAlign: "center",
           align: "center",
-          width: 125,
-        },
-      ],
+          width: 125
+        }
+      ]
     };
   },
   mounted() {},
   methods: {
-    createButtonsContainers: function (toolbar) {
-      let buttonsContainer = document.createElement("div");
+    createButtonsContainers: function(toolbar) {
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
-      let syncButtonContainer = document.createElement("div");
-      let exportButtonContainer = document.createElement("div");
-      let reloadButtonContainer = document.createElement("div");
+      const syncButtonContainer = document.createElement("div");
+      const exportButtonContainer = document.createElement("div");
+      const reloadButtonContainer = document.createElement("div");
       const syncButtonID = JQXLite.generateID();
       const exportButtonID = JQXLite.generateID();
       const reloadButtonID = JQXLite.generateID();
@@ -489,52 +489,52 @@ export default {
       buttonsContainer.appendChild(exportButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
       toolbar[0].appendChild(buttonsContainer);
-      //创建按钮
-      let syncButton = jqwidgets.createInstance(
+      // 创建按钮
+      jqwidgets.createInstance(
         `#${syncButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/async.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/async.svg`)
         }
       );
       jqwidgets.createInstance(`#${syncButtonID}`, "jqxTooltip", {
         content: "同步数据到服务器",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let exportButton = jqwidgets.createInstance(
+      jqwidgets.createInstance(
         `#${exportButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/export.svg`)
         }
       );
       jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
         content: "导出",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let reloadButton = jqwidgets.createInstance(
+      const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
-        position: "bottom",
+        position: "bottom"
       });
 
-      //绑定事件
+      // 绑定事件
 
-      deleteButton.addEventHandler("click", (event) => {
-        let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
-        if (selectedrowindex < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED });
-          return false;
-        }
-        let id = this.$refs.myGrid.getrowid(selectedrowindex);
-        this.$refs.myGrid.deleterow(id);
-      });
+      // deleteButton.addEventHandler("click", (event) => {
+      //   const selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+      //   if (selectedrowindex < 0) {
+      //     this.$message.warning({ content: Message.NO_ROWS_SELECTED });
+      //     return false;
+      //   }
+      //   const id = this.$refs.myGrid.getrowid(selectedrowindex);
+      //   this.$refs.myGrid.deleterow(id);
+      // });
 
       reloadButton.addEventHandler("click", (event) => {
         this.$refs.myGrid.updatebounddata();
@@ -542,7 +542,7 @@ export default {
     },
     aggregatesRenderer(aggregates, column, element) {
       var renderString = "";
-      $.each(aggregates, function (key, value) {
+      $.each(aggregates, function(key, value) {
         switch (key) {
           case "sum":
             renderString +=
@@ -555,8 +555,8 @@ export default {
         }
       });
       return renderString;
-    },
-  },
+    }
+  }
 };
 </script>
 

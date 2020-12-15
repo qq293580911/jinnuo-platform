@@ -53,3 +53,11 @@ export function checkContractNumberExist(params) {
     params
   })
 }
+
+export function checkDuplicate(params) {
+  return request({
+    url: '/contrDtl/checkDuplicateByProjectName.do',
+    method: 'Get',
+    params
+  })
+}

@@ -43,14 +43,14 @@ import {
   calc_misc_freight,
   calc_misc_tax,
   calc_misc_warranty,
-  calc_rsv_p,
+  calc_rsv_p
 } from "@/common/util";
 import { importOrder, batchUpdateOrderByOrderNumber } from "@/network/order";
 export default {
   components: {
     JqxWindow,
     JqxGrid,
-    CustomUploader,
+    CustomUploader
   },
   beforeCreate() {
     this.source = {
@@ -58,65 +58,65 @@ export default {
         {
           name: "product_type",
           map: "productType",
-          type: "string",
+          type: "string"
         },
         {
           name: "order_date",
           map: "orderDate",
-          type: "string",
+          type: "string"
         },
         {
           name: "salesman",
-          type: "number",
+          type: "number"
         },
         {
           name: "salesman_name",
           map: "salesmanName",
-          type: "string",
+          type: "string"
         },
         {
           name: "contract_number",
           map: "contractNumber",
-          type: "string",
+          type: "string"
         },
         {
           name: "order_number",
           map: "orderNumber",
-          type: "number",
+          type: "number"
         },
         {
           name: "project_name",
           map: "projectName",
-          type: "string",
+          type: "string"
         },
         {
           name: "order_amount",
           map: "orderAmount",
-          type: "number",
+          type: "number"
         },
         {
           name: "remark",
           map: "remark",
-          type: "string",
+          type: "string"
         },
         {
           name: "order_area",
           map: "orderArea",
-          type: "float",
+          type: "float"
         },
         {
           name: "consideration_commission_status",
           map: "considerationCommissionStatus",
-          type: "string",
+          type: "string"
         },
         {
           name: "actual_freight",
           map: "actualFright",
-          type: "float",
-        },
+          type: "float"
+        }
       ],
       dataType: "json",
-      localdata: [],
+      localdata: []
     };
   },
   data() {
@@ -127,7 +127,7 @@ export default {
         beforeLoadComplete(records) {
           const salesmans = that.$store.state.salesmans;
           records.forEach((item) => {
-            //放入业务员ID
+            // 放入业务员ID
             const salesman = salesmans.find((salesman) => {
               return salesman["emp_name"] == item["salesman_name"];
             });
@@ -135,7 +135,7 @@ export default {
               item["salesman"] = salesman["emp_id"];
             }
           });
-        },
+        }
       }),
       columns: [
         {
@@ -143,98 +143,98 @@ export default {
           dataField: "product_type",
           cellsAlign: "center",
           align: "center",
-          cellclassname: function (row, columnfield, value, data) {
+          cellclassname: function(row, columnfield, value, data) {
             if (/^风管+(辅材)?$/.test(value) == false) {
               that.allowedFormat = false;
               return "yellow";
             }
             return "";
-          },
+          }
         },
         {
           text: "下单日期",
           dataField: "order_date",
           cellsAlign: "center",
           align: "center",
-          cellclassname: function (row, columnfield, value, data) {
-            let r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/);
+          cellclassname: function(row, columnfield, value, data) {
+            const r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/);
             if (r == null) {
               that.allowedFormat = false;
               return "yellow";
             }
             return "";
-          },
+          }
         },
         {
           text: "项目名称",
           dataField: "project_name",
           cellsAlign: "center",
           align: "center",
-          width: 150,
+          width: 150
         },
         {
           text: "业务员",
           dataField: "salesman_name",
           cellsAlign: "center",
           align: "center",
-          cellclassname: function (row, columnfield, value, data) {
+          cellclassname: function(row, columnfield, value, data) {
             if (data["salesman"] == null) {
               that.allowedFormat = false;
               return "yellow";
             }
             return "";
-          },
+          }
         },
         {
           text: "合同编号",
           dataField: "contract_number",
           cellsAlign: "center",
-          align: "center",
+          align: "center"
         },
         {
           text: "下单编号",
           dataField: "order_number",
           cellsAlign: "center",
-          align: "center",
+          align: "center"
         },
         {
           text: "下单金额",
           dataField: "order_amount",
           cellsAlign: "center",
-          align: "center",
+          align: "center"
         },
 
         {
           text: "下单面积",
           dataField: "order_area",
           cellsAlign: "center",
-          align: "center",
+          align: "center"
         },
         {
           text: "备注",
           dataField: "remark",
           cellsAlign: "center",
-          align: "center",
+          align: "center"
         },
         {
           text: "计提成状态",
           dataField: "consideration_commission_status",
           cellsAlign: "center",
           align: "center",
-          width: 110,
+          width: 110
         },
         {
           text: "实际运费",
           dataField: "actual_freight",
           cellsAlign: "center",
           align: "center",
-          width: 80,
-        },
+          width: 80
+        }
       ],
       fileContent: [],
       startRow: 0,
       endRow: 0,
-      allowedFormat: true,
+      allowedFormat: true
     };
   },
   watch: {
@@ -257,15 +257,15 @@ export default {
         this.source.localdata = data;
         this.$refs.myGrid.updatebounddata();
       }
-    },
+    }
   },
   mounted() {
     const that = this;
     // 上传器绑定值改变事件
     this.uploaderInstance.$off("changed").$on("changed", (data) => {
-      let sheetName = Object.keys(data[0])[0];
+      const sheetName = Object.keys(data[0])[0];
       const fileContent = data[0][sheetName];
-      fileContent.forEach(function (value, index) {
+      fileContent.forEach(function(value, index) {
         if (index > 0) {
           value["orderDate"] = LAY_EXCEL.dateCodeFormat(
             value["orderDate"],
@@ -303,13 +303,13 @@ export default {
         okText: "确认",
         cancelText: "取消",
         centered: true,
-        content: (h) => <div style="color:red;"></div>,
+        content: (h) => <div style='color:red;'></div>,
         onOk() {
           that.importOrder();
         },
         onCancel() {},
         class: "test",
-        zIndex: 1500,
+        zIndex: 1500
       });
     });
     // 批量修改按钮绑定点击事件
@@ -318,8 +318,8 @@ export default {
     });
   },
   methods: {
-    createButtonsContainers: function (toolbar) {
-      let buttonsContainer = document.createElement("div");
+    createButtonsContainers: function(toolbar) {
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
       toolbar[0].appendChild(buttonsContainer);
@@ -328,10 +328,10 @@ export default {
       uploadContainer.classList.add("tool-item");
       buttonsContainer.appendChild(uploadContainer);
       const uploader = document.createElement("div");
-      let uploaderID = JQXLite.generateID();
+      const uploaderID = JQXLite.generateID();
       uploader.id = uploaderID;
       uploadContainer.appendChild(uploader);
-      let uploaderComponent = Vue.extend(CustomUploader);
+      const uploaderComponent = Vue.extend(CustomUploader);
       this.uploaderInstance = new uploaderComponent({
         propsData: {
           width: 190,
@@ -350,17 +350,17 @@ export default {
               orderArea: "H",
               remark: "I",
               considerationCommissionStatus: "J",
-              actualFright: "K",
-            },
-          },
-        },
+              actualFright: "K"
+            }
+          }
+        }
       }).$mount(`#${uploaderID}`);
       // 开始行
       let spanContainer = document.createElement("span");
       spanContainer.classList.add("tool-item");
       spanContainer.innerHTML = "开始行：";
       const startRowContainer = document.createElement("div");
-      let startRowID = JQXLite.generateID();
+      const startRowID = JQXLite.generateID();
       startRowContainer.id = startRowID;
       startRowContainer.classList.add("tool-item");
       buttonsContainer.appendChild(spanContainer);
@@ -374,7 +374,7 @@ export default {
           min: 0,
           decimalDigits: 0,
           digits: 5,
-          spinButtons: true,
+          spinButtons: true
         }
       );
       // 结束行
@@ -383,7 +383,7 @@ export default {
       spanContainer.innerHTML = "结束行：";
       buttonsContainer.appendChild(spanContainer);
       const endRowContainer = document.createElement("div");
-      let endRowID = JQXLite.generateID();
+      const endRowID = JQXLite.generateID();
       endRowContainer.id = endRowID;
       endRowContainer.classList.add("tool-item");
       buttonsContainer.appendChild(endRowContainer);
@@ -396,14 +396,14 @@ export default {
           min: 0,
           decimalDigits: 0,
           digits: 5,
-          spinButtons: true,
+          spinButtons: true
         }
       );
 
       // 确认导入按钮
-      let confirmContainer = document.createElement("div");
+      const confirmContainer = document.createElement("div");
       confirmContainer.classList.add("tool-item");
-      let confirmImportID = JQXLite.generateID();
+      const confirmImportID = JQXLite.generateID();
       confirmContainer.id = confirmImportID;
       buttonsContainer.appendChild(confirmContainer);
       this.confirmImportInstance = jqwidgets.createInstance(
@@ -413,13 +413,13 @@ export default {
       );
       jqwidgets.createInstance(`#${confirmImportID}`, "jqxTooltip", {
         content: "确认导入",
-        position: "bottom",
+        position: "bottom"
       });
 
       // 批量修改按钮
-      let batchUpdateContainer = document.createElement("div");
+      const batchUpdateContainer = document.createElement("div");
       batchUpdateContainer.classList.add("tool-item");
-      let batchUpdateID = JQXLite.generateID();
+      const batchUpdateID = JQXLite.generateID();
       batchUpdateContainer.id = batchUpdateID;
       buttonsContainer.appendChild(batchUpdateContainer);
       this.batchUpdateInstance = jqwidgets.createInstance(
@@ -429,10 +429,10 @@ export default {
       );
       jqwidgets.createInstance(`#${batchUpdateID}`, "jqxTooltip", {
         content: "批量更新",
-        position: "bottom",
+        position: "bottom"
       });
       // 字段选择
-      let fieldSelection = document.createElement("div");
+      const fieldSelection = document.createElement("div");
       fieldSelection.id = "fieldSelection";
       fieldSelection.classList.add("tool-item");
       buttonsContainer.appendChild(fieldSelection);
@@ -442,7 +442,7 @@ export default {
         {
           source: ["实际运费", "计提成状态"],
           width: 100,
-          height: 23,
+          height: 23
         }
       );
     },
@@ -454,15 +454,15 @@ export default {
       const rowsData = this.$refs.myGrid.getrows();
       const params = {
         jsonParams: JSON.stringify({
-          items: rowsData,
-        }),
+          items: rowsData
+        })
       };
       importOrder(params).then((res) => {
         this.$refs.myWindow.close();
         this.$parent.refresh();
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

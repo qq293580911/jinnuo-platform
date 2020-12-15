@@ -59,7 +59,7 @@ export default {
     JqxToolbar,
     JqxPanel,
     JqxDocking,
-    JqxListBox,
+    JqxListBox
   },
   beforeCreate() {
     this.count = 5;
@@ -71,15 +71,15 @@ export default {
     return {
       toolsIndex: -1,
       tools: "custom",
-      groups: [],
+      groups: []
     };
   },
   methods: {
-    initTools: function (type, index, tool, menuToolIninitialization) {
+    initTools: function(type, index, tool, menuToolIninitialization) {
       if (index != this.toolsIndex) {
         switch (index) {
           case 0:
-            let addButtonContainer = document.createElement("div");
+            const addButtonContainer = document.createElement("div");
             addButtonContainer.id = "addButton";
             addButtonContainer.style.cssText =
               "overflow: hidden; position: relative;";
@@ -88,13 +88,13 @@ export default {
               "#addButton",
               "jqxButton",
               {
-                imgSrc: require("@/assets/iconfont/custom/add-circle.svg"),
+                imgSrc: require("@/assets/iconfont/custom/add-circle.svg")
               }
             );
 
             jqwidgets.createInstance("#addButton", "jqxTooltip", {
               content: "添加新团队",
-              position: "mouse",
+              position: "mouse"
             });
 
             break;
@@ -106,7 +106,7 @@ export default {
     renderData() {
       getSalesGroupList().then((res) => {
         const list = [];
-        for (let key in res) {
+        for (const key in res) {
           const map = {};
           map.name = key;
           map.group = res[key];
@@ -121,7 +121,7 @@ export default {
           this.groups.push(docks);
         }
       });
-    },
+    }
     // onDragStart: function (event) {},
     // onDragEnd: function (event) {
     //   if (event.args.label) {
@@ -157,7 +157,7 @@ export default {
     // dragEnd: function (dragItem, dropItem) {
     //   if (dragItem.label == "Frappuccino") return false;
     // },
-  },
+  }
 };
 </script>
 

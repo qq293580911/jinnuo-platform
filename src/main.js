@@ -17,19 +17,19 @@ Vue.use(authority)
 
 Vue.config.productionTip = false
 
-//引入Ant Design Vue中的icon
-import {Icon} from 'ant-design-vue'
-//这个iconfont.js就是从iconfont.cn网站上下载后的解压JS文件
+// 引入Ant Design Vue中的icon
+import { Icon } from 'ant-design-vue'
+// 这个iconfont.js就是从iconfont.cn网站上下载后的解压JS文件
 import iconFront from './assets/iconfont/iconfont.js'
 const myicon = Icon.createFromIconfontCN({
   scriptUrl: iconFront
 })
 Vue.component('my-icon', myicon)
 
-//添加事件总线对象
+// 添加事件总线对象
 Vue.prototype.$bus = new Vue()
 
-let myVue = new Vue({
+const myVue = new Vue({
   render: h => h(App),
   // 挂载到Vue示例上
   router,

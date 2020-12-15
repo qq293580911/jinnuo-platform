@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: "QuotationItem",
+  name: "QuotationItem"
 };
 </script>
 

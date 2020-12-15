@@ -26,12 +26,12 @@ import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
 import { getDepartment } from "@/network/department.js";
 import { addEmployee, updateEmployee } from "@/network/employee.js";
-import { Message, ADD_EMPLOYEE, EDIT_EMPLOYEE } from "@/common/const.js";
+import { EDIT_EMPLOYEE } from "@/common/const.js";
 export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   data() {
     const that = this;
@@ -46,7 +46,7 @@ export default {
           rowHeight: "40px",
           required: true,
           info: "输入员工姓名",
-          infoPosition: "right",
+          infoPosition: "right"
         },
         {
           name: "gender",
@@ -56,7 +56,7 @@ export default {
           width: "250px",
           rowHeight: "40px",
           required: false,
-          init: function (component) {
+          init: function(component) {
             var div = `<div id="male" style="float: left;margin-left:10px;"><span>男</span></div>
                                         <div id="female" style="float: left;margin-left:10px;"><span>女</span></div>`;
             component.append(div);
@@ -66,7 +66,7 @@ export default {
               {
                 width: "40%",
                 height: 30,
-                checked: true,
+                checked: true
               }
             );
             that.femaleInstance = jqwidgets.createInstance(
@@ -74,10 +74,10 @@ export default {
               "jqxRadioButton",
               {
                 width: "40%",
-                height: 30,
+                height: 30
               }
             );
-          },
+          }
         },
         {
           name: "phone",
@@ -88,7 +88,7 @@ export default {
           rowHeight: "40px",
           required: true,
           info: "输入员工联系方式",
-          infoPosition: "right",
+          infoPosition: "right"
         },
         {
           name: "idCard",
@@ -99,7 +99,7 @@ export default {
           rowHeight: "40px",
           required: true,
           info: "输入员工身份证",
-          infoPosition: "right",
+          infoPosition: "right"
         },
         {
           name: "entryDate",
@@ -109,7 +109,7 @@ export default {
           labelWidth: "25%",
           width: "250px",
           rowHeight: "40px",
-          required: true,
+          required: true
         },
         {
           name: "department",
@@ -119,13 +119,13 @@ export default {
           width: "250px",
           rowHeight: "40px",
           required: true,
-          init: (component) =>{
+          init: (component) => {
             // 按钮
-            let dropDownButtonContainer = document.createElement("div");
+            const dropDownButtonContainer = document.createElement("div");
             dropDownButtonContainer.id = "departmentButton";
             component[0].appendChild(dropDownButtonContainer);
             // 树
-            let treeContainer = document.createElement("div");
+            const treeContainer = document.createElement("div");
             treeContainer.id = "deptId";
             treeContainer.style.cssText = "border: none;";
             dropDownButtonContainer.appendChild(treeContainer);
@@ -134,7 +134,7 @@ export default {
               "jqxDropDownButton",
               {
                 width: 250,
-                height: 30,
+                height: 30
               }
             );
 
@@ -142,11 +142,11 @@ export default {
               dataFields: [
                 { name: "id", map: "deptId", type: "number" },
                 { name: "parentId", type: "number" },
-                { name: "text", map: "deptName", type: "string" },
+                { name: "text", map: "deptName", type: "string" }
               ],
               url: "/dept/getDepartmentSource.do",
               type: "get",
-              datatype: "json",
+              datatype: "json"
             };
 
             that.dataAdapter = new jqx.dataAdapter(source, {
@@ -154,7 +154,7 @@ export default {
                 getDepartment(source.url, source, serverdata).then((res) => {
                   callback({
                     originaldata: res,
-                    records: res.records,
+                    records: res.records
                   });
                 });
               },
@@ -166,24 +166,24 @@ export default {
                   [
                     {
                       name: "text",
-                      map: "label",
-                    },
+                      map: "label"
+                    }
                   ]
                 );
-                let dropDownTree = jqwidgets.createInstance(
+                jqwidgets.createInstance(
                   "#deptId",
                   "jqxTree",
                   {
                     source: records,
                     width: 248,
-                    height: 250,
+                    height: 250
                   }
                 );
-              },
+              }
             });
 
             that.dataAdapter.dataBind();
-          },
+          }
         },
         {
           name: "company",
@@ -195,7 +195,7 @@ export default {
           width: "250px",
           rowHeight: "40px",
           required: false,
-          init: function (component) {
+          init: function(component) {
             that.companyInstance = jqwidgets.createInstance(
               component,
               "jqxDropDownList",
@@ -204,10 +204,10 @@ export default {
                 disabled: true,
                 animationType: "fade",
                 height: 30,
-                width: 250,
+                width: 250
               }
             );
-          },
+          }
         },
         {
           name: "agency",
@@ -219,7 +219,7 @@ export default {
           width: "250px",
           rowHeight: "40px",
           required: false,
-          init: function (component) {
+          init: function(component) {
             that.agencyInstance = jqwidgets.createInstance(
               component,
               "jqxDropDownList",
@@ -228,10 +228,10 @@ export default {
                 disabled: true,
                 animationType: "fade",
                 height: 30,
-                width: 250,
+                width: 250
               }
             );
-          },
+          }
         },
         {
           columns: [
@@ -242,7 +242,7 @@ export default {
               width: "60px",
               rowHeight: "50px",
               columnWidth: "50%",
-              align: "right",
+              align: "right"
             },
             {
               name: "cancelButton",
@@ -250,18 +250,18 @@ export default {
               text: "取消",
               width: "60px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           name: "id",
           type: "custom",
-          init: function (component) {
+          init: function(component) {
             component.append('<input id="empId" type="hidden"/>');
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
   },
   mounted() {
@@ -269,16 +269,16 @@ export default {
 
     // 获取组件对象
     const $name = this.$refs.myForm.getComponentByName("empName");
-    const $gender = this.$refs.myForm.getComponentByName("gender");
-    const $phone = this.$refs.myForm.getComponentByName("phone");
-    const $idCard = this.$refs.myForm.getComponentByName("idCard");
-    const $entryDate = this.$refs.myForm.getComponentByName("entryDate");
+    // const $gender = this.$refs.myForm.getComponentByName("gender");
+    // const $phone = this.$refs.myForm.getComponentByName("phone");
+    // const $idCard = this.$refs.myForm.getComponentByName("idCard");
+    // const $entryDate = this.$refs.myForm.getComponentByName("entryDate");
     const $deptButton = document.getElementById("departmentButton");
     const $company = this.$refs.myForm.getComponentByName("company");
     const $agency = this.$refs.myForm.getComponentByName("agency");
-    const $id = this.$refs.myForm.getComponentByName("id");
+    // const $id = this.$refs.myForm.getComponentByName("id");
 
-    let dropDownTree = jqwidgets.createInstance(
+    const dropDownTree = jqwidgets.createInstance(
       document.getElementById("deptId"),
       "jqxTree"
     );
@@ -291,7 +291,7 @@ export default {
         "</div>";
       that.departmentDropDownButtonInstance.setContent(dropDownContent);
       const content = that.departmentDropDownButtonInstance.getContent();
-      if ("销售团队" === content[0]["textContent"]) {
+      if (content[0]["textContent"] === "销售团队") {
         const deptId = event.args.element.id;
         const items = dropDownTree.getItems();
         const companySource = items
@@ -312,7 +312,7 @@ export default {
             source: companySource,
             displayMember: "label",
             valueMember: "id",
-            disabled: false,
+            disabled: false
           }
         );
 
@@ -335,18 +335,18 @@ export default {
               source: agencySource,
               displayMember: "label",
               valueMember: "id",
-              disabled: false,
+              disabled: false
             }
           );
         });
       } else {
         jqwidgets.createInstance($company, "jqxDropDownList", {
           source: [],
-          disabled: true,
+          disabled: true
         });
         jqwidgets.createInstance($agency, "jqxDropDownList", {
           source: [],
-          disabled: true,
+          disabled: true
         });
       }
       that.departmentDropDownButtonInstance.close();
@@ -358,41 +358,41 @@ export default {
         input: $name,
         message: "该项必填",
         action: "input,blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $name,
         message: "该项不能包含数字",
         action: "keyup",
-        rule: "notNumber",
+        rule: "notNumber"
       },
       {
         input: $name,
         message: "员工姓名必须在2-4个字符之间",
         action: "keyup, blur",
-        rule: "length=2,4",
+        rule: "length=2,4"
       },
       {
         input: $deptButton,
         message: "该项必选",
         action: "close",
-        rule: function (input) {
+        rule: function(input) {
           return input[0].textContent != "";
-        },
+        }
       },
       {
         input: $company,
         message: "该项必选",
         action: "select",
-        rule: function () {
+        rule: function() {
           const disabled = that.companyInstance.disabled;
           if (disabled == false) {
             const selectIndex = that.companyInstance.getSelectedIndex();
             return selectIndex > -1;
           }
           return true;
-        },
-      },
+        }
+      }
       // {
       //   input: $phone,
       //   message: "该项必填",
@@ -420,13 +420,13 @@ export default {
       if (params[0] == EDIT_EMPLOYEE) {
         const data = params[1];
         const $name = this.$refs.myForm.getComponentByName("empName");
-        const $gender = this.$refs.myForm.getComponentByName("gender");
+        // const $gender = this.$refs.myForm.getComponentByName("gender");
         const $phone = this.$refs.myForm.getComponentByName("phone");
         const $idCard = this.$refs.myForm.getComponentByName("idCard");
         const $entryDate = this.$refs.myForm.getComponentByName("entryDate");
-        let treeInstance = jqwidgets.createInstance("#deptId", "jqxTree");
-        const $company = this.$refs.myForm.getComponentByName("company");
-        const $agency = this.$refs.myForm.getComponentByName("agency");
+        const treeInstance = jqwidgets.createInstance("#deptId", "jqxTree");
+        // const $company = this.$refs.myForm.getComponentByName("company");
+        // const $agency = this.$refs.myForm.getComponentByName("agency");
         const $id = this.$refs.myForm.getComponentByName("id");
 
         $name[0].value = data.emp_name;
@@ -445,7 +445,7 @@ export default {
             break;
           }
         }
-        that.dataAdapter.records.forEach((item) =>{
+        that.dataAdapter.records.forEach((item) => {
           if (item["text"] == data["company"]) {
             this.companyInstance.selectItem(item["id"]);
           }
@@ -461,11 +461,11 @@ export default {
     onValidationSuccess(event) {
       const that = this;
       const $name = this.$refs.myForm.getComponentByName("empName");
-      const $gender = this.$refs.myForm.getComponentByName("gender");
+      // const $gender = this.$refs.myForm.getComponentByName("gender");
       const $phone = this.$refs.myForm.getComponentByName("phone");
       const $idCard = this.$refs.myForm.getComponentByName("idCard");
       const $entryDate = this.$refs.myForm.getComponentByName("entryDate");
-      let treeInstance = jqwidgets.createInstance("#deptId", "jqxTree");
+      const treeInstance = jqwidgets.createInstance("#deptId", "jqxTree");
       const $id = this.$refs.myForm.getComponentByName("id");
 
       that.formValue = {};
@@ -504,7 +504,7 @@ export default {
     },
     add() {
       const params = {
-        jsonParams: JSON.stringify(this.formValue),
+        jsonParams: JSON.stringify(this.formValue)
       };
       addEmployee(params).then((res) => {
         this.$refs.myWindow.close()
@@ -513,14 +513,14 @@ export default {
     },
     update() {
       const params = {
-        jsonParams: JSON.stringify(this.formValue),
+        jsonParams: JSON.stringify(this.formValue)
       };
       updateEmployee(params).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.refresh();
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

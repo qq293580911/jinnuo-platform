@@ -84,21 +84,21 @@ export default {
   components: {
     JqxWindow,
     JqxComboBox,
-    JqxButton,
+    JqxButton
   },
   data() {
     return {
       position: {
         x: 0,
-        y: 0,
-      },
+        y: 0
+      }
     };
   },
   methods: {
     open(...params) {
       this.$refs.myWindow.position = {
         x: params[0] - 12,
-        y: params[1] + 10,
+        y: params[1] + 10
       };
       this.$refs.myWindow.open();
     },
@@ -113,7 +113,7 @@ export default {
       const type = this.$refs.type.val();
       const rowsData = this.$store.state.currentQuote.content;
       // 可加控制箱的
-      let eligibles = rowsData
+      const eligibles = rowsData
         .filter((rowData) => {
           const remark = rowData["remark"];
           return /[圆|柜]机/.test(remark);
@@ -130,12 +130,12 @@ export default {
             unit: rowData["unit"],
             quantity: rowData["quantity"],
             remark: certificateType,
-            selection: rowData["selection"],
+            selection: rowData["selection"]
           };
           return map;
         });
       // 可添加的台数
-      let machineCount = eligibles
+      const machineCount = eligibles
         .map((rowData) => {
           return rowData["quantity"];
         })
@@ -151,9 +151,9 @@ export default {
         cancelText: "取消",
         centered: true,
         content: (h) => (
-          <div style="color:red;">
+          <div style='color:red;'>
             检测到符合添加控制箱条件的风机台数有
-            <span style="color:green;">{machineCount}</span>
+          <span style='color:green;'>{machineCount}</span>
             台，是否要为其添加控制箱？
           </div>
         ),
@@ -166,24 +166,24 @@ export default {
                 ? "风机控制箱" + "（" + powerSupplyType + "）"
                 : "简易型控制箱" + "（" + powerSupplyType + "）",
             priceSchemeId: that.$store.state.currentQuote.pricePlan.id,
-            items: eligibles,
+            items: eligibles
           };
           getAddControlBoxList({
-            jsonParams: JSON.stringify(jsonParams),
+            jsonParams: JSON.stringify(jsonParams)
           }).then((res) => {
-            that.$store.dispatch('appendCurrentQuoteContent',res)
+            that.$store.dispatch('appendCurrentQuoteContent', res)
             that.$bus.$emit('refresh')
             that.$message.success(`添加完毕，检查末尾`)
           });
         },
         onCancel() {},
-        class: "test",
+        class: "test"
       });
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close();
-  },
+  }
 };
 </script>
 

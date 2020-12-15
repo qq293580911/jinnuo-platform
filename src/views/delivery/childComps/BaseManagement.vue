@@ -30,7 +30,6 @@
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
-import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
 
 import { getLocalization } from "@/common/localization.js";
 import { formatFilter } from "@/common/util.js";
@@ -39,8 +38,7 @@ import { showDeliveryList } from "@/network/delivery.js";
 export default {
   name: "Delivery",
   components: {
-    JqxGrid,
-    JqxTooltip,
+    JqxGrid
   },
   beforeCreate() {
     this.source = {
@@ -53,7 +51,7 @@ export default {
         { name: "delivery_date", type: "string" },
         { name: "delivery_amount", type: "number" },
         { name: "delivery_reserve_price", type: "number" },
-        { name: "delivery_area", type: "float" },
+        { name: "delivery_area", type: "float" }
       ],
       type: "get",
       datatype: "json",
@@ -61,29 +59,29 @@ export default {
       sortcolumn: "id",
       sortdirection: "desc",
       id: "id",
-      url: `/dlvDtl/showDeliveryInfoList.do`,
+      url: `/dlvDtl/showDeliveryInfoList.do`
     };
   },
   data() {
     return {
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           showDeliveryList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
         },
         beforeLoadComplete(records) {},
-        beforeSend: function (xhr) {},
+        beforeSend: function(xhr) {}
       }),
-      rendergridrows: function (obj) {
+      rendergridrows: function(obj) {
         return obj.data;
       },
       columns: [
@@ -91,14 +89,14 @@ export default {
           text: "下单编号",
           datafield: "order_number",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "送货日期",
           datafield: "delivery_date",
           cellsformat: "yyyy-MM-dd",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "送货金额",
@@ -107,7 +105,7 @@ export default {
           cellsalign: "center",
           aggregates: ["sum"],
           aggregatesRenderer: this.aggregatesRenderer,
-          cellsformat: "n",
+          cellsformat: "n"
         },
         {
           text: "送货底价",
@@ -116,7 +114,7 @@ export default {
           cellsalign: "center",
           aggregates: ["sum"],
           aggregatesRenderer: this.aggregatesRenderer,
-          cellsformat: "n",
+          cellsformat: "n"
         },
         {
           text: "送货面积",
@@ -125,29 +123,29 @@ export default {
           cellsalign: "center",
           aggregates: ["sum"],
           aggregatesRenderer: this.aggregatesRenderer,
-          cellsformat: "n",
-        },
-      ],
+          cellsformat: "n"
+        }
+      ]
     };
   },
   mounted() {},
   methods: {
-    createButtonsContainers: function (toolbar) {
-      let buttonsContainer = document.createElement("div");
+    createButtonsContainers: function(toolbar) {
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
-      let addButtonContainer = document.createElement("div");
-      let deleteButtonContainer = document.createElement("div");
-      let editButtonContainer = document.createElement("div");
-      let importButtonContainer = document.createElement("div");
-      let exportButtonContainer = document.createElement("div");
-      let reloadButtonContainer = document.createElement("div");
-      let addButtonID = JQXLite.generateID();
-      let deleteButtonID = JQXLite.generateID();
-      let editButtonID = JQXLite.generateID();
-      let importButtonID = JQXLite.generateID();
-      let exportButtonID = JQXLite.generateID();
-      let reloadButtonID = JQXLite.generateID();
+      const addButtonContainer = document.createElement("div");
+      const deleteButtonContainer = document.createElement("div");
+      const editButtonContainer = document.createElement("div");
+      const importButtonContainer = document.createElement("div");
+      const exportButtonContainer = document.createElement("div");
+      const reloadButtonContainer = document.createElement("div");
+      const addButtonID = JQXLite.generateID();
+      const deleteButtonID = JQXLite.generateID();
+      const editButtonID = JQXLite.generateID();
+      const importButtonID = JQXLite.generateID();
+      const exportButtonID = JQXLite.generateID();
+      const reloadButtonID = JQXLite.generateID();
       addButtonContainer.id = addButtonID;
       deleteButtonContainer.id = deleteButtonID;
       editButtonContainer.id = editButtonID;
@@ -173,81 +171,81 @@ export default {
       buttonsContainer.appendChild(exportButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
       toolbar[0].appendChild(buttonsContainer);
-      //创建按钮
-      let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+      // 创建按钮
+      jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
+        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`)
       });
       jqwidgets.createInstance(`#${addButtonID}`, "jqxTooltip", {
         content: "添加",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let deleteButton = jqwidgets.createInstance(
+      const deleteButton = jqwidgets.createInstance(
         `#${deleteButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`)
         }
       );
       jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
         content: "删除",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let editButton = jqwidgets.createInstance(
+      jqwidgets.createInstance(
         `#${editButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/edit.svg`)
         }
       );
       jqwidgets.createInstance("#editButton", "jqxTooltip", {
         content: "编辑",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let importButton = jqwidgets.createInstance(
+      jqwidgets.createInstance(
         `#${importButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/import.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/import.svg`)
         }
       );
       jqwidgets.createInstance(`#${importButtonID}`, "jqxTooltip", {
         content: "导入",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let exportButton = jqwidgets.createInstance(
+      jqwidgets.createInstance(
         "#exportButton",
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/export.svg`)
         }
       );
       jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
         content: "导出",
-        position: "bottom",
+        position: "bottom"
       });
 
-      let reloadButton = jqwidgets.createInstance(
+      const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
-        position: "bottom",
+        position: "bottom"
       });
 
-      //绑定事件
+      // 绑定事件
       deleteButton.addEventHandler("click", (event) => {
-        let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+        const selectedrowindex = this.$refs.myGrid.getselectedrowindex();
         if (selectedrowindex < 0) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
           return false;
         }
-        let id = this.$refs.myGrid.getrowid(selectedrowindex);
+        const id = this.$refs.myGrid.getrowid(selectedrowindex);
         this.$refs.myGrid.deleterow(id);
       });
 
@@ -257,7 +255,7 @@ export default {
     },
     aggregatesRenderer(aggregates, column, element) {
       var renderString = "";
-      $.each(aggregates, function (key, value) {
+      $.each(aggregates, function(key, value) {
         switch (key) {
           case "sum":
             renderString +=
@@ -270,8 +268,8 @@ export default {
         }
       });
       return renderString;
-    },
-  },
+    }
+  }
 };
 </script>
 

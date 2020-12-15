@@ -71,15 +71,15 @@ import {
   Message,
   ADD_CONTRACT,
   EDIT_CONTRACT,
-  FILE_UPLOAD,
+  FILE_UPLOAD
 } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import {
   showContractDetails,
   getContractAnnexList,
-  deleteContract,
+  deleteContract
 } from "@/network/contract.js";
-import { getAnnexUrl, downloadAnnex, deleteAnnex } from "@/network/annex.js";
+import { getAnnexUrl, deleteAnnex } from "@/network/annex.js";
 export default {
   components: {
     JqxGrid,
@@ -87,15 +87,15 @@ export default {
     PreviewWindow,
     ContractWindow,
     SetCustomerWindow,
-    UploadWindow,
+    UploadWindow
   },
   props: {
     isSigned: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
-  beforeCreate: function () {
+  beforeCreate: function() {
     this.source = {
       filter: () => {
         this.$refs.myGrid.updatebounddata("filter");
@@ -124,6 +124,7 @@ export default {
         { name: "freight", type: "string" },
         { name: "tax", type: "string" },
         { name: "warranty", type: "string" },
+        { name: 'install_fee', type: 'number' },
         { name: "sign_status", type: "string" },
         { name: "sign_date", type: "string" },
         { name: "sign_back_date", type: "string" },
@@ -137,7 +138,7 @@ export default {
         { name: "is_repeat", type: "string" },
         { name: "over_budget_bear", type: "string" },
         { name: "creator", type: "string" },
-        { name: "creator_name", type: "string" },
+        { name: "creator_name", type: "string" }
       ],
       type: "get",
       datatype: "json",
@@ -147,8 +148,8 @@ export default {
       id: "id",
       url: `/contrDtl/showContractDetails.do`,
       updaterow(rowid, newdata, commit) {
-        //console.log(newdata)
-      },
+        // console.log(newdata)
+      }
     };
   },
   created() {
@@ -161,23 +162,23 @@ export default {
     return {
       editable: false,
       annexType: "合同附件",
-      //数据网格
+      // 数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           if (that.isSigned) {
             serverdata["jsonParams"] = JSON.stringify({
-              signStatus: "已签",
+              signStatus: "已签"
             });
           }
           serverdata = formatFilter(serverdata);
           showContractDetails(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
         },
@@ -198,7 +199,7 @@ export default {
             } else {
               element["execution_state"] = "未执行";
             }
-            //获得加点情况
+            // 获得加点情况
             const beforeDiscountPrice = element["original_price"];
             const reservePrice = element["reserve_price"];
             const afterDiscountPrice = element["discount_price"];
@@ -206,30 +207,22 @@ export default {
             if (beforeDiscountPrice == reservePrice) {
               addPointDetails = "底价就是报价;";
             } else if (beforeDiscountPrice > reservePrice) {
-              let point = eval(
-                "(1-" + reservePrice + "/" + beforeDiscountPrice + ")*100"
-              );
+              let point = (1 - reservePrice / beforeDiscountPrice) * 100
               point = point.toFixed(2) + "%";
               addPointDetails = "底价+" + point + "报价;";
             } else {
-              let point = eval(
-                "(1-" + beforeDiscountPrice + "/" + reservePrice + ")*100"
-              );
+              let point = (1 - beforeDiscountPrice / reservePrice) * 100
               point = point.toFixed(2) + "%";
               addPointDetails = "底价-" + point + "报价;";
             }
 
             if (beforeDiscountPrice > afterDiscountPrice) {
-              let point = eval(
-                "(1-" + afterDiscountPrice + "/" + beforeDiscountPrice + ")*100"
-              );
+              let point = (1 - afterDiscountPrice / beforeDiscountPrice) * 100
               point = point.toFixed(2) + "%";
               addPointDetails += "合同单价总体优惠" + point + ";";
             }
             if (beforeDiscountPrice < afterDiscountPrice) {
-              let point = eval(
-                "(1-" + beforeDiscountPrice + "/" + afterDiscountPrice + ")*100"
-              );
+              let point = (1 - beforeDiscountPrice / afterDiscountPrice) * 100
               point = point.toFixed(2) + "%";
               addPointDetails += "合同单价上调" + point + ";";
             }
@@ -238,12 +231,12 @@ export default {
             }
             element["add_point_detail"] = addPointDetails;
           });
-        },
+        }
       }),
-      rendergridrows: function (obj) {
+      rendergridrows: function(obj) {
         return obj.data;
       },
-      columns: (function () {
+      columns: (function() {
         const columns = [];
         columns.push({
           text: "创建日期",
@@ -252,7 +245,7 @@ export default {
           align: "center",
           cellsalign: "center",
           pinned: true,
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "是否重复",
@@ -261,7 +254,7 @@ export default {
           cellsalign: "center",
           width: 100,
           pinned: true,
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -286,7 +279,7 @@ export default {
                 "</span>"
               );
             }
-          },
+          }
         });
         columns.push({
           text: "大区",
@@ -295,7 +288,7 @@ export default {
           cellsalign: "center",
           width: 100,
           pinned: true,
-          editable: false,
+          editable: false
         });
         columns.push({
           text: "办事处",
@@ -304,7 +297,7 @@ export default {
           cellsalign: "center",
           width: 100,
           pinned: true,
-          editable: false,
+          editable: false
         });
         columns.push({
           text: "业务员",
@@ -313,7 +306,7 @@ export default {
           cellsalign: "center",
           pinned: true,
           width: 100,
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -328,7 +321,7 @@ export default {
               value +
               "</span>"
             );
-          },
+          }
         });
         columns.push({
           text: "合同编号",
@@ -336,7 +329,7 @@ export default {
           align: "center",
           cellsalign: "center",
           pinned: true,
-          width: 130,
+          width: 130
         });
         columns.push({
           text: "项目名称",
@@ -344,7 +337,7 @@ export default {
           align: "center",
           cellsalign: "center",
           pinned: true,
-          width: 150,
+          width: 150
         });
         if (that.hasAuthority(that, "contrDtl:customer")) {
           columns.push({
@@ -353,7 +346,7 @@ export default {
             align: "center",
             cellsalign: "center",
             width: 100,
-            cellsrenderer: function (
+            cellsrenderer: function(
               row,
               columnfield,
               value,
@@ -368,7 +361,7 @@ export default {
                 value +
                 "</span>"
               );
-            },
+            }
           });
         }
         if (that.hasAuthority(that, "contrDtl:customer_company")) {
@@ -377,7 +370,7 @@ export default {
             datafield: "customer_company",
             align: "center",
             cellsalign: "center",
-            width: 100,
+            width: 100
           });
         }
         if (that.hasAuthority(that, "contrDtl:customer_phone")) {
@@ -386,7 +379,7 @@ export default {
             datafield: "customer_phone",
             align: "center",
             cellsalign: "center",
-            width: 120,
+            width: 120
           });
         }
         columns.push({
@@ -394,70 +387,77 @@ export default {
           datafield: "province",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "市",
           datafield: "city",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "县",
           datafield: "county",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "报价",
           datafield: "original_price",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "成交价格",
           datafield: "final_price",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "底价",
           datafield: "reserve_price",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "物流管理费",
           datafield: "logistics_management_fee",
           align: "center",
           cellsalign: "center",
-          width: 110,
+          width: 110
         });
         columns.push({
           text: "运费",
           datafield: "freight",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "税金",
           datafield: "tax",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "质保金",
           datafield: "warranty",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
+        });
+        columns.push({
+          text: '安装费',
+          datafield: 'install_fee',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100
         });
         columns.push({
           text: "签订状态",
@@ -465,7 +465,7 @@ export default {
           align: "center",
           cellsalign: "center",
           width: 100,
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -489,7 +489,7 @@ export default {
               value +
               "</span>"
             );
-          },
+          }
         });
         columns.push({
           text: "签订日期",
@@ -497,7 +497,7 @@ export default {
           cellsformat: "yyyy-MM-dd",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "签回日期",
@@ -505,14 +505,14 @@ export default {
           cellsformat: "yyyy-MM-dd",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "价格方案",
           datafield: "formula_model",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         if (that.hasAuthority(that, "contrDtl:order_amount")) {
           columns.push({
@@ -520,7 +520,7 @@ export default {
             datafield: "order_amount",
             align: "center",
             cellsalign: "center",
-            width: 110,
+            width: 110
           });
         }
         if (that.hasAuthority(that, "contrDtl:delivery_amount")) {
@@ -529,7 +529,7 @@ export default {
             datafield: "delivery_amount",
             align: "center",
             cellsalign: "center",
-            width: 100,
+            width: 100
           });
         }
         columns.push({
@@ -538,7 +538,7 @@ export default {
           align: "center",
           cellsalign: "center",
           width: 100,
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -571,42 +571,42 @@ export default {
               value +
               "</span>"
             );
-          },
+          }
         });
         columns.push({
           text: "加点情况",
           datafield: "add_point_detail",
           align: "center",
           cellsalign: "center",
-          width: 250,
+          width: 250
         });
         columns.push({
           text: "非3C风阀",
           datafield: "deduction_bonus_amount",
           align: "center",
           cellsalign: "center",
-          width: 150,
+          width: 150
         });
         columns.push({
           text: "业绩奖金报销",
           datafield: "performance_bonus_reimbursement",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "降点情况",
           datafield: "rise_drop_point",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "超点承担",
           datafield: "over_budget_bear",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         });
         columns.push({
           text: "创建者",
@@ -614,7 +614,7 @@ export default {
           align: "center",
           cellsalign: "center",
           pinned: false,
-          width: 100,
+          width: 100
         });
 
         return columns;
@@ -622,9 +622,9 @@ export default {
       rowdetailstemplate: {
         rowdetails: "<div class='child-grid' style='margin: 10px;'></div>",
         rowdetailsheight: 220,
-        rowdetailshidden: true,
+        rowdetailshidden: true
       },
-      previewUrl: "",
+      previewUrl: ""
     };
   },
   mounted() {
@@ -634,30 +634,30 @@ export default {
     });
   },
   methods: {
-    createButtonsContainers: function (statusbar) {
-      let buttonsContainer = document.createElement("div");
+    createButtonsContainers: function(statusbar) {
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
       statusbar[0].appendChild(buttonsContainer);
 
       // 创建添加按钮
       if (this.hasAuthority(this, "contrDtl:add")) {
-        let addButtonContainer = document.createElement("div");
-        let addButtonID = JQXLite.generateID();
+        const addButtonContainer = document.createElement("div");
+        const addButtonID = JQXLite.generateID();
         addButtonContainer.id = addButtonID;
         addButtonContainer.style.cssText =
           "float: left; margin-left: 5px;cursor: pointer;";
         buttonsContainer.appendChild(addButtonContainer);
-        let addButtonInstance = jqwidgets.createInstance(
+        const addButtonInstance = jqwidgets.createInstance(
           `#${addButtonID}`,
           "jqxButton",
           {
-            imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+            imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`)
           }
         );
         jqwidgets.createInstance(`#${addButtonID}`, "jqxTooltip", {
           content: "添加",
-          position: "bottom",
+          position: "bottom"
         });
         addButtonInstance.addEventHandler("click", (event) => {
           this.$refs.contractWindow.open(ADD_CONTRACT);
@@ -666,53 +666,53 @@ export default {
 
       // 创建删除按钮
       if (this.hasAuthority(this, "contrDtl:delete")) {
-        let deleteButtonContainer = document.createElement("div");
-        let deleteButtonID = JQXLite.generateID();
+        const deleteButtonContainer = document.createElement("div");
+        const deleteButtonID = JQXLite.generateID();
         deleteButtonContainer.id = deleteButtonID;
         deleteButtonContainer.style.cssText =
           "float: left; margin-left: 5px;cursor: pointer;";
         buttonsContainer.appendChild(deleteButtonContainer);
-        let deleteButton = jqwidgets.createInstance(
+        const deleteButton = jqwidgets.createInstance(
           `#${deleteButtonID}`,
           "jqxButton",
           {
-            imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+            imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`)
           }
         );
         jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
           content: "删除",
-          position: "bottom",
+          position: "bottom"
         });
 
         deleteButton.addEventHandler("click", (event) => {
-          let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+          const selectedrowindex = this.$refs.myGrid.getselectedrowindex();
           if (selectedrowindex < 0) {
             this.$message.warning({ content: Message.NO_ROWS_SELECTED });
             return false;
           }
-          let id = this.$refs.myGrid.getrowid(selectedrowindex);
-          this.delete(id)
+          const id = this.$refs.myGrid.getrowid(selectedrowindex);
+          this.delete(id);
         });
       }
 
       // 创建修改按钮
       if (this.hasAuthority(this, "contrDtl:update")) {
-        let editButtonContainer = document.createElement("div");
-        let editButtonID = JQXLite.generateID();
+        const editButtonContainer = document.createElement("div");
+        const editButtonID = JQXLite.generateID();
         editButtonContainer.id = editButtonID;
         editButtonContainer.style.cssText =
           "float: left; margin-left: 5px;cursor: pointer;";
         buttonsContainer.appendChild(editButtonContainer);
-        let editButton = jqwidgets.createInstance(
+        const editButton = jqwidgets.createInstance(
           `#${editButtonID}`,
           "jqxButton",
           {
-            imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+            imgSrc: require(`@/assets/iconfont/custom/edit.svg`)
           }
         );
         jqwidgets.createInstance(`#${editButtonID}`, "jqxTooltip", {
           content: "编辑",
-          position: "bottom",
+          position: "bottom"
         });
         editButton.addEventHandler("click", (event) => {
           const index = this.$refs.myGrid.getselectedrowindex();
@@ -727,22 +727,22 @@ export default {
 
       // 创建上传按钮
       if (this.hasAuthority(this, "contrAnnex:upload")) {
-        let uploadButtonContainer = document.createElement("div");
-        let uploadButtonID = JQXLite.generateID();
+        const uploadButtonContainer = document.createElement("div");
+        const uploadButtonID = JQXLite.generateID();
         uploadButtonContainer.id = uploadButtonID;
         uploadButtonContainer.style.cssText =
           "float: left; margin-left: 5px;cursor: pointer;";
         buttonsContainer.appendChild(uploadButtonContainer);
-        let uploadButton = jqwidgets.createInstance(
+        const uploadButton = jqwidgets.createInstance(
           `#${uploadButtonID}`,
           "jqxButton",
           {
-            imgSrc: require(`@/assets/iconfont/custom/upload.svg`),
+            imgSrc: require(`@/assets/iconfont/custom/upload.svg`)
           }
         );
         jqwidgets.createInstance(`#${uploadButtonID}`, "jqxTooltip", {
           content: "上传",
-          position: "bottom",
+          position: "bottom"
         });
 
         uploadButton.addEventHandler("click", () => {
@@ -758,22 +758,22 @@ export default {
 
       // 创建导出按钮
       if (this.hasAuthority(this, "contrDtl:export")) {
-        let exportButtonContainer = document.createElement("div");
-        let exportButtonID = JQXLite.generateID();
+        const exportButtonContainer = document.createElement("div");
+        const exportButtonID = JQXLite.generateID();
         exportButtonContainer.id = exportButtonID;
         exportButtonContainer.style.cssText =
           "float: left; margin-left: 5px;cursor: pointer;";
         buttonsContainer.appendChild(exportButtonContainer);
-        let exportButton = jqwidgets.createInstance(
+        const exportButton = jqwidgets.createInstance(
           `#${exportButtonID}`,
           "jqxButton",
           {
-            imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+            imgSrc: require(`@/assets/iconfont/custom/export.svg`)
           }
         );
         jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
           content: "导出",
-          position: "bottom",
+          position: "bottom"
         });
 
         exportButton.addEventHandler("click", () => {
@@ -784,17 +784,17 @@ export default {
       }
 
       // 创建刷新按钮
-      let reloadButtonContainer = document.createElement("div");
-      let reloadButtonID = JQXLite.generateID();
+      const reloadButtonContainer = document.createElement("div");
+      const reloadButtonID = JQXLite.generateID();
       reloadButtonContainer.id = reloadButtonID;
       reloadButtonContainer.style.cssText = "float: right; margin-left: 5px;";
       buttonsContainer.appendChild(reloadButtonContainer);
-      let reloadButton = jqwidgets.createInstance(
+      const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
-      let reloadButtonTooltip = jqwidgets.createInstance(
+      jqwidgets.createInstance(
         `#${reloadButtonID}`,
         "jqxTooltip",
         { content: "刷新", position: "bottom" }
@@ -812,33 +812,33 @@ export default {
       const params = {
         jsonParams: JSON.stringify({
           boundId: id,
-          annexType: "合同附件",
-        }),
+          annexType: "合同附件"
+        })
       };
       const annexSource = {
         dataFields: [
           { name: "annex_id", type: "number" },
           { name: "annex_name", type: "string" },
-          { name: "bound_id", type: "number" },
+          { name: "bound_id", type: "number" }
         ],
 
         url: "/annex/showAnnexBySelectBoundId.do",
         type: "get",
         data: params,
         dataType: "json",
-        id: "annex_id",
+        id: "annex_id"
       };
 
       const nestedGridAdapter = new jqx.dataAdapter(annexSource, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           getContractAnnexList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
         },
@@ -848,35 +848,35 @@ export default {
             const suffix = annexName.substring(annexName.lastIndexOf(".") + 1);
             item["file_type"] = suffix;
           });
-        },
+        }
       });
 
-      let childGridInstance = jqwidgets.createInstance(childGrid, "jqxGrid", {
+      const childGridInstance = jqwidgets.createInstance(childGrid, "jqxGrid", {
         localization: getLocalization("zh-CN"),
         source: nestedGridAdapter,
         width: "96%",
         height: 200,
-        columns: (function () {
+        columns: (function() {
           const columns = [];
           columns.push({
             text: "附件名称",
             datafield: "annex_name",
             cellsAlign: "center",
-            align: "center",
+            align: "center"
           });
           columns.push({
             text: "文件类型",
             datafield: "file_type",
             cellsAlign: "center",
             align: "center",
-            cellsrenderer: function (row, column, value) {
+            cellsrenderer: function(row, column, value) {
               const imgurl = require(`@/assets/iconfont/custom/${value}.svg`);
               const img =
                 '<div style="text-align:center;"><img style="margin: 8px;" width="16" height="16" src="' +
                 imgurl +
                 '"></div>';
               return img;
-            },
+            }
           });
           if (that.hasAuthority(that, "contrAnnex:delete")) {
             columns.push({
@@ -884,32 +884,32 @@ export default {
               datafield: "annexDelete",
               columntype: "button",
               width: 50,
-              cellsrenderer: function () {
+              cellsrenderer: function() {
                 return "删除";
               },
-              buttonclick: function (rowindex) {
+              buttonclick: function(rowindex) {
                 that.$confirm({
                   title: `${Message.CONFIRM_DELETE}`,
                   okText: "确认",
                   cancelText: "取消",
                   centered: true,
                   okType: "danger",
-                  content: (h) => <div style="color:red;"></div>,
+                  content: (h) => <div style='color:red;'></div>,
                   onOk() {
                     const annexId = childGridInstance.getrowid(rowindex);
                     const params = {
                       jsonParams: JSON.stringify({
-                        annexId,
-                      }),
+                        annexId
+                      })
                     };
                     deleteAnnex(params).then((res) => {
                       childGridInstance.updatebounddata();
                     });
                   },
                   onCancel() {},
-                  class: "test",
+                  class: "test"
                 });
-              },
+              }
             });
           }
           if (that.hasAuthority(that, "contrAnnex:preview")) {
@@ -918,15 +918,15 @@ export default {
               datafield: "annexPreview",
               columntype: "button",
               width: 50,
-              cellsrenderer: function () {
+              cellsrenderer: function() {
                 return "预览";
               },
-              buttonclick: function (rowindex) {
+              buttonclick: function(rowindex) {
                 const annexId = childGridInstance.getrowid(rowindex);
                 const params = {
                   jsonParams: JSON.stringify({
-                    annexId,
-                  }),
+                    annexId
+                  })
                 };
                 getAnnexUrl(params).then((res) => {
                   const suffix = res.substring(res.lastIndexOf(".") + 1);
@@ -937,7 +937,7 @@ export default {
                   }
                   that.$refs.previewWindow.open("预览");
                 });
-              },
+              }
             });
           }
           if (that.hasAuthority(that, "contrAnnex:download")) {
@@ -946,10 +946,10 @@ export default {
               datafield: "annexDownload",
               columntype: "button",
               width: 50,
-              cellsrenderer: function () {
+              cellsrenderer: function() {
                 return "下载";
               },
-              buttonclick: function (rowindex) {
+              buttonclick: function(rowindex) {
                 const annexId = childGridInstance.getcellvalue(
                   rowindex,
                   "annex_id"
@@ -959,18 +959,17 @@ export default {
                   "annex_name"
                 );
                 const params = {
-                  annexId,
+                  annexId
                 };
                 // axios请求二进制流下载
                 axios({
                   method: "post",
                   url: "/api/annex/downloadFile.do",
                   data: params,
-                  responseType: "blob",
+                  responseType: "blob"
                 }).then((res) => {
                   const content = res.data;
                   const blob = new Blob([content]);
-                  let blobUrl = URL.createObjectURL(blob);
                   const elink = document.createElement("a");
                   elink.download = fileName;
                   elink.style.display = "none";
@@ -980,16 +979,16 @@ export default {
                   URL.revokeObjectURL(elink.href); // 释放URL 对象
                   document.body.removeChild(elink);
                 });
-              },
+              }
             });
           }
           return columns;
-        })(),
+        })()
       });
     },
     aggregatesRenderer(aggregates, column, element) {
       var renderString = "";
-      $.each(aggregates, function (key, value) {
+      $.each(aggregates, function(key, value) {
         switch (key) {
           case "sum":
             renderString +=
@@ -1003,14 +1002,14 @@ export default {
       });
       return renderString;
     },
-    delete(id){
+    delete(id) {
       const params = {
-        jsonParams:JSON.stringify({id})
-      }
-      deleteContract(params).then(res=>{
-        this.$message.success(Message.DELETE_SUCCESS)
-        this.refresh()
-      })
+        jsonParams: JSON.stringify({ id })
+      };
+      deleteContract(params).then((res) => {
+        this.$message.success(Message.DELETE_SUCCESS);
+        this.refresh();
+      });
     },
     refresh() {
       this.$refs.myGrid.updatebounddata();
@@ -1019,8 +1018,8 @@ export default {
       if (event.args.rightclick) {
         const clickCellInfo = event.args;
         this.clickCellInfo = clickCellInfo;
-        let scrollTop = $(window).scrollTop();
-        let scrollLeft = $(window).scrollLeft();
+        const scrollTop = $(window).scrollTop();
+        const scrollLeft = $(window).scrollLeft();
         this.$refs.jqxMenu.open(
           parseInt(event.args.originalEvent.clientX) + 5 + scrollLeft,
           parseInt(event.args.originalEvent.clientY) + 5 + scrollTop
@@ -1037,8 +1036,8 @@ export default {
     },
     sendCustomer(item) {
       console.log(item);
-    },
-  },
+    }
+  }
 };
 </script>
 

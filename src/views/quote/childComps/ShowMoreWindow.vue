@@ -37,19 +37,19 @@ import JqxListBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxlistbox.vue";
 export default {
   components: {
     JqxWindow,
-    JqxListBox,
+    JqxListBox
   },
   data() {
     return {
       position: {
         x: 0,
-        y: 0,
+        y: 0
       },
       source: [
         { label: "加点", value: "transfer", checked: false },
         { label: "公式", value: "formula", checked: false },
-        { label: "指派类型", value: "designateType", checked: false },
-      ],
+        { label: "指派类型", value: "designateType", checked: false }
+      ]
     };
   },
   methods: {
@@ -65,7 +65,7 @@ export default {
     open(...params) {
       this.$refs.myWindow.position = {
         x: params[0] - 12,
-        y: params[1] + 10,
+        y: params[1] + 10
       };
       this.$refs.myWindow.open();
     },
@@ -74,11 +74,11 @@ export default {
     },
     closed(event) {
       this.$parent.showMore = false;
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.destroy();
-  },
+  }
 };
 </script>
 

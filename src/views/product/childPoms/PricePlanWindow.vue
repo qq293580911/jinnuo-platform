@@ -29,7 +29,7 @@ export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   data() {
     return {
@@ -41,7 +41,7 @@ export default {
           labelWidth: "80px",
           width: "250px",
           required: true,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           name: "obsolete",
@@ -50,7 +50,7 @@ export default {
           labelWidth: "80px",
           width: "250px",
           required: false,
-          options: [{ value: "新" }, { value: "旧" }],
+          options: [{ value: "新" }, { value: "旧" }]
         },
         {
           name: "remark",
@@ -59,7 +59,7 @@ export default {
           labelWidth: "80px",
           width: "250px",
           required: false,
-          rowHeight: "40px",
+          rowHeight: "40px"
         },
         {
           columns: [
@@ -70,7 +70,7 @@ export default {
               width: "60px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -78,12 +78,12 @@ export default {
               text: "取消",
               width: "60px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
-        },
+              columnWidth: "50%"
+            }
+          ]
+        }
       ],
-      id:null
+      id: null
     };
   },
   mounted() {
@@ -101,8 +101,8 @@ export default {
         input: $rule,
         message: "该项必填",
         action: "input,blur",
-        rule: "required",
-      },
+        rule: "required"
+      }
     ];
     // 提交并验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
@@ -117,7 +117,7 @@ export default {
         const data = params[1]
         this.id = data['id']
         this.ruleInstance.val(data['rule'])
-        this.obsoleteInstance.jqxDropDownList('selectItem',data['obsolete'])
+        this.obsoleteInstance.jqxDropDownList('selectItem', data['obsolete'])
         this.remarkInstance.val(data['remark'])
       }
       this.$refs.myWindow.open();
@@ -125,10 +125,10 @@ export default {
     onValidationSuccess(event) {
       const title = this.$refs.myWindow.title;
       const formData = {
-        schemeRule:this.ruleInstance.val(),
-        obsolete:this.obsoleteInstance.val(),
-        remark:this.remarkInstance.val(),
-        schemeId:this.id
+        schemeRule: this.ruleInstance.val(),
+        obsolete: this.obsoleteInstance.val(),
+        remark: this.remarkInstance.val(),
+        schemeId: this.id
       };
 
       if (title == UPDATE_PRICE_PLAN) {
@@ -139,7 +139,7 @@ export default {
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addPricePlan(params).then((res) => {
         this.$refs.myWindow.close();
@@ -148,17 +148,17 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updatePricePlan(params).then((res) => {
         this.$refs.myWindow.close();
         this.$parent.refresh();
       });
-    },
+    }
   },
   beforeDestroy() {
     this.$refs.myWindow.close()
-  },
+  }
 };
 </script>
 

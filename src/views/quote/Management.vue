@@ -26,20 +26,20 @@ export default {
   components: {
     JqxMenu,
     Detail,
-    Statistics,
+    Statistics
   },
-  data: function () {
+  data: function() {
     return {
       menus: ["数据汇总", "图形统计"],
-      currentMenuName: "数据汇总",
+      currentMenuName: "数据汇总"
     };
   },
   methods: {
     onItemclick(event) {
       const menuName = event.args.textContent;
       this.currentMenuName = menuName;
-    },
-  },
+    }
+  }
 };
 </script>
 

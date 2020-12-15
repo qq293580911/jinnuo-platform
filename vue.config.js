@@ -12,14 +12,9 @@ module.exports = {
         'views': '@/views'
       }
     },
-    // plugins: [
-    //   new webpack.ProvidePlugin({
-    //     // layexcel : 'layexcel'
-    //   })
-    // ]
   },
   chainWebpack: config => {
-    config.module.rules.delete('eslint');
+    // config.module.rules.delete('eslint');
   },
   // publicPath:'/admin/',
   devServer: {

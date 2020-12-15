@@ -27,7 +27,6 @@
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
-import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
 
 import { getLocalization } from "@/common/localization.js";
 import { formatFilter, dataExport } from "@/common/util.js";
@@ -36,7 +35,7 @@ import { showDetailList } from "@/network/quote.js";
 export default {
   name: "QuoteDetail",
   components: {
-    JqxGrid,
+    JqxGrid
   },
   beforeCreate() {
     this.source = {
@@ -70,7 +69,7 @@ export default {
         { name: "controlbox_quote_price", type: "number" },
         { name: "formula", type: "string" },
         { name: "repeat", type: "string" },
-        { name: "remark", type: "string" },
+        { name: "remark", type: "string" }
       ],
       type: "get",
       datatype: "json",
@@ -78,30 +77,30 @@ export default {
       sortcolumn: "qtn_dtl_id",
       sortdirection: "desc",
       id: "qtn_dtl_id",
-      url: `/qtnDtl/showQuotationDetails.do`,
+      url: `/qtnDtl/showQuotationDetails.do`
     };
   },
   data() {
     return {
-      //数据网格
+      // 数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           showDetailList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
         },
         beforeLoadComplete(records) {},
-        beforeSend: function (xhr) {},
+        beforeSend: function(xhr) {}
       }),
-      rendergridrows: function (obj) {
+      rendergridrows: function(obj) {
         return obj.data;
       },
       columns: [
@@ -111,147 +110,147 @@ export default {
           cellsformat: "yyyy-MM-dd",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "报价人",
           datafield: "quoter_name",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "大区",
           datafield: "salesman_company",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "办事处",
           datafield: "salesman_agency",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "业务员",
           datafield: "salesman_name",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "项目名称",
           datafield: "project_name",
           align: "center",
           cellsalign: "center",
-          width: 180,
+          width: 180
         },
         {
           text: "省",
           datafield: "province",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "市",
           datafield: "city",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "县",
           datafield: "county",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "客户公司",
           datafield: "client_company",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "客户姓名",
           datafield: "client_name",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "客户电话",
           datafield: "client_phone",
           align: "center",
           cellsalign: "center",
-          width: 120,
+          width: 120
         },
         {
           text: "底价",
           datafield: "reserve_price",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "报价",
           datafield: "quote_price",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "控制箱底价",
           datafield: "controlbox_reserve_price",
           align: "center",
           cellsalign: "center",
-          width: 110,
+          width: 110
         },
         {
           text: "控制箱报价",
           datafield: "controlbox_quote_price",
           align: "center",
           cellsalign: "center",
-          width: 110,
+          width: 110
         },
         {
           text: "佣金",
           datafield: "brokerage",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "运费",
           datafield: "freight",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "税金",
           datafield: "tax",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "地区点",
           datafield: "region_tax",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "价格方案",
           datafield: "formula",
           align: "center",
           cellsalign: "center",
-          width: 100,
+          width: 100
         },
         {
           text: "重复",
@@ -259,7 +258,7 @@ export default {
           align: "center",
           cellsalign: "center",
           width: 100,
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -284,71 +283,71 @@ export default {
                 "</span>"
               );
             }
-          },
+          }
         },
         {
           text: "备注",
           datafield: "remark",
           align: "center",
           cellsalign: "center",
-          width: 100,
-        },
-      ],
+          width: 100
+        }
+      ]
     };
   },
   methods: {
-    createButtonsContainers: function (toolbar) {
-      let buttonsContainer = document.createElement("div");
+    createButtonsContainers: function(toolbar) {
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
       toolbar[0].appendChild(buttonsContainer);
       // 创建删除按钮
       if (this.hasAuthority(this, "qtnDtl:delete")) {
-        let deleteButtonContainer = document.createElement("div");
-        let deleteButtonID = JQXLite.generateID();
+        const deleteButtonContainer = document.createElement("div");
+        const deleteButtonID = JQXLite.generateID();
         deleteButtonContainer.id = deleteButtonID;
         deleteButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(deleteButtonContainer);
-        let deleteButton = jqwidgets.createInstance(
+        const deleteButton = jqwidgets.createInstance(
           `#${deleteButtonID}`,
           "jqxButton",
           {
-            imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+            imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`)
           }
         );
         jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
           content: "删除",
-          position: "bottom",
+          position: "bottom"
         });
         deleteButton.addEventHandler("click", (event) => {
-          let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+          const selectedrowindex = this.$refs.myGrid.getselectedrowindex();
           if (selectedrowindex < 0) {
             this.$message.warning({ content: Message.NO_ROWS_SELECTED });
             return false;
           }
-          let id = this.$refs.myGrid.getrowid(selectedrowindex);
+          const id = this.$refs.myGrid.getrowid(selectedrowindex);
           this.$refs.myGrid.deleterow(id);
         });
       }
       // 创建导出按钮
       if (this.hasAuthority(this, "qtnDtl:export")) {
-        let exportButtonContainer = document.createElement("div");
-        let exportButtonID = JQXLite.generateID();
+        const exportButtonContainer = document.createElement("div");
+        const exportButtonID = JQXLite.generateID();
         exportButtonContainer.id = exportButtonID;
         exportButtonContainer.style.cssText =
           "float: left;margin-left: 5px;  cursor: pointer;";
         buttonsContainer.appendChild(exportButtonContainer);
-        let exportButton = jqwidgets.createInstance(
+        const exportButton = jqwidgets.createInstance(
           `#${exportButtonID}`,
           "jqxButton",
           {
-            imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+            imgSrc: require(`@/assets/iconfont/custom/export.svg`)
           }
         );
         jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
           content: "导出",
-          position: "bottom",
+          position: "bottom"
         });
         exportButton.addEventHandler("click", () => {
           const columns = this.$refs.myGrid.columns;
@@ -358,27 +357,27 @@ export default {
       }
 
       // 创建刷新按钮
-      let reloadButtonContainer = document.createElement("div");
-      let reloadButtonID = JQXLite.generateID();
+      const reloadButtonContainer = document.createElement("div");
+      const reloadButtonID = JQXLite.generateID();
       reloadButtonContainer.id = reloadButtonID;
       reloadButtonContainer.style.cssText =
         "float:right;margin-left: 5px;  cursor: pointer;";
       buttonsContainer.appendChild(reloadButtonContainer);
-      let reloadButton = jqwidgets.createInstance(
+      const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
-        position: "bottom",
+        position: "bottom"
       });
 
       reloadButton.addEventHandler("click", (event) => {
         this.$refs.myGrid.updatebounddata();
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

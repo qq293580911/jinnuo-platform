@@ -26,17 +26,17 @@ import {
   DUCT_BLOWER,
   MUTE_BLOWER,
   SIDE_WALL_BLOWER,
-  SIDE_WALL_BLOWER_EP,
+  SIDE_WALL_BLOWER_EP
 } from "@/common/const.js";
 export default {
   components: {
-    JqxToolbar,
+    JqxToolbar
   },
   data() {
     return {
       toolsIndex: -1,
       tools: "custom | custom | custom | custom | custom | custom",
-      comps: {},
+      comps: {}
     };
   },
   created() {},
@@ -44,7 +44,6 @@ export default {
     const that = this;
     // 指派类型树绑定选择事件
     this.treeInstance.addEventHandler("select", (e) => {
-      const args = event.args;
       const item = that.treeInstance.getSelectedItem();
       if (item["hasItems"]) {
         that.$message.warning(Message.UNSELECTABLE_NODE);
@@ -67,11 +66,12 @@ export default {
     });
   },
   methods: {
-    initTools: function (type, index, tool, menuToolIninitialization) {
+    initTools: function(type, index, tool, menuToolIninitialization) {
       const that = this;
       if (index != this.toolsIndex) {
         switch (index) {
           case 0:
+          {
             const dropDownButton = document.createElement("div");
             dropDownButton.id = "dropDownButton";
             tool[0].appendChild(dropDownButton);
@@ -85,7 +85,7 @@ export default {
               "#dropDownButton",
               "jqxDropDownButton",
               {
-                width: 161,
+                width: 161
               }
             );
             // 树
@@ -95,10 +95,10 @@ export default {
                 { name: "id" },
                 { name: "parentid" },
                 { name: "text" },
-                { name: "value" },
+                { name: "value" }
               ],
               id: "id",
-              localdata: that.$store.state.assignType,
+              localdata: that.$store.state.assignType
             };
             const dataAdapter = new jqx.dataAdapter(source);
             dataAdapter.dataBind();
@@ -109,8 +109,8 @@ export default {
               [
                 {
                   name: "text",
-                  map: "label",
-                },
+                  map: "label"
+                }
               ]
             );
             that.treeInstance = jqwidgets.createInstance(
@@ -119,48 +119,53 @@ export default {
               {
                 source: records,
                 width: 158,
-                height: 300,
+                height: 300
               }
             );
             break;
+          }
           case 1:
+          {
             const assignContainer = document.createElement("div");
             assignContainer.style.cssText = "cursor: pointer;";
             assignContainer.id = "assign";
             tool[0].appendChild(assignContainer);
             jqwidgets.createInstance("#assign", "jqxButton", {
-              imgSrc: require("@/assets/iconfont/custom/specify.svg"),
+              imgSrc: require("@/assets/iconfont/custom/specify.svg")
             });
             that.assignButtonInstance = jqwidgets.createInstance(
               "#assign",
               "jqxTooltip",
               {
                 content: "指派类型",
-                position: "mouse",
+                position: "mouse"
               }
             );
             break;
-          case 2:
+          }
+          case 2: {
             const filterContainer = document.createElement("div");
             filterContainer.style.cssText = "cursor: pointer;";
             filterContainer.id = "filter";
             tool[0].appendChild(filterContainer);
             jqwidgets.createInstance("#filter", "jqxButton", {
-              imgSrc: require("@/assets/iconfont/custom/filter.svg"),
+              imgSrc: require("@/assets/iconfont/custom/filter.svg")
             });
             that.filterInstance = jqwidgets.createInstance(
               "#filter",
               "jqxTooltip",
               {
                 content: "筛选",
-                position: "mouse",
+                position: "mouse"
               }
             );
             break;
+          }
           case 3:
+          {
             tool[0].style.cssText = "float:right;";
             // 选型工具栏
-            let container = document.createElement("div");
+            const container = document.createElement("div");
             container.id = "container";
             container.style.cssText =
               "overflow: hidden; position: relative;margin-top:1px";
@@ -170,11 +175,13 @@ export default {
             that.selectionToolInstance = new SelectionToolComponent({
               store,
               propsData: {
-                selectionType: "常规风机",
-              },
+                selectionType: "常规风机"
+              }
             }).$mount("#container");
             break;
+          }
           case 4:
+          {
             tool[0].style.cssText = "float:right;";
             // 选型类型选择器
             const selectionSwitch = document.createElement("div");
@@ -193,11 +200,11 @@ export default {
                   DUCT_BLOWER,
                   MUTE_BLOWER,
                   SIDE_WALL_BLOWER,
-                  SIDE_WALL_BLOWER_EP,
+                  SIDE_WALL_BLOWER_EP
                 ],
                 width: 130,
                 height: 25,
-                selectedIndex: 0,
+                selectedIndex: 0
               }
             );
             selectionType.addEventHandler("select", (event) => {
@@ -207,17 +214,17 @@ export default {
               this.$parent.selectRibbon(value);
             });
             break;
-
+          }
           default:
             break;
         }
       }
       this.toolsIndex = index;
-    },
+    }
   },
   destroyed() {
     // console.log('工具栏销毁了')
-  },
+  }
 };
 </script>
 

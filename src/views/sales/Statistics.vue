@@ -25,20 +25,20 @@ export default {
   components: {
     JqxMenu,
     Machine,
-    Tube,
+    Tube
   },
   data() {
     return {
       menus: ["设备", "风管"],
-      currentMenuName: "设备",
+      currentMenuName: "设备"
     };
   },
   methods: {
     onItemclick(event) {
       const menuName = event.args.textContent;
       this.currentMenuName = menuName;
-    },
-  },
+    }
+  }
 };
 </script>
 

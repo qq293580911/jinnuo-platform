@@ -44,7 +44,7 @@ import {
   getCategory,
   addCategory,
   deleteCategory,
-  updateCategory,
+  updateCategory
 } from "@/network/product.js";
 
 export default {
@@ -53,7 +53,7 @@ export default {
     JqxTree,
     JqxValidator,
     JqxForm,
-    JqxButton,
+    JqxButton
   },
   beforeCreate() {
     this.source = {
@@ -61,12 +61,12 @@ export default {
         { name: "id", map: "pc_id", type: "number" },
         { name: "parentid", map: "pc_pid", type: "number" },
         { name: "text", map: "pc_name", type: "string" },
-        { name: "value", map: "pc_id", type: "string" },
+        { name: "value", map: "pc_id", type: "string" }
       ],
       datatype: "json",
       id: "id",
       type: "get",
-      url: "/productCateg/getAllProductCategory.do",
+      url: "/productCateg/getAllProductCategory.do"
     };
   },
   created() {
@@ -75,7 +75,7 @@ export default {
       loadServerData(serverdata, source, callback) {
         getCategory(source.url, source, serverdata).then((res) => {
           callback({
-            records: res.records,
+            records: res.records
           });
         });
       },
@@ -87,7 +87,7 @@ export default {
           [{ name: "text", map: "label" }]
         );
         that.$refs.myTree.source = that.records;
-      },
+      }
     });
     dataAdapter.dataBind();
   },
@@ -103,20 +103,20 @@ export default {
               type: "text",
               align: "left",
               width: "230px",
-              rowHeight: "40px",
+              rowHeight: "40px"
             },
             {
               name: "submitBtn",
               bind: "submitBtn",
               type: "button",
               text: "确认",
-              width: "60px",
-            },
-          ],
-        },
+              width: "60px"
+            }
+          ]
+        }
       ],
       formValues: {},
-      buttonGroup: ["添加", "编辑", "删除", "展开全部", "收起全部", "刷新"],
+      buttonGroup: ["添加", "编辑", "删除", "展开全部", "收起全部", "刷新"]
     };
   },
   mounted() {
@@ -128,8 +128,8 @@ export default {
         input: $newName,
         message: "该项必填",
         action: "blur,input",
-        rule: "required",
-      },
+        rule: "required"
+      }
     ];
     // 验证表单
     const btn = this.$refs.myForm.getComponentByName("submitBtn");
@@ -164,7 +164,7 @@ export default {
             this.$message.warning(Message.NO_NODE_SELECTED);
             return false;
           }
-          let $newName = this.$refs.myForm.getComponentByName("newName");
+          const $newName = this.$refs.myForm.getComponentByName("newName");
           $newName.val(item.label);
           break;
         case "删除":
@@ -189,7 +189,7 @@ export default {
     addCategory(id) {
       const params = {
         pid: id,
-        name: "item",
+        name: "item"
       };
       addCategory({ jsonParams: JSON.stringify(params) }).then((res) => {
         // 添加节点
@@ -197,7 +197,7 @@ export default {
         this.$refs.myTree.addTo(
           {
             label: "item",
-            id: id,
+            id: id
           },
           item == null ? null : item.element,
           false
@@ -208,22 +208,22 @@ export default {
     },
     deleteCategory(id) {
       const params = {
-        jsonParams: JSON.stringify({ id }),
+        jsonParams: JSON.stringify({ id })
       };
 
       deleteCategory(params).then((res) => {
-        let item = this.$refs.myTree.getSelectedItem();
+        const item = this.$refs.myTree.getSelectedItem();
         this.$refs.myTree.removeItem(item.element);
       });
     },
     updateCategory(params) {
       updateCategory({ jsonParams: JSON.stringify(params) }).then((res) => {
-        let item = this.$refs.myTree.getSelectedItem();
+        const item = this.$refs.myTree.getSelectedItem();
         this.$refs.myTree.updateItem(item.element, { label: params.name });
         this.$refs.myTree.render();
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

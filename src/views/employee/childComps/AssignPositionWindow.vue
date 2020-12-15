@@ -29,7 +29,7 @@ export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   beforeCreate() {
     this.source = {
@@ -38,11 +38,11 @@ export default {
         { name: "posId", map: "pos_id", type: "number" },
         { name: "posName", map: "pos_name", type: "string" },
         { name: "empId", map: "emp_id", type: "number" },
-        { name: "enable", type: "number" },
+        { name: "enable", type: "number" }
       ],
       url: "/emp/getEmployeePositionList.do",
       type: "get",
-      dataType: "json",
+      dataType: "json"
     };
   },
   data() {
@@ -53,19 +53,19 @@ export default {
           type: "custom",
           width: "250px",
           rowHeight: "210px",
-          init: function (component) {
-            let div = document.createElement("div");
+          init: function(component) {
+            const div = document.createElement("div");
             div.id = "positionId";
             component[0].appendChild(div);
-          },
+          }
         },
         {
           name: "empId",
           bind: "empId",
           type: "custom",
-          init: function (component) {
+          init: function(component) {
             component.append('<input type="hidden" id="empId"/>');
-          },
+          }
         },
         {
           name: "submitButton",
@@ -73,9 +73,9 @@ export default {
           text: "提交",
           width: "60px",
           rowHeight: "50px",
-          align: "center",
-        },
-      ],
+          align: "center"
+        }
+      ]
     };
   },
   mounted() {
@@ -83,7 +83,7 @@ export default {
     const $btn = myForm.getComponentByName("submitButton");
     $btn[0].addEventListener("click", () => {
       const items = this.listBoxInstance.getItems();
-      let arr = items.map((item) => {
+      const arr = items.map((item) => {
         if (item["checked"] == true) {
           item["originalItem"]["enable"] = 1;
         } else {
@@ -95,8 +95,8 @@ export default {
       const params = {
         jsonParams: JSON.stringify({
           items: arr,
-          empId: this.empId,
-        }),
+          empId: this.empId
+        })
       };
 
       assignPosition(params).then((res) => {
@@ -115,12 +115,12 @@ export default {
         loadServerData(serverdata, source, callback) {
           const params = {
             jsonParams: JSON.stringify({
-              empId,
-            }),
+              empId
+            })
           };
           getEmployeePosition(source.url, source, params).then((res) => {
             callback({
-              records: res.records,
+              records: res.records
             });
           });
         },
@@ -135,7 +135,7 @@ export default {
               width: "100%",
               height: 200,
               displayMember: "posName",
-              valueMember: "posId",
+              valueMember: "posId"
             }
           );
         },
@@ -145,15 +145,15 @@ export default {
               that.listBoxInstance.checkIndex(index);
             }
           });
-        },
+        }
       });
 
       dataAdapter.dataBind();
 
       this.$refs.myWindow.open();
     },
-    onValidationSuccess(event) {},
-  },
+    onValidationSuccess(event) {}
+  }
 };
 </script>
 

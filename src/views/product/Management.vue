@@ -31,14 +31,14 @@ export default {
     NonMachine,
     Ventilator
   },
-  data: function () {
+  data: function() {
     return {
-      menus: ["设备类", "非设备类","换气扇"],
-      currentMenuName: "设备类",
+      menus: ["设备类", "非设备类", "换气扇"],
+      currentMenuName: "设备类"
     }
   },
   methods: {
-    onItemclick(event){
+    onItemclick(event) {
       const menuName = event.args.textContent
       this.currentMenuName = menuName
     }

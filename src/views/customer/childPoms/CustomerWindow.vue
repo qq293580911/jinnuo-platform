@@ -16,19 +16,11 @@
 <script>
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
-import jqxRadioButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxradiobutton.vue";
-import jqxDropDownButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxdropdownbutton.vue";
-import jqxTree from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtree.vue";
-import jqxNumberInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxnumberinput.vue";
-import jqxComboBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxcombobox.vue";
 export default {
   name: "CustomerWindow",
   components: {
     JqxWindow,
-    JqxForm,
-    jqxDropDownButton,
-    jqxTree,
-    jqxNumberInput,
+    JqxForm
   },
   data() {
     return {
@@ -43,7 +35,7 @@ export default {
           required: true,
           rowHeight: "40px",
           info: "输入客户姓名",
-          infoPosition: "right",
+          infoPosition: "right"
         },
         {
           name: "type",
@@ -54,7 +46,7 @@ export default {
           width: "250px",
           required: false,
           info: "输入客户类别",
-          infoPosition: "right",
+          infoPosition: "right"
         },
         {
           name: "gender",
@@ -63,34 +55,34 @@ export default {
           label: "客户性别",
           required: false,
           labelWidth: "80px",
-          init: function (component) {
+          init: function(component) {
             var div = `<div id="male" style="float: left;margin-left:50px;"><span>男</span></div>
                                         <div id="female" style="float: left;margin-left:10px;"><span>女</span></div>`;
             component.append(div);
-            let maleRadioButton = jqwidgets.createInstance(
+            jqwidgets.createInstance(
               "#male",
               "jqxRadioButton",
               {
                 width: "30%",
                 height: 30,
-                checked: true,
+                checked: true
               }
             );
-            let femaleRadioButton = jqwidgets.createInstance(
+            jqwidgets.createInstance(
               "#female",
               "jqxRadioButton",
               {
                 width: "30%",
                 height: 30,
-                checked: true,
+                checked: true
               }
             );
 
             $("#male").jqxRadioButton({
               width: "30%",
-              height: 30,
+              height: 30
             });
-          },
+          }
         },
         {
           name: "phone",
@@ -101,7 +93,7 @@ export default {
           required: true,
           labelWidth: "80px",
           info: "输入客户电话",
-          infoPosition: "right",
+          infoPosition: "right"
         },
         {
           name: "company",
@@ -112,7 +104,7 @@ export default {
           required: false,
           labelWidth: "80px",
           info: "输入客户公司",
-          infoPosition: "right",
+          infoPosition: "right"
         },
         {
           name: "position",
@@ -123,14 +115,14 @@ export default {
           required: false,
           labelWidth: "80px",
           info: "输入客户职位",
-          infoPosition: "right",
+          infoPosition: "right"
         },
         {
           name: "id",
           type: "custom",
-          init: function (component) {
+          init: function(component) {
             component.append('<input id="customerId" type="hidden"/>');
-          },
+          }
         },
         {
           columns: [
@@ -142,7 +134,7 @@ export default {
               height: "30px",
               rowHeight: "50px",
               align: "right",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "cancelButton",
@@ -151,28 +143,26 @@ export default {
               width: "60px",
               height: "30px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           name: "id",
           type: "custom",
-          init: function (component) {
+          init: function(component) {
             component.append('<input id="id" type="hidden"/>');
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
   },
   methods: {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
-      if (params[1]) {
-      }
       this.$refs.myWindow.open();
-    },
-  },
+    }
+  }
 };
 </script>
 

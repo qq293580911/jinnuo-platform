@@ -7,8 +7,8 @@
 <script>
 import ProductManagement from 'views/product/management'
 export default {
-  name:'Page',
-  components:{
+  name: 'Page',
+  components: {
     ProductManagement
   }
 }

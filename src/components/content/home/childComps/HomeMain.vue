@@ -94,7 +94,7 @@ export default {
     SuppliesManagement,
     SuppliesStatistics,
     // 测试
-    Test,
+    Test
   },
   data() {
     return {};
@@ -194,13 +194,13 @@ export default {
           break;
       }
       this.vm = new component({
-        store,
+        store
       }).$mount(`#${obj.content}`);
     },
     removed(event) {
       this.vm.$destroy();
-    },
-  },
+    }
+  }
 };
 </script>
 

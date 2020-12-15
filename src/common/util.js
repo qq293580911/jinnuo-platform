@@ -1,10 +1,8 @@
 // 省市县多级联动
 const {
-  data,
   province,
   city,
-  area,
-  town,
+  area
 } = require("province-city-china/data");
 // 获得省
 export function getProvince() {
@@ -41,7 +39,7 @@ export function getArea(provinceValue, cityValue) {
 // 函数防抖
 export function debounce(func, delay) {
   let timer = null
-  return function (...args) {
+  return function(...args) {
     if (timer) clearTimeout(timer)
 
     timer = setTimeout(() => {
@@ -51,15 +49,16 @@ export function debounce(func, delay) {
   }
 }
 
-Date.prototype.format = function (fmt) {
+// eslint-disable-next-line no-extend-native
+Date.prototype.format = function(fmt) {
   var o = {
-    "M+": this.getMonth() + 1, //月份
-    "d+": this.getDate(), //日
-    "h+": this.getHours(), //小时
-    "m+": this.getMinutes(), //分
-    "s+": this.getSeconds(), //秒
-    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-    "S": this.getMilliseconds() //毫秒
+    "M+": this.getMonth() + 1, // 月份
+    "d+": this.getDate(), // 日
+    "h+": this.getHours(), // 小时
+    "m+": this.getMinutes(), // 分
+    "s+": this.getSeconds(), // 秒
+    "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
+    "S": this.getMilliseconds() // 毫秒
   };
   if (/(y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
@@ -77,37 +76,37 @@ export function formatDate(date, fmt) {
   if (/(y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
   }
-  let o = {
+  const o = {
     'M+': date.getMonth() + 1,
     'd+': date.getDate(),
     'h+': date.getHours(),
     'm+': date.getMinutes(),
     's+': date.getSeconds()
   };
-  for (let k in o) {
+  for (const k in o) {
     if (new RegExp(`(${k})`).test(fmt)) {
-      let str = o[k] + '';
+      const str = o[k] + '';
       fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : padLeftZero(str));
     }
   }
   return fmt;
-};
+}
 
 function padLeftZero(str) {
   return ('00' + str).substr(str.length);
-};
+}
 
 export function formatToTree(list) {
-  //filter会遍历原数组的每一项，因为有children引用的存在，返回值只需要返回第一层数据就可以了
-  //当然，此处也可改用双层for循环
-  return list.filter(function (parent) {
-    //遍历原数组的每一项，找出当前项的所有子节点
-    let branchArr = list.filter(function (child) {
+  // filter会遍历原数组的每一项，因为有children引用的存在，返回值只需要返回第一层数据就可以了
+  // 当然，此处也可改用双层for循环
+  return list.filter(function(parent) {
+    // 遍历原数组的每一项，找出当前项的所有子节点
+    const branchArr = list.filter(function(child) {
       return parent.id == child.parentId;
     });
-    //为当前项数据追加children引用
+    // 为当前项数据追加children引用
     parent.children = branchArr;
-    return !parent.parentId; //过滤出第一层
+    return !parent.parentId; // 过滤出第一层
   })
 }
 
@@ -194,7 +193,7 @@ export function calc_misc_freight(...params) {
   const tax = params[2]
   const logManageFee = params[3]
   const warranty = params[4]
-  let rate = params[5]
+  const rate = params[5]
   if (amount === 0) {
     return 0
   }
@@ -208,8 +207,8 @@ export function calc_misc_freight(...params) {
 
 // 计算下单底价
 export function calc_rsv_p(...param) {
-  let result = param.reduce(function (prev, curr, idx, arr) {
-    return prev - curr; //reduce() 方法接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值
+  let result = param.reduce(function(prev, curr, idx, arr) {
+    return prev - curr; // reduce() 方法接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值
   });
   result = Math.round(result)
   return isNaN(result) ? 0 : result
@@ -222,10 +221,10 @@ export function dataExport(...params) {
   const rowsData = params[2]
   const customConfig = params[3]
   // 列下标转换列号
-  let createCellPos = function (n) {
-    let ordA = 'A'.charCodeAt(0);
-    let ordZ = 'Z'.charCodeAt(0);
-    let len = ordZ - ordA + 1;
+  const createCellPos = function(n) {
+    const ordA = 'A'.charCodeAt(0);
+    const ordZ = 'Z'.charCodeAt(0);
+    const len = ordZ - ordA + 1;
     let s = "";
     while (n >= 0) {
       s = String.fromCharCode(n % len + ordA) + s;
@@ -234,8 +233,8 @@ export function dataExport(...params) {
     return s;
   };
   // 梳理数据前
-  let filterCofig = {}
-  let aggregatesRow = {}
+  const filterCofig = {}
+  const aggregatesRow = {}
   const titleRow = {}
   const headFields = []
   const columnWidths = {}
@@ -250,8 +249,8 @@ export function dataExport(...params) {
     filterCofig[dataField] = dataField
     aggregatesRow[dataField] = ''
     // 判断数字列
-    if (customConfig['numberCol'].includes(item['text'])) {
-      filterCofig[dataField] = function (value, line, data, lineIndex, newField) {
+    if (customConfig && customConfig['numberCol'].includes(item['text'])) {
+      filterCofig[dataField] = function(value, line, data, lineIndex, newField) {
         return {
           v: value,
           t: 'n'
@@ -262,8 +261,8 @@ export function dataExport(...params) {
     if (item['aggregates'] != null) {
       aggregatesRow[dataField] = {
         t: 'n',
-        //第2行开始是因为后面会加标题头，结尾行也响应加1
-        f: `${item['aggregates'][0]}(${createCellPos(index)}2:${createCellPos(index)}${rowsData.length+1})`
+        // 第2行开始是因为后面会加标题头，结尾行也响应加1
+        f: `${item['aggregates'][0]}(${createCellPos(index)}2:${createCellPos(index)}${rowsData.length + 1})`
       }
     }
   })
@@ -277,7 +276,7 @@ export function dataExport(...params) {
   })
   // 梳理数据
   data = LAY_EXCEL.filterExportData(data, filterCofig);
-  //设置标题头
+  // 设置标题头
   data.unshift(titleRow);
   // 末尾聚合行
   data.push(aggregatesRow)
@@ -309,7 +308,7 @@ export function dataExport(...params) {
         wrapText: true
       }
     }
-  }, function (cell, newCell, row, config, currentRow, currentCol, fieldKey) {
+  }, function(cell, newCell, row, config, currentRow, currentCol, fieldKey) {
     return newCell;
   });
 
@@ -343,7 +342,7 @@ export function dataExport(...params) {
   });
 
   let colConfig = LAY_EXCEL.makeColConfig(columnWidths, 80);
-  if (customConfig.colConfig) {
+  if (customConfig && customConfig.colConfig) {
     colConfig = LAY_EXCEL.makeColConfig(customConfig.colConfig, 80);
   }
 
@@ -354,7 +353,7 @@ export function dataExport(...params) {
   }, 25);
 
   // 若果有自定义配置
-  if (customConfig.rowConfig) {
+  if (customConfig && customConfig.rowConfig) {
     rowConfig = LAY_EXCEL.makeRowConfig({
       1: customConfig['rowConfig']['start'],
       [end]: customConfig['rowConfig']['end']

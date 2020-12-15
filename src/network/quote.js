@@ -28,7 +28,7 @@ export function handle(params) {
 }
 
 export function filterSelectionParams(params) {
-  let productName = params['productName']
+  const productName = params['productName']
   let specModel = params["specModel"]
   specModel = specModel.toUpperCase()
     .replace("M/H", "m³/h")
@@ -47,18 +47,18 @@ export function filterSelectionParams(params) {
   let len = specModel.indexOf("m³/h");
   if (len > 0) {
     for (let i = len - 1; i > 0; i--) {
-      let c = specModel.charAt(i);
+      const c = specModel.charAt(i);
       if (/\d|\.|\//.test(c) == false) {
         airVolume = specModel.substring(i + 1, specModel.indexOf("m³/h"));
         break;
       }
     }
-  }else if(specModel.indexOf("Q=")){
+  } else if (specModel.indexOf("Q=")) {
     len = specModel.indexOf("Q=")
-    for(let i = len + 2;i<specModel.length;i++){
-      let c = specModel.charAt(i);
+    for (let i = len + 2; i < specModel.length; i++) {
+      const c = specModel.charAt(i);
       if (/\d|\.|\//.test(c) == false) {
-        airVolume = specModel.substring(specModel.indexOf("Q=")+2,i );
+        airVolume = specModel.substring(specModel.indexOf("Q=") + 2, i);
         break;
       }
     }
@@ -68,18 +68,18 @@ export function filterSelectionParams(params) {
   len = specModel.indexOf("kw");
   if (len > 0) {
     for (let i = len - 1; i > 0; i--) {
-      let c = specModel.charAt(i);
+      const c = specModel.charAt(i);
       if (/\d|\.|\//.test(c) == false) {
         power = specModel.substring(i + 1, specModel.indexOf("kw"));
         break;
       }
     }
-  }else if(specModel.indexOf("N=")){
+  } else if (specModel.indexOf("N=")) {
     len = specModel.indexOf("N=")
-    for(let i = len + 2;i<specModel.length;i++){
-      let c = specModel.charAt(i);
+    for (let i = len + 2; i < specModel.length; i++) {
+      const c = specModel.charAt(i);
       if (/\d|\.|\//.test(c) == false) {
-        airVolume = specModel.substring(specModel.indexOf("N=")+2,i );
+        airVolume = specModel.substring(specModel.indexOf("N=") + 2, i);
         break;
       }
     }
@@ -92,20 +92,20 @@ export function filterSelectionParams(params) {
     speedType = "双速";
   } else if (specModel.indexOf('速') != specModel.lastIndexOf('速')) {
     speedType = "双速";
-  }else if (specModel.indexOf('Q') != specModel.lastIndexOf('Q')) {
+  } else if (specModel.indexOf('Q') != specModel.lastIndexOf('Q')) {
     speedType = "双速";
-  }else if (/\/|\\/.test(power)) {
+  } else if (/\/|\\/.test(power)) {
     speedType = "双速";
-  }else {
+  } else {
     speedType = "单速"
   }
   // 获得认证类型
   let certificate = ''
-  if(/T35|外购|防[爆,暴]|送|补|加压|混流|斜流|排风|管道|通风|壁式/.test(productName)){
+  if (/T35|外购|防[爆,暴]|送|补|加压|混流|斜流|排风|管道|通风|壁式/.test(productName)) {
     certificate = false
-  }else if(/双速|高温|排烟|PY/.test(productName)){
+  } else if (/双速|高温|排烟|PY/.test(productName)) {
     certificate = true
-  }else{
+  } else {
     certificate = true
   }
 
@@ -222,7 +222,7 @@ export function addQuotationAndDetail(form) {
 }
 
 // 报价统计
-export function getQuoterColumnChartData(params) {  
+export function getQuoterColumnChartData(params) {
   return request({
     url: '/qtnStat/getQuoterQuotationColumnChartData.do',
     method: 'Get',

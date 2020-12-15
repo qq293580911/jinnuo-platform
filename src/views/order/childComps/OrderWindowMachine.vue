@@ -2,8 +2,7 @@
   <div>
     <JqxWindow
       ref="myWindow"
-      :width="'750px'"
-      :height="'550px'"
+      :width="'700px'"
       :autoOpen="false"
       :position="{ x: '30%', y: '20%' }"
     >
@@ -30,14 +29,14 @@ import {
   calc_misc_freight,
   calc_misc_tax,
   calc_misc_warranty,
-  calc_rsv_p,
+  calc_rsv_p
 } from "@/common/util";
 import { addOrder, updateOrder } from "@/network/order";
 export default {
   components: {
     JqxWindow,
     JqxValidator,
-    JqxForm,
+    JqxForm
   },
   created() {
     this.salesmans = this.$store.state.salesmans;
@@ -50,14 +49,20 @@ export default {
           columns: [
             {
               name: "orderDate",
-              type: "date",
+              type: "custom",
               label: "下单日期",
               labelWidth: "150px",
-              width: "250px",
               required: true,
               rowHeight: "40px",
               columnWidth: "50%",
-              formatString: "yyyy-MM-dd",
+              init: function(component) {
+                jqwidgets.createInstance(component, "jqxDateTimeInput", {
+                  width: 250,
+                  height: 30,
+                  culture: "zh-CN",
+                  formatString: "yyyy-MM-dd"
+                });
+              }
             },
             {
               name: "salesman",
@@ -74,11 +79,11 @@ export default {
                   height: 30,
                   animationType: "slide",
                   displayMember: "emp_name",
-                  valueMember: "emp_id",
+                  valueMember: "emp_id"
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -90,7 +95,7 @@ export default {
               width: "250px",
               required: true,
               rowHeight: "40px",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "orderNumber",
@@ -100,9 +105,9 @@ export default {
               width: "250px",
               required: true,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -114,9 +119,9 @@ export default {
               width: "250px",
               required: true,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -128,16 +133,16 @@ export default {
               required: true,
               rowHeight: "40px",
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxNumberInput", {
                   width: 250,
                   height: 30,
                   inputMode: "simple",
                   digits: 11,
                   spinButtons: true,
-                  decimalDigits: 0,
+                  decimalDigits: 0
                 });
-              },
+              }
             },
             {
               name: "reservePrice",
@@ -147,18 +152,18 @@ export default {
               required: false,
               rowHeight: "40px",
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxNumberInput", {
                   width: 250,
                   height: 30,
                   inputMode: "simple",
                   digits: 11,
                   spinButtons: true,
-                  decimalDigits: 0,
+                  decimalDigits: 0
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -170,7 +175,7 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "freight",
@@ -180,9 +185,9 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -194,7 +199,7 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
+              columnWidth: "50%"
             },
             {
               name: "warranty",
@@ -204,9 +209,9 @@ export default {
               width: "250px",
               required: false,
               rowHeight: "40px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         },
         {
           columns: [
@@ -218,7 +223,7 @@ export default {
               required: false,
               rowHeight: "40px",
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxNumberInput", {
                   width: 250,
                   height: 30,
@@ -226,11 +231,11 @@ export default {
                   digits: 11,
                   spinButtons: true,
                   decimalDigits: 0,
-                  disabled: false,
+                  disabled: false
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -242,7 +247,7 @@ export default {
               required: true,
               rowHeight: "40px",
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxNumberInput", {
                   width: 250,
                   height: 30,
@@ -250,9 +255,9 @@ export default {
                   digits: 11,
                   spinButtons: true,
                   decimalDigits: 0,
-                  disabled: true,
+                  disabled: true
                 });
-              },
+              }
             },
             {
               name: "actualFreight",
@@ -262,7 +267,7 @@ export default {
               required: false,
               rowHeight: "40px",
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxNumberInput", {
                   width: 250,
                   height: 30,
@@ -270,11 +275,11 @@ export default {
                   digits: 11,
                   spinButtons: true,
                   decimalDigits: 0,
-                  disabled: true,
+                  disabled: true
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -286,16 +291,16 @@ export default {
               required: false,
               rowHeight: "40px",
               columnWidth: "50%",
-              init: function (component) {
+              init: function(component) {
                 jqwidgets.createInstance(component, "jqxNumberInput", {
                   width: 250,
                   height: 30,
                   inputMode: "simple",
                   digits: 11,
                   spinButtons: true,
-                  decimalDigits: 0,
+                  decimalDigits: 0
                 });
-              },
+              }
             },
             {
               name: "considerationCommissionStatus",
@@ -305,9 +310,9 @@ export default {
               width: "250px",
               rowHeight: "40px",
               columnWidth: "50%",
-              options: [{ label: "进行中" }, { label: "已终止" }],
-            },
-          ],
+              options: [{ label: "进行中" }, { label: "已终止" }]
+            }
+          ]
         },
         {
           columns: [
@@ -326,11 +331,11 @@ export default {
                   inputMode: "simple",
                   digits: 11,
                   spinButtons: true,
-                  decimalDigits: 0,
+                  decimalDigits: 0
                 });
-              },
-            },
-          ],
+              }
+            }
+          ]
         },
         {
           columns: [
@@ -343,9 +348,9 @@ export default {
               height: "30px",
               required: false,
               columnWidth: "50%",
-              rowHeight: "40px",
-            },
-          ],
+              rowHeight: "40px"
+            }
+          ]
         },
         {
           columns: [
@@ -356,7 +361,7 @@ export default {
               width: "60px",
               rowHeight: "50px",
               columnWidth: "50%",
-              align: "right",
+              align: "right"
             },
             {
               name: "cancelButton",
@@ -364,47 +369,47 @@ export default {
               text: "取消",
               width: "60px",
               rowHeight: "50px",
-              columnWidth: "50%",
-            },
-          ],
+              columnWidth: "50%"
+            }
+          ]
         }
       ],
-      id:null
+      id: null
     };
   },
   mounted() {
-    let $orderDate = this.$refs.myForm.getComponentByName("orderDate");
-    let $salesman = this.$refs.myForm.getComponentByName("salesman");
-    let $contractNumber = this.$refs.myForm.getComponentByName(
+    const $orderDate = this.$refs.myForm.getComponentByName("orderDate");
+    const $salesman = this.$refs.myForm.getComponentByName("salesman");
+    const $contractNumber = this.$refs.myForm.getComponentByName(
       "contractNumber"
     );
-    let $orderNumber = this.$refs.myForm.getComponentByName("orderNumber");
-    let $projectName = this.$refs.myForm.getComponentByName("projectName");
-    let $reservePrice = this.$refs.myForm.getComponentByName("reservePrice");
-    let $logManageFee = this.$refs.myForm.getComponentByName(
+    const $orderNumber = this.$refs.myForm.getComponentByName("orderNumber");
+    const $projectName = this.$refs.myForm.getComponentByName("projectName");
+    const $reservePrice = this.$refs.myForm.getComponentByName("reservePrice");
+    const $logManageFee = this.$refs.myForm.getComponentByName(
       "logisticsManagementFee"
     );
-    let $freight = this.$refs.myForm.getComponentByName("freight");
-    let $tax = this.$refs.myForm.getComponentByName("tax");
-    let $warranty = this.$refs.myForm.getComponentByName("warranty");
-    let $installFee = this.$refs.myForm.getComponentByName("installFee");
-    let $orderAmount = this.$refs.myForm.getComponentByName("orderAmount");
-    let $orderReservePrice = this.$refs.myForm.getComponentByName(
+    const $freight = this.$refs.myForm.getComponentByName("freight");
+    const $tax = this.$refs.myForm.getComponentByName("tax");
+    const $warranty = this.$refs.myForm.getComponentByName("warranty");
+    const $installFee = this.$refs.myForm.getComponentByName("installFee");
+    const $orderAmount = this.$refs.myForm.getComponentByName("orderAmount");
+    const $orderReservePrice = this.$refs.myForm.getComponentByName(
       "orderReservePrice"
     );
-    let $considerationCommissionOrderAmount = this.$refs.myForm.getComponentByName(
+    const $considerationCommissionOrderAmount = this.$refs.myForm.getComponentByName(
       "considerationCommissionOrderAmount"
     );
-    let $considerationCommissionStatus = this.$refs.myForm.getComponentByName(
+    const $considerationCommissionStatus = this.$refs.myForm.getComponentByName(
       "considerationCommissionStatus"
     );
-    let $notConsiderationCommissionOrderAmount = this.$refs.myForm.getComponentByName(
+    const $notConsiderationCommissionOrderAmount = this.$refs.myForm.getComponentByName(
       "notConsiderationCommissionOrderAmount"
     );
-    let $actualFreight = this.$refs.myForm.getComponentByName(
+    const $actualFreight = this.$refs.myForm.getComponentByName(
       "notConsiderationCommissionOrderAmount"
     );
-    let $remark = this.$refs.myForm.getComponentByName("remark");
+    const $remark = this.$refs.myForm.getComponentByName("remark");
 
     this.orderDateInstance = $orderDate;
     this.salesmanInstance = $salesman;
@@ -430,81 +435,81 @@ export default {
         input: $projectName,
         message: "不能为空!",
         action: "keyup, blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $contractNumber,
         message: "不能为空!",
         action: "keyup, blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $orderNumber,
         message: "不能为空!",
         action: "keyup, blur",
-        rule: "required",
+        rule: "required"
       },
       {
         input: $logManageFee,
         message: "不正确的格式",
         action: "keyup, blur",
-        rule: function (input) {
-          let value = $(input).val();
-          if (value.length > 0) {
-            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
-            return r;
-          }
-          return true;
-        },
-      },
-      {
-        input: $freight,
-        message: "不正确的格式",
-        action: "keyup, blur",
-        rule: function (input) {
-          let value = $(input).val();
-          if (value.length > 0) {
-            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
-            return r;
-          }
-          return true;
-        },
-      },
-      {
-        input: $tax,
-        message: "不正确的格式",
-        action: "keyup, blur",
-        rule: function (input) {
-          let value = $(input).val();
-          if (value.length > 0) {
-            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
-            return r;
-          }
-          return true;
-        },
-      },
-      {
-        input: $warranty,
-        message: "不正确的格式",
-        action: "keyup, blur",
-        rule: function (input) {
+        rule: function(input) {
           const value = $(input).val();
           if (value.length > 0) {
             const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
             return r;
           }
           return true;
-        },
+        }
+      },
+      {
+        input: $freight,
+        message: "不正确的格式",
+        action: "keyup, blur",
+        rule: function(input) {
+          const value = $(input).val();
+          if (value.length > 0) {
+            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
+            return r;
+          }
+          return true;
+        }
+      },
+      {
+        input: $tax,
+        message: "不正确的格式",
+        action: "keyup, blur",
+        rule: function(input) {
+          const value = $(input).val();
+          if (value.length > 0) {
+            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
+            return r;
+          }
+          return true;
+        }
+      },
+      {
+        input: $warranty,
+        message: "不正确的格式",
+        action: "keyup, blur",
+        rule: function(input) {
+          const value = $(input).val();
+          if (value.length > 0) {
+            const r = /^[0-9]*$|^(100|[1-9]\d|\d)(.\d{1,4})?%$/.test(value);
+            return r;
+          }
+          return true;
+        }
       },
       {
         input: $salesman,
         action: "change",
         message: "该项必选!",
-        rule: function () {
+        rule: function() {
           const index = $salesman.jqxComboBox("getSelectedIndex");
           return index > -1;
-        },
-      },
+        }
+      }
     ];
     $orderAmount
       .add($logManageFee)
@@ -512,7 +517,7 @@ export default {
       .add($tax)
       .add($warranty)
       .add($installFee)
-      .on("change", function () {
+      .on("change", function() {
         const orderAmount = $orderAmount.val();
         const logManageFee = $logManageFee.val();
         const freight = $freight.val();
@@ -520,15 +525,15 @@ export default {
         const warranty = $warranty.val();
         const installFee = $installFee.val();
 
-        let ordManageFee = calc_misc_log_manage_fee(
+        const ordManageFee = calc_misc_log_manage_fee(
           orderAmount,
           installFee,
           logManageFee
         );
 
-        let ordTax = calc_misc_tax(orderAmount, installFee, tax);
-        let ordWarranty = calc_misc_warranty(orderAmount, installFee, warranty);
-        let ordFreight = calc_misc_freight(
+        const ordTax = calc_misc_tax(orderAmount, installFee, tax);
+        const ordWarranty = calc_misc_warranty(orderAmount, installFee, warranty);
+        const ordFreight = calc_misc_freight(
           orderAmount,
           installFee,
           ordManageFee,
@@ -536,7 +541,7 @@ export default {
           ordWarranty,
           freight
         );
-        let ordRsvP = calc_rsv_p(
+        const ordRsvP = calc_rsv_p(
           orderAmount,
           ordManageFee,
           ordFreight,
@@ -613,7 +618,7 @@ export default {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0]);
       if (params[0] == EDIT_ORDER) {
-        let rowData = params[1];
+        const rowData = params[1];
         this.$nextTick(() => {
           // 下单日期
           this.orderDateInstance.val(rowData["order_date"]);
@@ -674,14 +679,14 @@ export default {
           );
           // 备注
           this.remarkInstance.val(rowData["remark"]);
-          this.id = rowData["id"]
+          this.id = rowData["id"];
         });
       }
       this.$refs.myWindow.open();
     },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       addOrder(params).then((res) => {
         this.$refs.myWindow.close();
@@ -691,15 +696,15 @@ export default {
     },
     update(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams: JSON.stringify(formData)
       };
       updateOrder(params).then((res) => {
         this.$refs.myWindow.close();
         this.$parent.refresh();
         this.clearForm();
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

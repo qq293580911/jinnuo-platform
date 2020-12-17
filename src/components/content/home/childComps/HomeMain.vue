@@ -23,7 +23,6 @@ import Vue from "vue";
 import store from "@/store";
 Vue.use(store);
 import JqxTabs from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtabs.vue";
-import Welcom from "components/content/Welcom.vue";
 // 产品管理
 import ProductManagement from "views/product/Management";
 import ProductCategory from "views/product/Category";
@@ -61,45 +60,11 @@ import { Module } from "@/common/const.js";
 export default {
   name: "HomeMain",
   components: {
-    JqxTabs,
-    Welcom,
-    // 产品，类型，价格
-    ProductManagement,
-    ProductCategory,
-    ProductPrice,
-    // 报价处理，报价单，统计管理
-    QuoteHandle,
-    Quotation,
-    QuoteManagement,
-    // 客户
-    CustomerManagement,
-    // 合同，合同发票
-    ContractManagement,
-    ContractInvoice,
-    // 下单，送货
-    OrderManagement,
-    DeliveryManagement,
-    SalesStatistics,
-    // 用户
-    UserManagement,
-    RoleManagement,
-    // 权限
-    AuthorityManagement,
-    // 部门，员工
-    DepartmentManagement,
-    SalesGroupManagement,
-    EmployeeManagement,
-    // 用品类型，管理，统计
-    SuppliesCategory,
-    SuppliesManagement,
-    SuppliesStatistics,
-    // 测试
-    Test
+    JqxTabs
   },
   data() {
     return {};
   },
-  computed: {},
   mounted() {
     this.$bus.$off("addTab").$on("addTab", (obj) => {
       const length = this.$refs.myTabs.length();

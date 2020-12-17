@@ -30,17 +30,14 @@
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
-import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
 
 import { getLocalization } from "@/common/localization.js";
-import { formatFilter } from "@/common/util.js";
-import { Message } from "@/common/const.js";
+import { formatFilter, calc_misc_tax, calc_misc_log_manage_fee, calc_misc_warranty, calc_misc_freight, calc_rsv_p } from "@/common/util.js";
 import { showDeliveryDetailList } from "@/network/delivery.js";
 export default {
   name: "Detail",
   components: {
-    JqxGrid,
-    JqxTooltip
+    JqxGrid
   },
   beforeCreate() {
     this.source = {
@@ -102,112 +99,72 @@ export default {
           });
         },
         beforeLoadComplete(records) {
+          const orderNumbers = [];
           records.forEach(function(value, index, array) {
             const ordAmt = value["order_amount"];
             const dlvAmt = value["delivery_amount"];
-            const logManageFee = value["logistics_management_fee"];
-            const freight = value["freight"];
-            const tax = value["tax"];
-            const warranty = value["warranty"];
+            let logManageFee = value["logistics_management_fee"];
+            let freight = value["freight"];
+            let tax = value["tax"];
+            let warranty = value["warranty"];
 
-            if (logManageFee.indexOf("%") > -1) {
-              logManageFee = parseFloat(logManageFee) / 100;
+            //  安装费只在一条送货数据里体现
+            const orderNumber = value['order_number'];
+            const has = orderNumbers.includes(orderNumber, 0);
+            let installFee = 0;
+            if (has == false) {
+              installFee = value['install_fee'] == null ? 0 : value['install_fee'];
+            } else {
+              orderNumbers.push(orderNumber)
+            }
+            value['install_fee'] = installFee;
+
+            if (logManageFee == '' || logManageFee == null) {
+              logManageFee = 0
             }
 
-            if (freight.indexOf("%") > -1) {
-              freight = parseFloat(freight) / 100;
+            if (freight == '' || logManageFee == null) {
+              freight = 0
             }
 
-            if (tax.indexOf("%") > -1) {
-              tax = parseFloat(tax) / 100;
+            if (tax == '' || tax == null) {
+              tax = 0;
             }
 
-            if (warranty.indexOf("%") > -1) {
-              warranty = parseFloat(warranty) / 100;
+            if (warranty == '' || warranty == null) {
+              warranty = 0
             }
+
+            // 计算送货税金
+            const dlvTax = calc_misc_tax(dlvAmt, installFee, tax);
+            value["delivery_tax"] = dlvTax;
 
             // 计算送货物流管理费
-            if (ordAmt == 0) {
-              value["delivery_logistics_management_fee"] = 0;
-            } else if (logManageFee % 1 === 0) {
-              var dlvLogManageFee = (dlvAmt / ordAmt) * logManageFee;
-              dlvLogManageFee = Math.round(dlvLogManageFee);
-              isNaN(dlvLogManageFee)
-                ? (value["delivery_logistics_management_fee"] = 0)
-                : (value[
-                  "delivery_logistics_management_fee"
-                ] = dlvLogManageFee);
-            } else {
-              var dlvLogManageFee = dlvAmt * logManageFee;
-              dlvLogManageFee = Math.round(dlvLogManageFee);
-              isNaN(dlvLogManageFee)
-                ? (value["delivery_logistics_management_fee"] = 0)
-                : (value[
-                  "delivery_logistics_management_fee"
-                ] = dlvLogManageFee);
-            }
+            const dlvLogManageFee = calc_misc_log_manage_fee(dlvAmt, installFee, logManageFee);
+            value["delivery_logistics_management_fee"] = dlvLogManageFee;
+
+            // 计算送货质保金
+            const dlvWrt = calc_misc_warranty(dlvAmt, installFee, warranty);
+            value["delivery_warranty"] = dlvWrt;
+
 
             // 计算送货运费
-            if (ordAmt == 0) {
-              value["delivery_freight"] = 0;
-            } else if (freight % 1 === 0) {
-              var dlvFreight = (dlvAmt / ordAmt) * freight;
-              dlvFreight = Math.round(dlvFreight);
-              isNaN(dlvFreight)
-                ? (value["delivery_freight"] = 0)
-                : (value["delivery_freight"] = dlvFreight);
-            } else {
-              var dlvFreight = dlvAmt * freight;
-              isNaN(dlvFreight)
-                ? (value["delivery_freight"] = 0)
-                : (value["delivery_freight"] = Math.round(dlvFreight));
-            }
-            // 计算送货税金
-            if (ordAmt == 0) {
-              value["delivery_tax"] = 0;
-            } else if (tax % 1 === 0) {
-              var dlvTax = (dlvAmt / ordAmt) * tax;
-              dlvTax = Math.round(dlvTax);
-              isNaN(dlvTax)
-                ? (value["delivery_tax"] = 0)
-                : (value["delivery_tax"] = dlvTax);
-            } else {
-              var dlvTax = dlvAmt * tax;
-              isNaN(dlvTax)
-                ? (value["delivery_tax"] = 0)
-                : (value["delivery_tax"] = Math.round(dlvTax));
-            }
-            // 计算送货质保金
-            if (ordAmt == 0) {
-              value["delivery_warranty"] = 0;
-            } else if (warranty % 1 === 0) {
-              var dlvWrt = (dlvAmt / ordAmt) * warranty;
-              dlvWrt = Math.round(dlvWrt);
-              isNaN(dlvWrt)
-                ? (value["delivery_warranty"] = 0)
-                : (value["delivery_warranty"] = dlvWrt);
-            } else {
-              var dlvWrt = dlvAmt * warranty;
-              isNaN(dlvWrt)
-                ? (value["delivery_warranty"] = 0)
-                : (value["delivery_warranty"] = Math.round(dlvWrt));
-            }
+            const dlvFreight = calc_misc_freight(dlvAmt, installFee, dlvTax, dlvLogManageFee, dlvWrt, freight);
+            value["delivery_freight"] = dlvFreight;
 
             // 计算送货底价
-            var dlvLogManageFee = value["delivery_logistics_management_fee"];
-            var dlvFreight = value["delivery_freight"];
-            var dlvTax = value["delivery_tax"];
-            var dlvWrt = value["delivery_warranty"];
-            var dlvRsvP =
-              dlvAmt - dlvLogManageFee - dlvFreight - dlvTax - dlvWrt;
-            dlvRsvP = Math.round(dlvRsvP);
-            isNaN(dlvRsvP)
-              ? (value["delivery_reserve_price"] = 0)
-              : (value["delivery_reserve_price"] = dlvRsvP);
-            var unDlvAmt = ordAmt - dlvAmt;
-            isNaN(unDlvAmt)
-              ? (value["undelivered_amount"] = ordAmt)
-              : (value["undelivered_amount"] = unDlvAmt);
+            const dlvRsvP = calc_rsv_p(
+              dlvAmt,
+              installFee,
+              dlvLogManageFee,
+              dlvFreight,
+              dlvTax,
+              dlvWrt
+            );
+            value["delivery_reserve_price"] = dlvRsvP;
+            // 未送货金额
+            const unDlvAmt = ordAmt - dlvAmt;
+            isNaN(unDlvAmt) ? value['undelivered_amount'] = ordAmt : value['undelivered_amount'] = unDlvAmt;
           });
         }
       }),

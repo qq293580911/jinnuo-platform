@@ -24,7 +24,7 @@ import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
-import { Message, ADD_ORDER, EDIT_ORDER } from "@/common/const";
+import { EDIT_ORDER } from "@/common/const";
 import { addOrder, updateOrder } from "@/network/order";
 export default {
   components: {

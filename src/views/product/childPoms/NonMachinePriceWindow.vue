@@ -24,7 +24,7 @@ import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
-import { Message, ADD_PRODUCT_PRICE, EDIT_PRODUCT_PRICE } from "@/common/const";
+import { EDIT_PRODUCT_PRICE } from "@/common/const";
 import {
   getAllNonMachineProduct,
   addNonMachinePrice,
@@ -97,7 +97,7 @@ export default {
           info: "面板/常规/非3C",
           infoPosition: "right",
           init: function(component) {
-            const comboBox = jqwidgets.createInstance(
+            jqwidgets.createInstance(
               component,
               "jqxNumberInput",
               {
@@ -117,10 +117,9 @@ export default {
           labelWidth: "80px",
           rowHeight: "40px",
           required: true,
-          required: true,
           info: "阀体/圆形/3C",
           init: function(component) {
-            const comboBox = jqwidgets.createInstance(
+            jqwidgets.createInstance(
               component,
               "jqxNumberInput",
               {

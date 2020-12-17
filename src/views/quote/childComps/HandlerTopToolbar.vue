@@ -20,13 +20,13 @@ import CustomUploader from "@/components/common/CustomUploader";
 export default {
   components: {
     JqxToolbar,
-    AddControlBoxWindow,
+    AddControlBoxWindow
   },
   data() {
     return {
       tools: "custom | custom | custom | custom | custom",
       toolsIndex: -1,
-      showAddControlBox: false,
+      showAddControlBox: false
     };
   },
   watch: {
@@ -39,13 +39,13 @@ export default {
       } else {
         this.$refs.addControlBoxWindow.close();
       }
-    },
+    }
   },
   mounted() {
     const that = this;
     // 上传器监听文件读取内容
     this.uploaderInstance.$on("changed", (data) => {
-      let sheetName = Object.keys(data[0])[0];
+      const sheetName = Object.keys(data[0])[0];
       const fileName = that.uploaderInstance.inputValue;
       const fileContent = data[0][sheetName];
       this.$store.dispatch("saveCurrentQuoteName", fileName);
@@ -61,9 +61,9 @@ export default {
         cancelText: "取消",
         centered: true,
         content: (h) => (
-          <div style="color:red;">
-            你现在选择的是<span style="color:green;">{priceRule}</span>的价格，
-            <span style="color:green;">{splitRule}</span>
+          <div style='color:red;'>
+            你现在选择的是<span style='color:green;'>{priceRule}</span>的价格，
+          <span style='color:green;'>{splitRule}</span>
             的拆分，确认导入数据吗？?
           </div>
         ),
@@ -71,7 +71,7 @@ export default {
           that.$bus.$emit("import");
         },
         onCancel() {},
-        class: "test",
+        class: "test"
       });
     });
     // 匹配阀门风口
@@ -96,10 +96,10 @@ export default {
         if (isNaN(unitPrice) || unitPrice == 0) {
           rowData["transfer"] = "";
         } else if (point < 0) {
-          //如果是降点
+          // 如果是降点
           unitPrice = unitPrice * (1 + point / 100);
         } else {
-          //如果是加点
+          // 如果是加点
           unitPrice = unitPrice / (1 - point / 100);
         }
         switch (unit) {
@@ -107,6 +107,7 @@ export default {
             unitPrice = Math.ceil(unitPrice);
             break;
           case "台":
+          {
             let _unit = unitPrice % 10;
             if (_unit > 0 && _unit < 5) {
               _unit = 5;
@@ -116,6 +117,7 @@ export default {
             }
             unitPrice = unitPrice - (unitPrice % 10) + _unit;
             break;
+          }
           default:
             break;
         }
@@ -124,7 +126,7 @@ export default {
           rowData["transfer"] = point;
         }
       });
-      this.$store.dispatch('saveCurrentQuoteContent',rowsData)
+      this.$store.dispatch('saveCurrentQuoteContent', rowsData)
       this.$bus.$emit('refresh')
       this.$message.success('加点完成')
     });
@@ -132,7 +134,7 @@ export default {
     this.priceRuleInstance.addEventHandler("select", (event) => {
       const pricePlan = {
         rule: event.args.item.label,
-        id: event.args.item.value,
+        id: event.args.item.value
       };
       this.$store.dispatch("saveCurrentQuotePricePlan", pricePlan);
     });
@@ -145,17 +147,18 @@ export default {
     this.splitRuleInstance.selectIndex(0);
   },
   methods: {
-    initTools: function (type, index, tool, menuToolIninitialization) {
+    initTools: function(type, index, tool, menuToolIninitialization) {
       if (index != this.toolsIndex) {
         const that = this;
         switch (index) {
           case 0:
-            let container = document.createElement("div");
+          {
+            const container = document.createElement("div");
             container.id = "container";
             container.style.cssText =
               "overflow: hidden; position: relative;margin-top:1px";
             tool[0].appendChild(container);
-            let uploaderComponent = Vue.extend(CustomUploader);
+            const uploaderComponent = Vue.extend(CustomUploader);
             that.uploaderInstance = new uploaderComponent({
               propsData: {
                 width: 190,
@@ -175,13 +178,15 @@ export default {
                     selection: "I",
                     transfer: "J",
                     formula: "K",
-                    designateType: "L",
-                  },
-                },
-              },
+                    designateType: "L"
+                  }
+                }
+              }
             }).$mount("#container");
             break;
+          }
           case 1:
+          {
             const buttonGroup = document.createElement("div");
             buttonGroup.style.cssText =
               "overflow: hidden; position: relative;display:flex";
@@ -206,39 +211,41 @@ export default {
               "#importButton",
               "jqxButton",
               {
-                imgSrc: require("@/assets/iconfont/custom/import.svg"),
+                imgSrc: require("@/assets/iconfont/custom/import.svg")
               }
             );
             jqwidgets.createInstance("#importButton", "jqxTooltip", {
               content: "导入数据",
-              position: "mouse",
+              position: "mouse"
             });
 
             that.handlerInstance = jqwidgets.createInstance(
               "#proccessButton",
               "jqxButton",
               {
-                imgSrc: require("@/assets/iconfont/custom/process.svg"),
+                imgSrc: require("@/assets/iconfont/custom/process.svg")
               }
             );
             jqwidgets.createInstance("#proccessButton", "jqxTooltip", {
               content: "匹配价格",
-              position: "mouse",
+              position: "mouse"
             });
 
             that.exportInstance = jqwidgets.createInstance(
               "#exportButton",
               "jqxButton",
               {
-                imgSrc: require("@/assets/iconfont/custom/export.svg"),
+                imgSrc: require("@/assets/iconfont/custom/export.svg")
               }
             );
             jqwidgets.createInstance("#exportButton", "jqxTooltip", {
               content: "导出数据",
-              position: "mouse",
+              position: "mouse"
             });
             break;
+          }
           case 2:
+          {
             tool[0].style.cssText = "margin-left:10%;";
 
             const addControlBoxContainer = document.createElement("div");
@@ -247,50 +254,25 @@ export default {
             addControlBoxContainer.id = "addControlBox";
             tool[0].appendChild(addControlBoxContainer);
             jqwidgets.createInstance("#addControlBox", "jqxButton", {
-              imgSrc: require("@/assets/iconfont/custom/box.svg"),
+              imgSrc: require("@/assets/iconfont/custom/box.svg")
             });
             that.addControlBoxInstance = jqwidgets.createInstance(
               "#addControlBox",
               "jqxTooltip",
               {
                 content: "添加控制箱",
-                position: "mouse",
+                position: "mouse"
               }
             );
             break;
+          }
           case 3:
+          {
             tool[0].style.cssText = "margin-left:10%;";
-            container = document.createElement("div");
+            const container = document.createElement("div");
             container.style.cssText =
               "overflow: hidden; position: relative;display:flex";
             tool[0].appendChild(container);
-            // 固定金额浮动
-            // const fixedFloatContainer = document.createElement("input");
-            // fixedFloatContainer.style.cssText = "margin-right:5px;";
-            // fixedFloatContainer.id = "fixedFloat";
-            // container.appendChild(fixedFloatContainer);
-            // jqwidgets.createInstance("#fixedFloat", "jqxInput", {
-            //   width: 80,
-            //   height: 25,
-            //   placeHolder: "输入金额",
-            // });
-            // 固定金额浮动按钮
-            // const fixedFloatBtnContainer = document.createElement("div");
-            // fixedFloatBtnContainer.style.cssText =
-            //   "cursor: pointer;margin-right:5px;";
-            // fixedFloatBtnContainer.id = "fixedFloatBtn";
-            // container.appendChild(fixedFloatBtnContainer);
-
-            // jqwidgets.createInstance("#fixedFloatBtn", "jqxButton", {
-            //   width: 25,
-            //   height: 25,
-            //   imgSrc: require("@/assets/iconfont/custom/digital.svg"),
-            // });
-
-            // jqwidgets.createInstance("#fixedFloatBtn", "jqxTooltip", {
-            //   content: "固定金额比例浮动",
-            //   position: "mouse",
-            // });
             // 加点
             const addPointNumberContainer = document.createElement("div");
             addPointNumberContainer.style.cssText = "margin-right:5px;";
@@ -302,10 +284,9 @@ export default {
               {
                 width: 80,
                 inputMode: "simple",
-                spinButtons: true,
+                spinButtons: true
               }
             );
-
             // 加点按钮
             const addPointBtnContainer = document.createElement("div");
             addPointBtnContainer.style.cssText =
@@ -318,23 +299,25 @@ export default {
               {
                 width: 25,
                 height: 25,
-                imgSrc: require("@/assets/iconfont/custom/rate.svg"),
+                imgSrc: require("@/assets/iconfont/custom/rate.svg")
               }
             );
             break;
+          }
           case 4:
+          {
             tool[0].style.cssText = "float:right;";
             const planContainer = document.createElement("div");
             planContainer.style.cssText =
               "overflow: hidden; position: relative;display:flex;";
             tool[0].appendChild(planContainer);
 
-            let pricePlanSelector = document.createElement("div");
+            const pricePlanSelector = document.createElement("div");
             pricePlanSelector.id = "pricePlan";
             pricePlanSelector.style.cssText =
               "margin-right:5px;cursor:pointer;";
 
-            let splitPlanSelector = document.createElement("div");
+            const splitPlanSelector = document.createElement("div");
             splitPlanSelector.id = "splitPlan";
             splitPlanSelector.style.cssText =
               "margin-right:5px;cursor:pointer;";
@@ -349,12 +332,12 @@ export default {
                 source: that.$store.state.pricePlan,
                 width: 150,
                 displayMember: "rule",
-                valueMember: "id",
+                valueMember: "id"
               }
             );
             jqwidgets.createInstance("#pricePlan", "jqxTooltip", {
               content: "价格方案",
-              position: "bottom",
+              position: "bottom"
             });
 
             that.splitRuleInstance = jqwidgets.createInstance(
@@ -364,19 +347,20 @@ export default {
                 source: that.$store.state.splitPlan,
                 width: 150,
                 displayMember: "rule",
-                valueMember: "rule",
+                valueMember: "rule"
               }
             );
             jqwidgets.createInstance("#splitPlan", "jqxTooltip", {
               content: "拆分方案",
-              position: "bottom",
+              position: "bottom"
             });
             break;
+          }
         }
         this.toolsIndex = index;
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

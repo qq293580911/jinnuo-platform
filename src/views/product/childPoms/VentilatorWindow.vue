@@ -25,9 +25,7 @@ import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
 import {
   Message,
-  ADD_PRODUCT,
-  EDIT_PRODUCT,
-  CONFIRM_DELETE
+  EDIT_PRODUCT
 } from "@/common/const.js";
 
 import { addVentilator, updateVentilator } from "@/network/product.js";
@@ -214,7 +212,6 @@ export default {
     };
   },
   mounted() {
-    const that = this;
     // 获取组件对象
     const $name = this.$refs.myForm.getComponentByName("name");
     const $category = this.$refs.myForm.getComponentByName("category");
@@ -285,7 +282,6 @@ export default {
   },
   methods: {
     open(...params) {
-      const that = this;
       this.$refs.myWindow.setTitle(params[0]);
       this.clearForm();
       if (params[0] == EDIT_PRODUCT) {

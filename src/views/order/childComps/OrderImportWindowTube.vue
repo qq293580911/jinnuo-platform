@@ -38,19 +38,11 @@ import CustomUploader from "@/components/common/CustomUploader";
 
 import { getLocalization } from "@/common/localization.js";
 import { Message, IMPORT_ORDER } from "@/common/const";
-import {
-  calc_misc_log_manage_fee,
-  calc_misc_freight,
-  calc_misc_tax,
-  calc_misc_warranty,
-  calc_rsv_p
-} from "@/common/util";
-import { importOrder, batchUpdateOrderByOrderNumber } from "@/network/order";
+import { importOrder } from "@/network/order";
 export default {
   components: {
     JqxWindow,
-    JqxGrid,
-    CustomUploader
+    JqxGrid
   },
   beforeCreate() {
     this.source = {

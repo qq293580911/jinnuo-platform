@@ -941,6 +941,7 @@ export default {
       this.signDateInstance.val("");
       this.signBackDateInstance.val("");
       this.deductionBonusAmountInstance.val("");
+      this.performanceBonusReimbursementInstance.val("")
       this.formulaModelInstance.jqxComboBox("clearSelection");
       this.riseDropPointInstance.val("");
       this.overBudgetBearInstance.val("");

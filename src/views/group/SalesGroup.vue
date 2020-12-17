@@ -23,7 +23,7 @@
             :id="'panel' + index"
             style="height: 150px"
           >
-            <div v-for="(item, index) in items">
+            <div v-for="(item, index) in items" :key="index">
               <div>{{ item.name }}</div>
               <div>
                 <JqxListBox
@@ -79,6 +79,7 @@ export default {
       if (index != this.toolsIndex) {
         switch (index) {
           case 0:
+          {
             const addButtonContainer = document.createElement("div");
             addButtonContainer.id = "addButton";
             addButtonContainer.style.cssText =
@@ -91,15 +92,13 @@ export default {
                 imgSrc: require("@/assets/iconfont/custom/add-circle.svg")
               }
             );
-
             jqwidgets.createInstance("#addButton", "jqxTooltip", {
               content: "添加新团队",
               position: "mouse"
             });
-
             break;
+          }
         }
-
         this.toolsIndex = index;
       }
     },

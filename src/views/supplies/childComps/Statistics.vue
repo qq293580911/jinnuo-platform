@@ -23,13 +23,10 @@
     >
     </JqxGrid>
   </div>
-  </div>
 </template>
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
-import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
-// import MachineWindow from "./MachineWindow";
 
 import { formatFilter } from "@/common/util.js";
 import { Message } from "@/common/const.js";
@@ -37,8 +34,7 @@ import { getLocalization } from "@/common/localization.js";
 import { showStatisticsList } from "@/network/supplies.js";
 export default {
   components: {
-    JqxGrid,
-    JqxTooltip
+    JqxGrid
   },
   beforeCreate() {
     this.source = {
@@ -253,7 +249,7 @@ export default {
       buttonsContainer.appendChild(reloadButtonContainer);
       toolbar[0].appendChild(buttonsContainer);
       // 创建按钮
-      const addButton = jqwidgets.createInstance("#addButton", "jqxButton", {
+      jqwidgets.createInstance("#addButton", "jqxButton", {
         imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`)
       });
       jqwidgets.createInstance("#addButton", "jqxTooltip", {
@@ -273,7 +269,7 @@ export default {
         position: "bottom"
       });
 
-      const exportButton = jqwidgets.createInstance(
+      jqwidgets.createInstance(
         "#exportButton",
         "jqxButton",
         {

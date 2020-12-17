@@ -35,16 +35,15 @@ import { formatFilter } from "@/common/util.js";
 import { Message, ADD_PRICE_PLAN, UPDATE_PRICE_PLAN } from "@/common/const.js";
 import {
   showPricePlan,
-  getPricePlan,
-  deletePricePlan,
+  deletePricePlan
 } from "@/network/product.js";
 export default {
   name: "PricePlan",
   components: {
     JqxGrid,
-    PricePlanWindow,
+    PricePlanWindow
   },
-  beforeCreate: function () {
+  beforeCreate: function() {
     this.source = {
       filter: () => {
         this.$refs.myGrid.updatebounddata("filter");
@@ -56,7 +55,7 @@ export default {
         { name: "create_date", type: "string" },
         { name: "update_date", type: "string" },
         { name: "remark", type: "string" },
-        { name: "enable", type: "string" },
+        { name: "enable", type: "string" }
       ],
       type: "get",
       datatype: "json",
@@ -64,28 +63,28 @@ export default {
       sortcolumn: "id",
       sortdirection: "desc",
       id: "id",
-      url: `/productPrice/showPriceSchemeList.do`,
+      url: `/productPrice/showPriceSchemeList.do`
     };
   },
   data() {
     return {
-      //数据网格
+      // 数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           showPricePlan(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
-        },
+        }
       }),
-      rendergridrows: function (obj) {
+      rendergridrows: function(obj) {
         return obj.data;
       },
       columns: [
@@ -94,7 +93,7 @@ export default {
           datafield: "rule",
           columntype: "textbox",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "陈旧状态",
@@ -102,7 +101,7 @@ export default {
           columntype: "combobox",
           align: "center",
           cellsalign: "center",
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -127,7 +126,7 @@ export default {
                 "</span>"
               );
             }
-          },
+          }
         },
         {
           text: "创建日期",
@@ -135,7 +134,7 @@ export default {
           columntype: "datetimeinput",
           align: "center",
           cellsalign: "center",
-          editable: false,
+          editable: false
         },
         {
           text: "更新日期",
@@ -143,14 +142,14 @@ export default {
           columntype: "datetimeinput",
           align: "center",
           cellsalign: "center",
-          editable: false,
+          editable: false
         },
         {
           text: "方案备注",
           datafield: "remark",
           columntype: "textbox",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "开放状态",
@@ -158,7 +157,7 @@ export default {
           columntype: "combobox",
           align: "center",
           cellsalign: "center",
-          cellsrenderer: function (
+          cellsrenderer: function(
             row,
             columnfield,
             value,
@@ -183,29 +182,29 @@ export default {
                 "</span>"
               );
             }
-          },
-        },
-      ],
+          }
+        }
+      ]
     };
   },
   mounted() {},
   methods: {
-    createButtonsContainers: function (toolbar) {
+    createButtonsContainers: function(toolbar) {
       const that = this;
-      let buttonsContainer = document.createElement("div");
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
       toolbar[0].appendChild(buttonsContainer);
 
-      let addButtonContainer = document.createElement("div");
-      let deleteButtonContainer = document.createElement("div");
-      let editButtonContainer = document.createElement("div");
-      let reloadButtonContainer = document.createElement("div");
+      const addButtonContainer = document.createElement("div");
+      const deleteButtonContainer = document.createElement("div");
+      const editButtonContainer = document.createElement("div");
+      const reloadButtonContainer = document.createElement("div");
 
-      let addButtonID = JQXLite.generateID();
-      let deleteButtonID = JQXLite.generateID();
-      let editButtonID = JQXLite.generateID();
-      let reloadButtonID = JQXLite.generateID();
+      const addButtonID = JQXLite.generateID();
+      const deleteButtonID = JQXLite.generateID();
+      const editButtonID = JQXLite.generateID();
+      const reloadButtonID = JQXLite.generateID();
 
       addButtonContainer.id = addButtonID;
       deleteButtonContainer.id = deleteButtonID;
@@ -225,33 +224,33 @@ export default {
       buttonsContainer.appendChild(deleteButtonContainer);
       buttonsContainer.appendChild(editButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
-      //创建按钮
-      let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+      // 创建按钮
+      const addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
+        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`)
       });
       jqwidgets.createInstance(`#${addButtonID}`, "jqxTooltip", {
         content: "添加",
-        position: "bottom",
+        position: "bottom"
       });
 
       addButton.addEventHandler("click", (event) => {
         this.$refs.pricePlanWindow.open(ADD_PRICE_PLAN);
       });
 
-      let deleteButton = jqwidgets.createInstance(
+      const deleteButton = jqwidgets.createInstance(
         `#${deleteButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`)
         }
       );
       jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
         content: "删除",
-        position: "bottom",
+        position: "bottom"
       });
 
       deleteButton.addEventHandler("click", (event) => {
-        let selectedrowindex = this.$refs.myGrid.getselectedrowindex();
+        const selectedrowindex = this.$refs.myGrid.getselectedrowindex();
         if (selectedrowindex < 0) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
           return false;
@@ -262,30 +261,30 @@ export default {
           cancelText: "取消",
           centered: true,
           okType: "danger",
-          content: (h) => <div style="color:red;"></div>,
+          content: (h) => <div style='color:red;'></div>,
           onOk() {
             const selectedIndexes = that.$refs.myGrid.getselectedrowindexes();
-            const ids = selectedIndexes.map(rowIndex=>{
+            const ids = selectedIndexes.map(rowIndex => {
               const id = that.$refs.myGrid.getrowid(rowIndex)
               return id
             })
             that.delete(ids);
           },
           onCancel() {},
-          class: "test",
+          class: "test"
         });
       });
 
-      let editButton = jqwidgets.createInstance(
+      const editButton = jqwidgets.createInstance(
         `#${editButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/edit.svg`)
         }
       );
       jqwidgets.createInstance(`#${editButtonID}`, "jqxTooltip", {
         content: "编辑",
-        position: "bottom",
+        position: "bottom"
       });
 
       editButton.addEventHandler("click", (event) => {
@@ -298,14 +297,14 @@ export default {
         this.$refs.pricePlanWindow.open(UPDATE_PRICE_PLAN, rowData);
       });
 
-      let reloadButton = jqwidgets.createInstance(
+      const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
-        position: "bottom",
+        position: "bottom"
       });
 
       reloadButton.addEventHandler("click", (event) => {
@@ -315,8 +314,8 @@ export default {
     delete(ids) {
       const params = {
         jsonParams: JSON.stringify({
-          ids,
-        }),
+          ids
+        })
       };
       deletePricePlan(params).then((res) => {
         this.refresh();
@@ -324,8 +323,8 @@ export default {
     },
     refresh() {
       this.$refs.myGrid.updatebounddata();
-    },
-  },
+    }
+  }
 };
 </script>
 

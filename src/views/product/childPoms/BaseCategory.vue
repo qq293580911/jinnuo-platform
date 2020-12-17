@@ -160,6 +160,7 @@ export default {
           }
           break;
         case "编辑":
+        {
           if (!item) {
             this.$message.warning(Message.NO_NODE_SELECTED);
             return false;
@@ -167,6 +168,7 @@ export default {
           const $newName = this.$refs.myForm.getComponentByName("newName");
           $newName.val(item.label);
           break;
+        }
         case "删除":
           if (!item) {
             this.$message.warning(Message.NO_NODE_SELECTED);

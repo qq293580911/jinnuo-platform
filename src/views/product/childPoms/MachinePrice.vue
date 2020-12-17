@@ -34,7 +34,7 @@ import { formatFilter } from "@/common/util.js";
 import {
   Message,
   ADD_PRODUCT_PRICE,
-  EDIT_PRODUCT_PRICE,
+  EDIT_PRODUCT_PRICE
 } from "common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import { showMachinePrice, deleteMachinePrice } from "@/network/product.js";
@@ -42,9 +42,9 @@ export default {
   name: "MachinePrice",
   components: {
     JqxGrid,
-    MachinePriceWindow,
+    MachinePriceWindow
   },
-  beforeCreate: function () {
+  beforeCreate: function() {
     this.source = {
       filter: () => {
         this.$refs.myGrid.updatebounddata("filter");
@@ -57,7 +57,7 @@ export default {
         { name: "price_non_ccc", type: "number" },
         { name: "price_ccc", type: "number" },
         { name: "pm_name", type: "string" },
-        { name: "pm_id", type: "number" },
+        { name: "pm_id", type: "number" }
       ],
       type: "get",
       datatype: "json",
@@ -65,28 +65,28 @@ export default {
       sortcolumn: "price_id",
       sortdirection: "asc",
       id: "price_id",
-      url: `/productPrice/showMachinePriceList.do`,
+      url: `/productPrice/showMachinePriceList.do`
     };
   },
   data() {
     return {
-      //数据网格
+      // 数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function (data) {
+        formatData: function(data) {
           return data;
         },
-        loadServerData: function (serverdata, source, callback) {
+        loadServerData: function(serverdata, source, callback) {
           serverdata = formatFilter(serverdata);
           showMachinePrice(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total,
+              totalrecords: res.total
             });
           });
-        },
+        }
       }),
-      rendergridrows: function (obj) {
+      rendergridrows: function(obj) {
         return obj.data;
       },
       columns: [
@@ -94,52 +94,52 @@ export default {
           text: "产品名称",
           datafield: "pm_name",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "产品功率",
           datafield: "power",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "非3C价格",
           datafield: "price_non_ccc",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "3C价格",
           datafield: "price_ccc",
           align: "center",
-          cellsalign: "center",
+          cellsalign: "center"
         },
         {
           text: "价格方案",
           datafield: "ps_rule",
           align: "center",
-          cellsalign: "center",
-        },
-      ],
+          cellsalign: "center"
+        }
+      ]
     };
   },
   mounted() {},
   methods: {
-    createButtonsContainers: function (toolbar) {
+    createButtonsContainers: function(toolbar) {
       const that = this;
-      let buttonsContainer = document.createElement("div");
+      const buttonsContainer = document.createElement("div");
       buttonsContainer.style.cssText =
         "overflow: hidden; position: relative; margin: 5px;";
       toolbar[0].appendChild(buttonsContainer);
-      let addButtonContainer = document.createElement("div");
-      let deleteButtonContainer = document.createElement("div");
-      let editButtonContainer = document.createElement("div");
-      let reloadButtonContainer = document.createElement("div");
+      const addButtonContainer = document.createElement("div");
+      const deleteButtonContainer = document.createElement("div");
+      const editButtonContainer = document.createElement("div");
+      const reloadButtonContainer = document.createElement("div");
 
-      let addButtonID = JQXLite.generateID();
-      let deleteButtonID = JQXLite.generateID();
-      let editButtonID = JQXLite.generateID();
-      let reloadButtonID = JQXLite.generateID();
+      const addButtonID = JQXLite.generateID();
+      const deleteButtonID = JQXLite.generateID();
+      const editButtonID = JQXLite.generateID();
+      const reloadButtonID = JQXLite.generateID();
 
       addButtonContainer.id = addButtonID;
       deleteButtonContainer.id = deleteButtonID;
@@ -160,33 +160,33 @@ export default {
       buttonsContainer.appendChild(editButtonContainer);
       buttonsContainer.appendChild(reloadButtonContainer);
 
-      //创建按钮
-      let addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+      // 创建按钮
+      const addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
+        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`)
       });
       jqwidgets.createInstance(`#${addButtonID}`, "jqxTooltip", {
         content: "添加",
-        position: "bottom",
+        position: "bottom"
       });
 
       addButton.addEventHandler("click", (event) => {
         this.$refs.machinePriceWindow.open(ADD_PRODUCT_PRICE);
       });
 
-      let deleteButton = jqwidgets.createInstance(
+      const deleteButton = jqwidgets.createInstance(
         `#${deleteButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`)
         }
       );
       jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
         content: "删除",
-        position: "bottom",
+        position: "bottom"
       });
 
       deleteButton.addEventHandler("click", (event) => {
-        let selectedrowindexes = this.$refs.myGrid.getselectedrowindexes();
+        const selectedrowindexes = this.$refs.myGrid.getselectedrowindexes();
         if (selectedrowindexes.length < 1) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED });
           return false;
@@ -197,7 +197,7 @@ export default {
           cancelText: "取消",
           centered: true,
           okType: "danger",
-          content: (h) => <div style="color:red;"></div>,
+          content: (h) => <div style='color:red;'></div>,
           onOk() {
             const ids = selectedrowindexes.map((rowIndex) => {
               return that.$refs.myGrid.getrowid(rowIndex);
@@ -205,20 +205,20 @@ export default {
             that.delete(ids);
           },
           onCancel() {},
-          class: "test",
+          class: "test"
         });
       });
 
-      let editButton = jqwidgets.createInstance(
+      const editButton = jqwidgets.createInstance(
         `#${editButtonID}`,
         "jqxButton",
         {
-          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/edit.svg`)
         }
       );
       jqwidgets.createInstance(`#${editButtonID}`, "jqxTooltip", {
         content: "编辑",
-        position: "bottom",
+        position: "bottom"
       });
 
       editButton.addEventHandler("click", (event) => {
@@ -231,14 +231,14 @@ export default {
         this.$refs.machinePriceWindow.open(EDIT_PRODUCT_PRICE, rowData);
       });
 
-      let reloadButton = jqwidgets.createInstance(
+      const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         "jqxButton",
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
       );
       jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
         content: "刷新",
-        position: "bottom",
+        position: "bottom"
       });
 
       reloadButton.addEventHandler("click", (event) => {
@@ -248,8 +248,8 @@ export default {
     delete(ids) {
       const params = {
         jsonParams: JSON.stringify({
-          ids,
-        }),
+          ids
+        })
       };
       deleteMachinePrice(params).then((res) => {
         this.refresh();
@@ -257,8 +257,8 @@ export default {
     },
     refresh() {
       this.$refs.myGrid.updatebounddata();
-    },
-  },
+    }
+  }
 };
 </script>
 

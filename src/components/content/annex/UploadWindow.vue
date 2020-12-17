@@ -47,7 +47,6 @@ export default {
       fileCount: 0,
       uploadUrl: `/api/annex/uploadAnnex.do`,
       fileInputName: "file",
-      boundId: 0,
       localization: {
         browseButton: "浏览",
         uploadButton: "上传",
@@ -79,12 +78,12 @@ export default {
       this.fileCount--;
     },
     onUploadStart(event) {
-      const boundId = this.boundId;
-      const annexType = this.annexType;
+      $("form").find('input[name="boundId"]').remove();
+      $("form").find('input[name="annexType"]').remove();
       $("form")
-        .append(`<input type="hidden" name="boundId" value="${boundId}" />`)
+        .append(`<input type="hidden" name="boundId" value="${this.boundId}" />`)
         .append(
-          `<input type="hidden" name="annexType" value="${annexType}" />`
+          `<input type="hidden" name="annexType" value="${this.annexType}" />`
         );
     },
     onUploadEnd(event) {

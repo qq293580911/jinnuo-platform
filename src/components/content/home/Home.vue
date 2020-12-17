@@ -5,25 +5,52 @@
       <home-nav-bar></home-nav-bar>
     </a-layout-header>
 
-    <a-layout id="components-layout-demo-custom-trigger" class="content">
+    <a-layout
+      id="components-layout-demo-custom-trigger"
+      class="content"
+    >
       <!-- 左侧菜单 -->
-      <a-layout-sider v-model="collapsed" collapsible>
+      <a-layout-sider
+        v-model="collapsed"
+        collapsible
+      >
         <div class="sider-header">
           <div class="logo"></div>
+          <!--  切换主题 -->
+          <a-tooltip
+            placement="topLeft"
+            title="切换主题"
+            v-show="!collapsed"
+          >
+            <a-dropdown :trigger="['click']">
+              <a-button
+                type="primary"
+                :style="{
+                  marginRight:'10px'
+                }"
+              >
+                <a-icon :type="'ordered-list'" />
+              </a-button>
+              <a-menu slot="overlay">
+                <a-sub-menu
+                  v-for="(groups,index) in themes"
+                  :key="index"
+                  :title="groups.name"
+                >
+                  <a-menu-item
+                    v-for="item in groups.group"
+                    :key="item.value"
+                    @click="changeTheme(item.value)"
+                  >{{ item.label }}</a-menu-item>
+                </a-sub-menu>
+              </a-menu>
+            </a-dropdown>
+          </a-tooltip>
         </div>
         <home-aside></home-aside>
       </a-layout-sider>
 
       <a-layout>
-        <!-- 右侧控制栏 -->
-        <!-- <a-layout-header
-          style="background: #fff; padding: 0; height: 40px; display: flex"
-        <a-icon
-            class="trigger"
-            :type="collapsed ? 'menu-unfold' : 'menu-fold'"
-            @click="() => (collapsed = !collapsed)"
-          />
-        </a-layout-header> -->
         <!-- 右侧主面板 -->
         <a-layout-content>
           <home-main />
@@ -34,183 +61,240 @@
 </template>
 
 <script>
-import HomeNavBar from "./childComps/HomeNavBar";
-import HomeAside from "./childComps/HomeAside";
-import HomeMain from "./childComps/HomeMain";
-import { getPermissions } from "@/network/home.js";
-import { getSalesman, getQuoter } from "@/network/employee.js";
-import { getPricePlan, getCategory, getAssignType, getFormula } from "@/network/product.js";
-import { getSplitPlan } from "@/network/quote.js";
-jqx.theme = "ui-smoothness";
+import HomeNavBar from './childComps/HomeNavBar'
+import HomeAside from './childComps/HomeAside'
+import HomeMain from './childComps/HomeMain'
+import { getPermissions } from '@/network/home.js'
+import { updateUserInfo } from '@/network/user.js'
+import { getSalesman, getQuoter } from '@/network/employee.js'
+import {
+  getPricePlan,
+  getCategory,
+  getAssignType,
+  getFormula,
+} from '@/network/product.js'
+import { getSplitPlan } from '@/network/quote.js'
+
 export default {
-  name: "Home",
+  name: 'Home',
+  inject: ['reload'],
   components: {
     HomeNavBar,
     HomeAside,
-    HomeMain
+    HomeMain,
   },
   data() {
     return {
-      collapsed: false
-    };
+      collapsed: false,
+      themes: [
+        {
+          name: '常规主题',
+          group: [
+            { label: 'Light', value: 'light' },
+            { label: 'Dark', value: 'dark' },
+            { label: 'Material', value: 'materialpurple' },
+            { label: 'Arctic', value: 'arctic' },
+            { label: 'Web', value: 'web' },
+            { label: 'Bootstrap', value: 'bootstrap' },
+            { label: 'Metro Dark', value: 'metrodark' },
+            { label: 'Office', value: 'office' },
+            { label: 'Orange', value: 'orange' },
+            { label: 'Fresh', value: 'fresh' },
+            { label: 'Energy', value: 'energyblue' },
+            { label: 'Dark Blue', value: 'darkblue' },
+            { label: 'Black', value: 'black' },
+            { label: 'Shiny Black', value: 'shinyblack' },
+            { label: 'Classic', value: 'classic' },
+            { label: 'Summer', value: 'summer' },
+            { label: 'High Contrast', value: 'highcontrast' },
+          ],
+        },
+        {
+          name: '兼容UI',
+          group: [
+            { label: 'Lightness', value: 'ui-lightness' },
+            { label: 'Darkness', value: 'ui-darkness' },
+            { label: 'Smoothness', value: 'ui-smoothness' },
+            { label: 'Start', value: 'ui-start' },
+            { label: 'Redmond', value: 'ui-redmond' },
+            { label: 'Sunny', value: 'ui-sunny' },
+            { label: 'Overcast', value: 'ui-overcast' },
+            { label: 'Le Frog', value: 'ui-le-frog' },
+          ],
+        },
+      ],
+    }
   },
-  created() {},
+  created() {
+    this.user = JSON.parse(window.sessionStorage.getItem('user'))
+    const theme = this.user.theme
+    jqx.theme = theme
+  },
   mounted() {
-    const that = this;
+    const that = this
     // 全局监听，页面刷新的时候将store里state的值存到sessionStorage中，然后从sessionStorage中获取，再赋值给store。
     // 然后再把session里面存的删除即可，相当于中间件的作用。
     // 在页面加载时读取sessionStorage里的状态信息
-    if (sessionStorage.getItem("store")) {
+    if (sessionStorage.getItem('store')) {
       this.$store.replaceState(
         Object.assign(
           {},
           this.$store.state,
-          JSON.parse(sessionStorage.getItem("store"))
+          JSON.parse(sessionStorage.getItem('store'))
         )
-      );
-      sessionStorage.removeItem("store");
+      )
+      sessionStorage.removeItem('store')
     }
 
     // 在页面刷新时将vuex里的信息保存到sessionStorage里
-    window.onbeforeunload = function(e) {
+    window.onbeforeunload = function (e) {
       // TODO
-      sessionStorage.setItem("store", JSON.stringify(that.$store.state));
-    };
+      sessionStorage.setItem('store', JSON.stringify(that.$store.state))
+    }
 
-    this.getPermissions();
-    this.getSlasmans();
-    this.getQuoters();
-    this.getProductTypes();
-    this.getAssignTypes();
-    this.getPricePlans();
-    this.getSplitPlans();
-    this.getFormulas();
+    this.getPermissions()
+    this.getSlasmans()
+    this.getQuoters()
+    this.getProductTypes()
+    this.getAssignTypes()
+    this.getPricePlans()
+    this.getSplitPlans()
+    this.getFormulas()
   },
   methods: {
+    changeTheme(value) {
+      this.user.theme = value
+      const params = {
+        jsonParams: JSON.stringify({
+          userId: this.user.id,
+          theme: value,
+        }),
+      }
+      updateUserInfo(params).then((res) => {
+        window.sessionStorage.setItem('user', JSON.stringify(this.user))
+        this.reload()
+      })
+    },
     getPermissions() {
-      const permissions = this.$store.state.permissions;
+      const permissions = this.$store.state.permissions
       if (Array.isArray(permissions) == false) {
-        this.user = JSON.parse(window.sessionStorage.getItem("user"));
+        this.user = JSON.parse(window.sessionStorage.getItem('user'))
         const params = {
           jsonParams: JSON.stringify({
-            userId: this.user.id
-          })
-        };
+            userId: this.user.id,
+          }),
+        }
         getPermissions(params).then((responese) => {
-          this.$store.dispatch("savePermissions", responese);
-        });
+          this.$store.dispatch('savePermissions', responese)
+        })
       }
     },
     getQuoters() {
-      const quoters = this.$store.state.quoters;
+      const quoters = this.$store.state.quoters
       if (Array.isArray(quoters) == false) {
         getQuoter().then((responese) => {
-          this.$store.dispatch("saveQuoters", responese);
-        });
+          this.$store.dispatch('saveQuoters', responese)
+        })
       }
     },
     getSlasmans() {
-      const salesmans = this.$store.state.salesmans;
+      const salesmans = this.$store.state.salesmans
       if (Array.isArray(salesmans) == false) {
         getSalesman().then((responese) => {
-          this.$store.dispatch("saveSalesmans", responese);
-        });
+          this.$store.dispatch('saveSalesmans', responese)
+        })
       }
     },
     getProductTypes() {
       const that = this
-      const productTypes = this.$store.state.productType;
+      const productTypes = this.$store.state.productType
       if (Array.isArray(productTypes) == false) {
         const source = {
-          datatype: "json",
+          datatype: 'json',
           datafields: [
-            { name: "id", map: "pc_id", type: "number" },
-            { name: "parentid", map: "pc_pid", type: "number" },
-            { name: "text", map: "pc_name", type: "string" },
-            { name: "value", map: "pc_id", type: "string" }
+            { name: 'id', map: 'pc_id', type: 'number' },
+            { name: 'parentid', map: 'pc_pid', type: 'number' },
+            { name: 'text', map: 'pc_name', type: 'string' },
+            { name: 'value', map: 'pc_id', type: 'string' },
           ],
-          id: "id",
-          type: "json",
-          url: "/productCateg/getProductCategoryData.do"
-        };
+          id: 'id',
+          type: 'json',
+          url: '/productCateg/getProductCategoryData.do',
+        }
         const dataAdapter = new jqx.dataAdapter(source, {
           loadServerData(serverdata, source, callback) {
             getCategory(source.url, source, serverdata).then((res) => {
-              callback({
-                records: res.records
-              });
-            });
+              callback(res.records)
+            })
           },
           loadComplete(records) {
-            that.$store.state.productType = records;
-          }
-        });
-        dataAdapter.dataBind();
+            that.$store.state.productType = records
+          },
+        })
+        dataAdapter.dataBind()
       }
     },
     getAssignTypes() {
-      const that = this;
-      const assignTypes = this.$store.state.assignType;
+      const that = this
+      const assignTypes = this.$store.state.assignType
       if (Array.isArray(assignTypes) == false) {
         const source = {
-          datatype: "json",
+          datatype: 'json',
           datafields: [
-            { name: "id", map: "at_id", type: "number" },
-            { name: "parentid", map: "at_pid", type: "number" },
-            { name: "text", map: "at_name", type: "string" },
-            { name: "value", map: "at_id", type: "string" }
+            { name: 'id', map: 'at_id', type: 'number' },
+            { name: 'parentid', map: 'at_pid', type: 'number' },
+            { name: 'text', map: 'at_name', type: 'string' },
+            { name: 'value', map: 'at_id', type: 'string' },
           ],
-          id: "id",
-          type: "json",
-          url: "/productCateg/getAssignTypeData.do"
-        };
+          id: 'id',
+          type: 'json',
+          url: '/productCateg/getAssignTypeData.do',
+        }
         const dataAdapter = new jqx.dataAdapter(source, {
           loadServerData(serverdata, source, callback) {
             getAssignType(source.url, source, serverdata).then((res) => {
-              callback({
-                records: res.records
-              });
-            });
+              callback(res.records)
+            })
           },
           loadComplete(records) {
-            that.$store.state.assignType = records;
-          }
-        });
-        dataAdapter.dataBind();
+            that.$store.state.assignType = records
+          },
+        })
+        dataAdapter.dataBind()
       }
     },
     getPricePlans() {
-      const pricePlans = this.$store.state.pricePlan;
+      const pricePlans = this.$store.state.pricePlan
       if (Array.isArray(pricePlans) == false) {
         getPricePlan().then((responese) => {
           if (Array.isArray(responese)) {
-            this.$store.dispatch("savePricePlan", responese);
+            this.$store.dispatch('savePricePlan', responese)
           }
-        });
+        })
       }
     },
     getSplitPlans() {
-      const splitPlans = this.$store.state.splitPlan;
+      const splitPlans = this.$store.state.splitPlan
       if (Array.isArray(splitPlans) == false) {
         getSplitPlan().then((responese) => {
           if (Array.isArray(responese)) {
-            this.$store.dispatch("saveSplitPlan", responese);
+            this.$store.dispatch('saveSplitPlan', responese)
           }
-        });
+        })
       }
     },
     getFormulas() {
-      const formulas = this.$store.state.formula;
+      const formulas = this.$store.state.formula
       if (Array.isArray(formulas) == false) {
         getFormula().then((responese) => {
           if (Array.isArray(responese)) {
-            this.$store.dispatch("saveFormula", responese);
+            this.$store.dispatch('saveFormula', responese)
           }
-        });
+        })
       }
-    }
-  }
-};
+    },
+  },
+}
 </script>
 
 <style scoped>
@@ -222,7 +306,9 @@ export default {
   display: flex;
   align-items: center;
 }
-
+.ant-btn {
+  height: 30px;
+}
 #components-layout-demo-custom-trigger .trigger {
   font-size: 18px;
   padding: 0px;

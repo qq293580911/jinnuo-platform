@@ -25,8 +25,6 @@ import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
 import {
-  Message,
-  ADD_PRODUCT_PRICE,
   EDIT_PRODUCT_PRICE
 } from "common/const.js";
 

@@ -6,34 +6,34 @@
     }"
     class="wrapper"
   >
-    <input type="text" :id="textId" />
+    <input :id="textId" type="text" />
     <input
-      type="file"
       :id="fileId"
-      multiple
-      class="file"
-      @change="changed($event)"
       :style="{
         width: getWidth,
         height: getHeight,
       }"
+      @change="changed($event)"
+      class="file"
+      multiple
+      type="file"
     />
     <div style="margin-left: 5px" v-if="showUploadButton">
-      <JqxTooltip :position="'mouse'" :content="'上传'">
+      <JqxTooltip :content="'上传'" :position="'mouse'">
         <JqxButton
-          style="cursor: pointer"
-          v-if="type == 'jqxInput'"
           :imgSrc="require('@/assets/iconfont/custom/upload.svg')"
           @click="open"
+          style="cursor: pointer"
+          v-if="type == 'jqxInput'"
         ></JqxButton>
         <input
-          v-else
-          type="button"
-          class="button"
-          @click="open"
           :style="{
             height: getHeight,
           }"
+          @click="open"
+          class="button"
+          type="button"
+          v-else
           value="浏览"
         />
       </JqxTooltip>
@@ -42,27 +42,27 @@
 </template>
 
 <script>
-import JqxTooltip from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue";
-import JqxButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue";
+import JqxTooltip from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxtooltip.vue'
+import JqxButton from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue'
 
-import LAY_EXCEL from "lay-excel";
+import LAY_EXCEL from 'lay-excel'
 export default {
-  name: "CustomUploder",
+  name: 'CustomUploder',
   components: {
     JqxTooltip,
     JqxButton
   },
   data() {
     return {
-      inputValue: "",
+      inputValue: '',
       fileContent: {},
       file: null
-    };
+    }
   },
   props: {
     type: {
       type: String,
-      default: ""
+      default: ''
     },
     width: {
       type: Number,
@@ -79,66 +79,66 @@ export default {
     fieldsCofig: {
       type: Object,
       default: () => {
-        return {};
+        return {}
       }
     }
   },
   created() {
-    this.textId = "textInput" + JQXLite.generateID();
-    this.fileId = "file" + JQXLite.generateID();
+    this.textId = 'textInput' + JQXLite.generateID()
+    this.fileId = 'file' + JQXLite.generateID()
   },
   computed: {
     getWidth() {
-      return this.width + "px";
+      return this.width + 'px'
     },
     getHeight() {
-      return this.height + "px";
+      return this.height + 'px'
     }
   },
   mounted() {
-    const that = this;
+    const that = this
     // 创建自定义风格input
     switch (this.type) {
-      case "jqxInput": {
-        const input = document.getElementById(that.textId);
-        jqwidgets.createInstance(input, "jqxInput", {
+      case 'jqxInput': {
+        const input = document.getElementById(that.textId)
+        jqwidgets.createInstance(input, 'jqxInput', {
           width: this.width,
           height: this.height
-        });
-        break;
+        })
+        break
       }
       default:
-        break;
+        break
     }
   },
   methods: {
     open() {
-      const file = document.getElementById(this.fileId);
-      file.click();
+      const file = document.getElementById(this.fileId)
+      file.click()
     },
     changed(event) {
-      this.file = event.target.files[0];
-      const that = this;
+      this.file = event.target.files[0]
+      const that = this
       // 文件名称
-      let fileName = event.target.value;
+      let fileName = event.target.value
       fileName = fileName.substring(
-        fileName.lastIndexOf("\\") + 1,
+        fileName.lastIndexOf('\\') + 1,
         fileName.length
-      );
+      )
 
-      const input = document.getElementById(this.textId);
-      input.value = fileName;
-      this.inputValue = fileName;
+      const input = document.getElementById(this.textId)
+      input.value = fileName
+      this.inputValue = fileName
       // 文件内容
-      const files = event.target.files;
+      const files = event.target.files
       LAY_EXCEL.importExcel(files, that.fieldsCofig, function(data, book) {
-        event.srcElement.value = ""; // 及时清空,避免下次选择相同的文件无法触发事件
-        that.fileContent = data;
-        that.$emit("changed", data);
-      });
+        event.srcElement.value = '' // 及时清空,避免下次选择相同的文件无法触发事件
+        that.fileContent = data
+        that.$emit('changed', data)
+      })
     }
   }
-};
+}
 </script>
 
 <style scoped>

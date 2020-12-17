@@ -40,7 +40,10 @@ export default {
     JqxForm
   },
   props: {
-    installFeeDisabled: false
+    installFeeDisabled: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     const that = this;

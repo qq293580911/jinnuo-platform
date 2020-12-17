@@ -23,7 +23,7 @@ import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
-import { Message, ADD_PRICE_PLAN, UPDATE_PRICE_PLAN } from "@/common/const";
+import { UPDATE_PRICE_PLAN } from "@/common/const";
 import { addPricePlan, updatePricePlan } from "@/network/product";
 export default {
   components: {

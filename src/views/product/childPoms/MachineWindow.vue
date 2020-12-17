@@ -20,15 +20,9 @@
 import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
-// import jqxDropDownButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxdropdownbutton.vue";
-// import jqxTree from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtree.vue";
-// import jqxNumberInput from "jqwidgets-scripts/jqwidgets-vue/vue_jqxnumberinput.vue";
-// import jqxComboBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxcombobox.vue";
-
-import { Message, ADD_PRODUCT, EDIT_PRODUCT } from "common/const.js";
-
+import jqxDropDownButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxdropdownbutton.vue";
+import { Message, EDIT_PRODUCT } from "common/const.js";
 import {
-  getCategory,
   addMachineProduct,
   updateMachineProduct
 } from "@/network/product.js";
@@ -38,9 +32,6 @@ export default {
     JqxWindow,
     JqxValidator,
     JqxForm
-    // jqxDropDownButton,
-    // jqxTree,
-    // jqxNumberInput,
   },
   beforeCreate() {
     this.dropDownButtonID = JQXLite.generateID();
@@ -83,7 +74,7 @@ export default {
             component[0].appendChild(dropDownButtonContainer);
             // 树
             const treeContainer = document.createElement("div");
-            const treeID = JQXLite.generateID();
+            that.treeID = JQXLite.generateID();
             treeContainer.id = that.treeID;
             treeContainer.style.cssText = "border: none;";
             dropDownButtonContainer.appendChild(treeContainer);
@@ -104,7 +95,7 @@ export default {
                 { name: "parentid", type: "number" },
                 { name: "text", type: "string" }
               ],
-              localdata: that.$store.state.productType.records
+              localdata: that.$store.state.productType
             };
             const dataAdapter = new jqx.dataAdapter(source);
             dataAdapter.dataBind();
@@ -259,7 +250,6 @@ export default {
     // 获取组件对象
     const $name = this.$refs.myForm.getComponentByName("name");
     const $model = this.$refs.myForm.getComponentByName("model");
-    const $category = this.$refs.myForm.getComponentByName("category");
     const $unit = this.$refs.myForm.getComponentByName("unit");
     const $power = this.$refs.myForm.getComponentByName("power");
     const $remark = this.$refs.myForm.getComponentByName("remark");
@@ -309,7 +299,6 @@ export default {
   },
   methods: {
     open(...params) {
-      const that = this;
       this.$refs.myWindow.setTitle(params[0]);
       this.clearForm();
       if (params[0] == EDIT_PRODUCT) {

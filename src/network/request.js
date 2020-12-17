@@ -71,7 +71,7 @@ export function request(config) {
       if (typeof res.data == 'object' && res.data.rows) {
         data = res.data.rows
       }
-      var dataArray = new Array();
+      var dataArray = [];
       for (var i = 0; i < data.length; i++) {
         var record = data[i];
         var datarow = {};

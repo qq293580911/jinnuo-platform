@@ -42,7 +42,6 @@ export default {
     this.salesmans = this.$store.state.salesmans;
   },
   data() {
-    const that = this;
     return {
       template: [
         {

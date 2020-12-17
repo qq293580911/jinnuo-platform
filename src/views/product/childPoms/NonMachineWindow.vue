@@ -21,9 +21,8 @@ import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
 import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
 import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
 
-import { Message, ADD_PRODUCT, EDIT_PRODUCT } from "@/common/const";
+import { Message, EDIT_PRODUCT } from "@/common/const";
 import {
-  getCategory,
   addNonMachineProduct,
   updateNonMachineProduct
 } from "@/network/product.js";
@@ -64,7 +63,7 @@ export default {
             component[0].appendChild(dropDownButtonContainer);
             // 树
             const treeContainer = document.createElement("div");
-            const treeID = JQXLite.generateID();
+            that.treeID = JQXLite.generateID();
             treeContainer.id = that.treeID;
             treeContainer.style.cssText = "border: none;";
             dropDownButtonContainer.appendChild(treeContainer);
@@ -84,7 +83,7 @@ export default {
                 { name: "parentid", type: "number" },
                 { name: "text", type: "string" }
               ],
-              localdata: that.$store.state.productType.records
+              localdata: that.$store.state.productType
             };
             const dataAdapter = new jqx.dataAdapter(source);
             dataAdapter.dataBind();
@@ -208,7 +207,7 @@ export default {
           rowHeight: "40px",
           init: function(component) {
             const formulas = that.$store.state.formula;
-            const comboBox = jqwidgets.createInstance(component, "jqxComboBox", {
+            jqwidgets.createInstance(component, "jqxComboBox", {
               width: 250,
               height: 30,
               source: formulas

@@ -6,7 +6,10 @@
       :mode="mode"
       theme="dark"
     >
-      <a-sub-menu v-for="(item, index) in menus" :key="index">
+      <a-sub-menu
+        v-for="(item, index) in menus"
+        :key="index"
+      >
         <span slot="title">
           <my-icon :type="item.type" /><span>{{ item.name }}</span>
         </span>
@@ -24,51 +27,50 @@
 </template>
 
 <script>
-import { getMenus, Menu } from "@/network/home.js";
-import { formatToTree } from "@/common/util.js";
+import { getMenus, Menu } from '@/network/home.js'
+import { formatToTree } from '@/common/util.js'
 export default {
-  name: "HomeAside",
+  name: 'HomeAside',
   components: {},
   data() {
     return {
-      mode: "inline",
+      mode: 'inline',
       menus: [],
-      user: {}
-    };
+      user: {},
+    }
   },
   created() {
-    this.user = JSON.parse(window.sessionStorage.getItem("user"));
-    this.initMenu();
+    this.user = JSON.parse(window.sessionStorage.getItem('user'))
+    this.initMenu()
   },
   methods: {
-    collapsed() {},
-    changeMode(checked) {
-      this.mode = checked ? "vertical" : "inline";
-    },
+    // collapsed() {},
+    // changeMode(checked) {
+    //   this.mode = checked ? 'vertical' : 'inline'
+    // },
     menuItemClick(menu) {
       const params = {
         title: menu.name,
         content: menu.component,
-        component: menu.component
-      };
-      this.$bus.$emit("addTab", params);
+        component: menu.component,
+      }
+      this.$bus.$emit('addTab', params)
     },
     initMenu() {
       const params = {
-        userId: this.user.id
-      };
-
+        userId: this.user.id,
+      }
       getMenus(params).then((res) => {
-        let menus = [];
+        let menus = []
         for (const element of res) {
-          menus.push(new Menu(element));
+          menus.push(new Menu(element))
         }
-        menus = formatToTree(menus);
-        this.menus = menus;
-      });
-    }
-  }
-};
+        menus = formatToTree(menus)
+        this.menus = menus
+      })
+    },
+  },
+}
 </script>
 
 <style scoped>

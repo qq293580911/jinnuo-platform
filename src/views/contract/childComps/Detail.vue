@@ -616,7 +616,6 @@ export default {
           pinned: false,
           width: 100
         });
-
         return columns;
       })(),
       rowdetailstemplate: {

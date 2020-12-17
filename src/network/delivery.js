@@ -43,3 +43,19 @@ export function showDeliveryDetailList(source, params) {
     params
   })
 }
+
+export function getRelatedOrderInfo(params) {  
+  return request({
+    url: '/dlvDtl/getOrderInfoListByOrderNumber.do',
+    method: 'Post',
+    data: params
+  })
+}
+
+export function importDelivery(params) {  
+  return request({
+    url: '/dlvDtl/importDeliveryDetail.do',
+    method: 'Post',
+    data: params
+  })
+}

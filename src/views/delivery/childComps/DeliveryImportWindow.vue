@@ -33,7 +33,6 @@
 import Vue from 'vue'
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue'
 import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
-
 import CustomUploader from '@/components/common/CustomUploader'
 import { getLocalization } from '@/common/localization.js'
 import { Message } from '@/common/const'
@@ -44,7 +43,7 @@ import {
   calc_misc_warranty,
   calc_rsv_p,
 } from '@/common/util'
-import { importOrder, batchUpdateOrderByOrderNumber } from '@/network/order'
+import { getRelatedOrderInfo, importDelivery } from '@/network/delivery.js'
 export default {
   components: {
     JqxWindow,
@@ -53,99 +52,15 @@ export default {
   beforeCreate() {
     this.source = {
       datafields: [
-        {
-          name: 'product_type',
-          map: 'productType',
-          type: 'string',
-        },
-        {
-          name: 'order_date',
-          map: 'orderDate',
-          type: 'string',
-        },
-        {
-          name: 'salesman',
-          type: 'number',
-        },
-        {
-          name: 'salesman_name',
-          map: 'salesmanName',
-          type: 'string',
-        },
-        {
-          name: 'contract_number',
-          map: 'contractNumber',
-          type: 'string',
-        },
-        {
-          name: 'order_number',
-          map: 'orderNumber',
-          type: 'number',
-        },
-        {
-          name: 'project_name',
-          map: 'projectName',
-          type: 'string',
-        },
-        {
-          name: 'order_amount',
-          map: 'orderAmount',
-          type: 'number',
-        },
-        {
-          name: 'consideration_commission_order_amount',
-          map: 'considerationCommissionOrderAmount',
-          type: 'number',
-        },
-        {
-          name: 'not_consideration_commission_order_amount',
-          map: 'notConsiderationCommissionOrderAmount',
-          type: 'number',
-        },
-        {
-          name: 'logistics_management_fee',
-          map: 'logisticsManagementFee',
-          type: 'string',
-        },
-        {
-          name: 'freight',
-          map: 'freight',
-          type: 'string',
-        },
-        {
-          name: 'tax',
-          map: 'tax',
-          type: 'string',
-        },
-        {
-          name: 'warranty',
-          map: 'warranty',
-          type: 'string',
-        },
-        {
-          name: 'install_fee',
-          map: 'installFee',
-          type: 'string',
-        },
-        {
-          name: 'order_reserve_price',
-          type: 'number',
-        },
-        {
-          name: 'consideration_commission_status',
-          map: 'considerationCommissionStatus',
-          type: 'string',
-        },
-        {
-          name: 'remark',
-          map: 'remark',
-          type: 'string',
-        },
-        {
-          name: 'actual_freight',
-          map: 'actualFreight',
-          type: 'string',
-        },
+        { name: 'delivery_date', type: 'string' },
+        { name: 'order_number', type: 'string' },
+        { name: 'delivery_amount', type: 'number' },
+        { name: 'logistics_management_fee', type: 'string' },
+        { name: 'freight', type: 'string' },
+        { name: 'tax', type: 'string' },
+        { name: 'warranty', type: 'string' },
+        { name: 'install_fee', type: 'string' },
+        { name: 'delivery_area', type: 'float' },
       ],
       dataType: 'json',
       localdata: [],
@@ -157,198 +72,110 @@ export default {
       localization: getLocalization('zh-CN'),
       dataAdapter: new jqx.dataAdapter(this.source, {
         beforeLoadComplete(records) {
-          const salesmans = that.$store.state.salesmans
-          records.map((item) => {
-            const ordAmt = item['order_amount']
+          records.forEach((item) => {
+            const dlvAmt = item['delivery_amount']
             const logManageFee = item['logistics_management_fee']
             const freight = item['freight']
             const tax = item['tax']
             const warranty = item['warranty']
             const installFee = item['install_fee']
-            // 计算下单杂费
-            const ordLogManageFee = calc_misc_log_manage_fee(
-              ordAmt,
+            // 计算送货杂费
+            const dlvLogManageFee = calc_misc_log_manage_fee(
+              dlvAmt,
               installFee,
               logManageFee
             )
-            const ordTax = calc_misc_tax(ordAmt, installFee, tax)
-            const ordWarranty = calc_misc_warranty(ordAmt, installFee, warranty)
-            const ordFreight = calc_misc_freight(
-              ordAmt,
+            const dlvTax = calc_misc_tax(dlvAmt, installFee, tax)
+            const dlvWarranty = calc_misc_warranty(dlvAmt, installFee, warranty)
+            const dlvFreight = calc_misc_freight(
+              dlvAmt,
               installFee,
-              ordLogManageFee,
-              ordTax,
-              ordWarranty,
+              dlvLogManageFee,
+              dlvTax,
+              dlvWarranty,
               freight
             )
-            // 计算下单底价
-            const ordRsvP = calc_rsv_p(
-              ordAmt,
-              ordLogManageFee,
-              ordFreight,
-              ordTax,
-              ordWarranty,
+            // 计算送货底价
+            const dlvRsvP = calc_rsv_p(
+              dlvAmt,
+              dlvLogManageFee,
+              dlvFreight,
+              dlvTax,
+              dlvWarranty,
               installFee
             )
-            item['order_reserve_price'] = ordRsvP
-            // 放入业务员ID
-            const salesman = salesmans.find((salesman) => {
-              return salesman['emp_name'] == item['salesman_name']
-            })
-            if (salesman) {
-              item['salesman'] = salesman['emp_id']
-            }
+            item['delivery_reserve_price'] = dlvRsvP
           })
         },
       }),
       columns: [
         {
-          text: '产品类型',
-          dataField: 'product_type',
+          text: '送货日期',
+          dataField: 'delivery_date',
           cellsAlign: 'center',
           align: 'center',
           width: 100,
           cellclassname: function (row, columnfield, value, data) {
-            if (/^设备$/.test(value) == false) {
-              that.allowedFormat = false
-              return 'yellow'
-            }
-            return ''
-          },
-        },
-        {
-          text: '下单日期',
-          dataField: 'order_date',
-          cellsAlign: 'center',
-          align: 'center',
-          width: 100,
-          cellclassname: function (row, columnfield, value, data) {
-            const r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/)
+            var r = value.match(/^(\d{4})(-)(\d{2})(-)(\d{2})$/)
             if (r == null) {
-              that.allowedFormat = false
               return 'yellow'
             }
             return ''
           },
-        },
-        {
-          text: '业务员',
-          dataField: 'salesman_name',
-          cellsAlign: 'center',
-          align: 'center',
-          width: 80,
-          cellclassname: function (row, columnfield, value, data) {
-            if (data['salesman'] == null) {
-              that.allowedFormat = false
-              return 'yellow'
-            }
-            return ''
-          },
-        },
-        {
-          text: '合同编号',
-          dataField: 'contract_number',
-          cellsAlign: 'center',
-          align: 'center',
-          width: 150,
         },
         {
           text: '下单编号',
           dataField: 'order_number',
           cellsAlign: 'center',
           align: 'center',
-          width: 150,
         },
         {
-          text: '项目名称',
-          dataField: 'project_name',
+          text: '送货金额',
+          dataField: 'delivery_amount',
           cellsAlign: 'center',
           align: 'center',
-          width: 300,
-        },
-        {
-          text: '下单金额',
-          dataField: 'order_amount',
-          cellsAlign: 'center',
-          align: 'center',
-          width: 120,
-        },
-        {
-          text: '计提成下单金额',
-          dataField: 'consideration_commission_order_amount',
-          cellsAlign: 'center',
-          align: 'center',
-          width: 120,
-        },
-        {
-          text: '非3C风阀下单金额',
-          dataField: 'not_consideration_commission_order_amount',
-          cellsAlign: 'center',
-          align: 'center',
-          width: 120,
         },
         {
           text: '物流管理费',
           dataField: 'logistics_management_fee',
           cellsAlign: 'center',
           align: 'center',
-          width: 100,
         },
         {
           text: '运费',
           dataField: 'freight',
           cellsAlign: 'center',
           align: 'center',
-          width: 80,
         },
         {
           text: '税金',
           dataField: 'tax',
           cellsAlign: 'center',
           align: 'center',
-          width: 80,
         },
         {
           text: '质保金',
           dataField: 'warranty',
           cellsAlign: 'center',
           align: 'center',
-          width: 80,
         },
         {
           text: '安装费',
           dataField: 'install_fee',
           cellsAlign: 'center',
           align: 'center',
-          width: 80,
         },
         {
-          text: '下单底价',
-          dataField: 'order_reserve_price',
+          text: '送货底价',
+          dataField: 'delivery_reserve_price',
           cellsAlign: 'center',
           align: 'center',
-          width: 100,
         },
         {
-          text: '备注',
-          dataField: 'remark',
+          text: '送货面积',
+          dataField: 'delivery_area',
           cellsAlign: 'center',
           align: 'center',
-          width: 150,
-        },
-        {
-          text: '计提成状态',
-          dataField: 'consideration_commission_status',
-          cellsAlign: 'center',
-          align: 'center',
-          width: 110,
-        },
-        {
-          text: '实际运费',
-          dataField: 'actual_freight',
-          cellsAlign: 'center',
-          align: 'center',
-          width: 80,
         },
       ],
       fileContent: [],
@@ -364,8 +191,21 @@ export default {
       } else {
         this.allowedFormat = true
         const data = this.fileContent.slice(this.startRow, this.endRow)
-        this.source.localdata = data
-        this.$refs.myGrid.updatebounddata()
+        data.forEach((item) => {
+          item['deliveryDate'] = item['delivery_date']
+          item['deliveryAmount'] = item['delivery_amount']
+          item['orderNumber'] = item['order_number']
+          item['deliveryArea'] = item['delivery_area']
+        })
+        const params = {
+          jsonParams: JSON.stringify({
+            items: data,
+          }),
+        }
+        getRelatedOrderInfo(params).then((res) => {
+          this.source.localdata = res
+          this.$refs.myGrid.updatebounddata()
+        })
       }
     },
     endRow() {
@@ -374,8 +214,21 @@ export default {
       } else {
         this.allowedFormat = true
         const data = this.fileContent.slice(this.startRow, this.endRow)
-        this.source.localdata = data
-        this.$refs.myGrid.updatebounddata()
+        data.forEach((item) => {
+          item['deliveryDate'] = item['delivery_date']
+          item['deliveryAmount'] = item['delivery_amount']
+          item['orderNumber'] = item['order_number']
+          item['deliveryArea'] = item['delivery_area']
+        })
+        const params = {
+          jsonParams: JSON.stringify({
+            items: data,
+          }),
+        }
+        getRelatedOrderInfo(params).then((res) => {
+          this.source.localdata = res
+          this.$refs.myGrid.updatebounddata()
+        })
       }
     },
   },
@@ -387,10 +240,14 @@ export default {
       const fileContent = data[0][sheetName]
       fileContent.forEach(function (value, index) {
         if (index > 0) {
-          value['orderDate'] = LAY_EXCEL.dateCodeFormat(
-            value['orderDate'],
+          value['delivery_date'] = LAY_EXCEL.dateCodeFormat(
+            value['delivery_date'],
             'YYYY-MM-DD'
           )
+          value['delivery_amount'] = parseFloat(
+            value['delivery_amount']
+          ).toFixed(2)
+          value['delivery_area'] = parseFloat(value['delivery_area']).toFixed(2)
         }
       })
       that.fileContent = fileContent
@@ -425,16 +282,12 @@ export default {
         centered: true,
         content: (h) => <div style="color:red;"></div>,
         onOk() {
-          that.importOrder()
+          that.import()
         },
         onCancel() {},
         class: 'test',
         zIndex: 1500,
       })
-    })
-    // 批量修改按钮绑定点击事件
-    this.batchUpdateInstance.addEventHandler('click', () => {
-      this.batchUpdateOrder()
     })
   },
   methods: {
@@ -460,23 +313,10 @@ export default {
           showUploadButton: true,
           fieldsCofig: {
             fields: {
-              productType: 'A',
-              orderDate: 'B',
-              salesmanName: 'C',
-              contractNumber: 'D',
-              orderNumber: 'E',
-              projectName: 'F',
-              orderAmount: 'G',
-              considerationCommissionOrderAmount: 'H',
-              notConsiderationCommissionOrderAmount: 'I',
-              logisticsManagementFee: 'J',
-              freight: 'K',
-              tax: 'L',
-              warranty: 'M',
-              installFee: 'N',
-              remark: 'O',
-              considerationCommissionStatus: 'P',
-              actualFreight: 'Q',
+              delivery_date: 'A',
+              order_number: 'B',
+              delivery_amount: 'C',
+              delivery_area: 'D',
             },
           },
         },
@@ -543,69 +383,60 @@ export default {
       })
 
       // 批量修改按钮
-      const batchUpdateContainer = document.createElement('div')
-      batchUpdateContainer.classList.add('tool-item')
-      const batchUpdateButtonID = JQXLite.generateID()
-      batchUpdateContainer.id = batchUpdateButtonID
-      buttonsContainer.appendChild(batchUpdateContainer)
-      this.batchUpdateInstance = jqwidgets.createInstance(
-        `#${batchUpdateButtonID}`,
-        'jqxButton',
-        {
-          width: 25,
-          height: 25,
-          imgSrc: require(`@/assets/iconfont/custom/batch-update.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${batchUpdateButtonID}`, 'jqxTooltip', {
-        content: '批量更新',
-        position: 'bottom',
-      })
+      // const batchUpdateContainer = document.createElement('div')
+      // batchUpdateContainer.classList.add('tool-item')
+      // const batchUpdateButtonID = JQXLite.generateID()
+      // batchUpdateContainer.id = batchUpdateButtonID
+      // buttonsContainer.appendChild(batchUpdateContainer)
+      // this.batchUpdateInstance = jqwidgets.createInstance(
+      //   `#${batchUpdateButtonID}`,
+      //   'jqxButton',
+      //   {
+      //     width: 25,
+      //     height: 25,
+      //     imgSrc: require(`@/assets/iconfont/custom/batch-update.svg`),
+      //   }
+      // )
+      // jqwidgets.createInstance(`#${batchUpdateButtonID}`, 'jqxTooltip', {
+      //   content: '批量更新',
+      //   position: 'bottom',
+      // })
       // 字段选择
-      const fieldSelection = document.createElement('div')
-      const fieldSelectionID = JQXLite.generateID()
-      fieldSelection.id = fieldSelectionID
-      fieldSelection.classList.add('tool-item')
-      buttonsContainer.appendChild(fieldSelection)
-      this.fieldSelectionInstance = jqwidgets.createInstance(
-        `#${fieldSelectionID}`,
-        'jqxDropDownList',
-        {
-          source: ['实际运费', '计提成状态'],
-          width: 100,
-          height: 25,
-        }
-      )
+      // const fieldSelection = document.createElement('div')
+      // const fieldSelectionID = JQXLite.generateID()
+      // fieldSelection.id = fieldSelectionID
+      // fieldSelection.classList.add('tool-item')
+      // buttonsContainer.appendChild(fieldSelection)
+      // this.fieldSelectionInstance = jqwidgets.createInstance(
+      //   `#${fieldSelectionID}`,
+      //   'jqxDropDownList',
+      //   {
+      //     source: ['实际运费', '计提成状态'],
+      //     width: 100,
+      //     height: 25,
+      //   }
+      // )
     },
     open(...params) {
+      console.log(params)
       this.$refs.myWindow.setTitle(params[0])
       this.$refs.myWindow.open()
     },
-    onValidationSuccess(event) {},
-    importOrder() {
+    import() {
       const rowsData = this.$refs.myGrid.getrows()
       const params = {
         jsonParams: JSON.stringify({
           items: rowsData,
         }),
       }
-      importOrder(params).then((res) => {
+      importDelivery(params).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.refresh()
       })
     },
-    batchUpdateOrder() {
-      const rowsData = this.$refs.myGrid.getrows()
-      const params = {
-        jsonParams: JSON.stringify({
-          items: rowsData,
-        }),
-      }
-      batchUpdateOrderByOrderNumber(params).then((res) => {
-        this.$refs.myWindow.close()
-        this.$parent.refresh()
-      })
-    },
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.close()
   },
 }
 </script>

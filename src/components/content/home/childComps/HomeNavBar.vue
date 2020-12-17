@@ -16,11 +16,11 @@
           class="submenu-title-wrapper"
           slot="title"
         >
-          <a-icon type="setting" />主题切换
+          <a-icon type="setting" />系统设置
         </span>
       </a-sub-menu>
       <a-menu-item key="alipay">
-        <a target="_blank">Navigation Four - Link</a>
+        <a target="_blank">联系我们</a>
       </a-menu-item>
       <a-dropdown :placement="'bottomRight'">
         <a-avatar

@@ -171,7 +171,7 @@ export default {
 
 <style scoped>
 .main {
-  height: calc(100vh - 66px);
+  height: calc(100vh);
   overflow: hidden;
 }
 ::v-deep .jqx-tabs-content-element {

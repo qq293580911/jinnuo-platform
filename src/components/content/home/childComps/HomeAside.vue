@@ -44,10 +44,6 @@ export default {
     this.initMenu()
   },
   methods: {
-    // collapsed() {},
-    // changeMode(checked) {
-    //   this.mode = checked ? 'vertical' : 'inline'
-    // },
     menuItemClick(menu) {
       const params = {
         title: menu.name,

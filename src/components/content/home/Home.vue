@@ -4,7 +4,6 @@
     <a-layout-header>
       <home-nav-bar></home-nav-bar>
     </a-layout-header>
-
     <a-layout
       id="components-layout-demo-custom-trigger"
       class="content"
@@ -15,7 +14,12 @@
         collapsible
       >
         <div class="sider-header">
-          <div class="logo"></div>
+          <div
+            class="logo"
+            style="text-align:center;line-height:30px;color:yellow;"
+          >
+            <!-- <span>金诺办公2.0</span> -->
+          </div>
           <!--  切换主题 -->
           <a-tooltip
             placement="topLeft"
@@ -298,9 +302,10 @@ export default {
 </script>
 
 <style scoped>
-.content {
-  height: calc(100vh - 64px);
+::v-deep .ant-layout-header {
+  padding-right: 20px;
 }
+
 .sider-header {
   height: 32px;
   display: flex;

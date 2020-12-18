@@ -45,8 +45,6 @@ export const Module = {
   USER_MANAGEMENT: 'UserManagement',
   // 角色
   ROLE_MANAGEMENT: 'RoleManagement',
-  // 权限
-  AUTHORITY_MANAGEMENT: 'AuthorityManagement',
   // 送货
   DELIVERY_MANAGEMENT: 'DeliveryManagement',
   // 部门
@@ -61,7 +59,10 @@ export const Module = {
   SUPPLIES_CATEGORY: 'SuppliesCategory',
   SUPPLIES_MANAGEMENT: 'SuppliesManagement',
   SUPPLIES_STATISTICS: 'SuppliesStatistics',
-  TEST: 'Test'
+  // 系统
+  TEST: 'Test',
+  AUTHORITY_MANAGEMENT: 'AuthorityManagement',
+
 }
 
 // 用户部分

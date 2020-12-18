@@ -5,15 +5,31 @@ export function showUserList(source, params) {
     url: source.url,
     method: source.type,
     source,
-    params
+    params,
   })
 }
 
-export function updateUserInfo(params) {  
+export function addUser(params) {
+  return request({
+    url: '/user/addUser.do',
+    method: 'Post',
+    data: params,
+  })
+}
+
+export function deleteUser(params) {
+  return request({
+    url: '/user/deleteUserByIds.do',
+    method: 'Post',
+    data: params,
+  })
+}
+
+export function updateUserInfo(params) {
   return request({
     url: '/user/updateUserInformation.do',
     method: 'Put',
-    data:params
+    data: params,
   })
 }
 
@@ -22,6 +38,30 @@ export function showRoleList(source, params) {
     url: source.url,
     method: source.type,
     source,
-    params
+    params,
+  })
+}
+
+export function addRole(params) {  
+  return request({
+    url: '/role/addRole.do',
+    method: 'Post',
+    data: params,
+  })
+}
+
+export function deleteRole(params) {
+  return request({
+    url: '/role/delRoleById.do',
+    method: 'Delete',
+    data: params,
+  })
+}
+
+export function updateRole(params) {
+  return request({
+    url: '/role/updateRoleInfo.do',
+    method: 'Put',
+    data: params,
   })
 }

@@ -22,92 +22,95 @@
       :rendergridrows="rendergridrows"
     >
     </JqxGrid>
+    <user-window ref="userWindow"></user-window>
   </div>
 </template>
 
 <script>
-import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
+import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
+import UserWindow from './childComps/UserWindow.vue'
 
-import { formatFilter } from "@/common/util.js";
-import { Message, ADD_USER, EDIT_USER } from "@/common/const.js";
-import { getLocalization } from "@/common/localization.js";
-import { showUserList } from "@/network/user.js";
+import { formatFilter } from '@/common/util.js'
+import { Message, ADD_USER, EDIT_USER } from '@/common/const.js'
+import { getLocalization } from '@/common/localization.js'
+import { showUserList, deleteUser } from '@/network/user.js'
 export default {
   components: {
-    JqxGrid
+    JqxGrid,
+    UserWindow,
   },
   beforeCreate() {
     this.source = {
       filter: () => {
-        this.$refs.myGrid.updatebounddata("filter");
+        this.$refs.myGrid.updatebounddata('filter')
       },
       datafields: [
-        { name: "user_id", type: "number" },
-        { name: "account", type: "string" },
-        { name: "user_name", type: "string" },
-        { name: "role_name", type: "string" },
-        { name: "gender", type: "string" },
-        { name: "locked", type: "string" }
+        { name: 'user_id', type: 'number' },
+        { name: 'account', type: 'string' },
+        { name: 'user_name', type: 'string' },
+        { name: 'role_name', type: 'string' },
+        { name: 'gender', type: 'string' },
+        { name: 'locked', type: 'string' },
       ],
-      type: "get",
-      datatype: "json",
-      root: "rows",
-      sortcolumn: "user_id",
-      sortdirection: "asc",
-      id: "user_id",
-      url: `/user/showUserList.do`
-    };
+      type: 'get',
+      datatype: 'json',
+      root: 'rows',
+      sortcolumn: 'user_id',
+      sortdirection: 'asc',
+      id: 'user_id',
+      url: `/user/showUserList.do`,
+    }
   },
   data() {
     return {
-      localization: getLocalization("zh-CN"),
+      localization: getLocalization('zh-CN'),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function(data) {
-          return data;
+        formatData: function (data) {
+          return data
         },
-        loadServerData: function(serverdata, source, callback) {
-          serverdata = formatFilter(serverdata);
+        loadServerData: function (serverdata, source, callback) {
+          serverdata = formatFilter(serverdata)
           showUserList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total
-            });
-          });
+              totalrecords: res.total,
+            })
+          })
         },
-        beforeLoadComplete(records) {}
+        beforeLoadComplete(records) {},
       }),
-      rendergridrows: function(obj) {
-        return obj.data;
+      rendergridrows: function (obj) {
+        return obj.data
       },
       columns: [
         {
-          text: "账号",
-          datafield: "account",
-          align: "center",
-          cellsalign: "center",
-          editable: false
+          text: '账号',
+          datafield: 'account',
+          align: 'center',
+          cellsalign: 'center',
+          editable: false,
         },
         {
-          text: "姓名",
-          datafield: "user_name",
-          align: "center",
-          cellsalign: "center",
-          editable: false
+          text: '姓名',
+          datafield: 'user_name',
+          align: 'center',
+          cellsalign: 'center',
+          editable: false,
         },
         {
-          text: "性别",
-          datafield: "gender",
-          align: "center",
-          cellsalign: "center",
-          editable: false
+          text: '性别',
+          datafield: 'gender',
+          align: 'center',
+          cellsalign: 'center',
+          editable: false,
         },
         {
-          text: "启用状态",
-          datafield: "locked",
-          columntype: "dropdownlist",
-          align: "center",
-          cellsalign: "center",
-          cellsrenderer: function(
+          text: '启用状态',
+          datafield: 'locked',
+          columntype: 'dropdownlist',
+          align: 'center',
+          cellsalign: 'center',
+          cellsrenderer: function (
             row,
             columnfield,
             value,
@@ -115,133 +118,170 @@ export default {
             columnproperties,
             rowdata
           ) {
-            if (value == "已停用") {
+            if (value == '已停用') {
               return (
                 '<span style="width:100%;display:block; text-align: ' +
                 columnproperties.cellsalign +
                 ';line-height:29px; color: #ff0000;">' +
                 value +
-                "</span>"
-              );
+                '</span>'
+              )
             } else {
               return (
                 '<span style="width:100%;display:block; text-align: ' +
                 columnproperties.cellsalign +
                 ';line-height:29px; color: #008000;">' +
                 value +
-                "</span>"
-              );
+                '</span>'
+              )
             }
-          }
-        }
-      ]
-    };
+          },
+        },
+      ],
+    }
   },
   methods: {
-    createButtonsContainers: function(statusbar) {
-      const buttonsContainer = document.createElement("div");
+    createButtonsContainers: function (toobar) {
+      const that = this
+      const buttonsContainer = document.createElement('div')
       buttonsContainer.style.cssText =
-        "overflow: hidden; position: relative; margin: 5px;";
-      const addButtonContainer = document.createElement("div");
-      const deleteButtonContainer = document.createElement("div");
-      const editButtonContainer = document.createElement("div");
-      const reloadButtonContainer = document.createElement("div");
+        'overflow: hidden; position: relative; margin: 5px;'
+      toobar[0].appendChild(buttonsContainer)
 
-      const addButtonID = JQXLite.generateID();
-      const deleteButtonID = JQXLite.generateID();
-      const editButtonID = JQXLite.generateID();
-      const reloadButtonID = JQXLite.generateID();
+      const addButtonContainer = document.createElement('div')
+      const deleteButtonContainer = document.createElement('div')
+      const editButtonContainer = document.createElement('div')
+      const reloadButtonContainer = document.createElement('div')
 
-      addButtonContainer.id = addButtonID;
-      deleteButtonContainer.id = deleteButtonID;
-      editButtonContainer.id = editButtonID;
-      reloadButtonContainer.id = reloadButtonID;
+      const addButtonID = JQXLite.generateID()
+      const deleteButtonID = JQXLite.generateID()
+      const editButtonID = JQXLite.generateID()
+      const reloadButtonID = JQXLite.generateID()
 
-      addButtonContainer.style.cssText = "float: left; margin-left: 5px;cursor: pointer;";
-      deleteButtonContainer.style.cssText = "float: left; margin-left: 5px;cursor: pointer;";
-      editButtonContainer.style.cssText = "float: left; margin-left: 5px;cursor: pointer;";
-      reloadButtonContainer.style.cssText = "float: right; margin-left: 5px;cursor: pointer;";
+      addButtonContainer.id = addButtonID
+      deleteButtonContainer.id = deleteButtonID
+      editButtonContainer.id = editButtonID
+      reloadButtonContainer.id = reloadButtonID
 
-      buttonsContainer.appendChild(addButtonContainer);
-      buttonsContainer.appendChild(deleteButtonContainer);
-      buttonsContainer.appendChild(editButtonContainer);
-      buttonsContainer.appendChild(reloadButtonContainer);
-      statusbar[0].appendChild(buttonsContainer);
-      // 创建按钮
-      const addButton = jqwidgets.createInstance(`#${addButtonID}`, "jqxButton", {
-        imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`)
-      });
-      jqwidgets.createInstance(
+      addButtonContainer.style.cssText =
+        'float: left; margin-left: 5px;cursor: pointer;'
+      deleteButtonContainer.style.cssText =
+        'float: left; margin-left: 5px;cursor: pointer;'
+      editButtonContainer.style.cssText =
+        'float: left; margin-left: 5px;cursor: pointer;'
+      reloadButtonContainer.style.cssText =
+        'float: right; margin-left: 5px;cursor: pointer;'
+
+      buttonsContainer.appendChild(addButtonContainer)
+      buttonsContainer.appendChild(deleteButtonContainer)
+      buttonsContainer.appendChild(editButtonContainer)
+      buttonsContainer.appendChild(reloadButtonContainer)
+
+      // 添加按钮
+      const addButtonIntance = jqwidgets.createInstance(
         `#${addButtonID}`,
-        "jqxTooltip",
-        { content: "添加", position: "bottom" }
-      );
+        'jqxButton',
+        {
+          imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+        }
+      )
+      jqwidgets.createInstance(`#${addButtonID}`, 'jqxTooltip', {
+        content: '添加',
+        position: 'bottom',
+      })
+      addButtonIntance.addEventHandler('click', (event) => {
+        this.$refs.userWindow.open(ADD_USER)
+      })
 
+      // 删除按钮
       const deleteButton = jqwidgets.createInstance(
         `#${deleteButtonID}`,
-        "jqxButton",
+        'jqxButton',
         {
-          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`)
+          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
         }
-      );
-      jqwidgets.createInstance(`#${deleteButtonID}`, "jqxTooltip", {
-        content: "删除",
-        position: "bottom"
-      });
+      )
+      jqwidgets.createInstance(`#${deleteButtonID}`, 'jqxTooltip', {
+        content: '删除',
+        position: 'bottom',
+      })
 
+      deleteButton.addEventHandler('click', (event) => {
+        const selectedrowindexes = this.$refs.myGrid.getselectedrowindexes()
+        if (selectedrowindexes.length < 1) {
+          this.$message.warning({ content: Message.NO_ROWS_SELECTED })
+          return false
+        }
+        this.$confirm({
+          title: `${Message.CONFIRM_DELETE}`,
+          okText: '确认',
+          cancelText: '取消',
+          centered: true,
+          okType: 'danger',
+          content: (h) => <div style="color:red;"></div>,
+          onOk() {
+            const ids = selectedrowindexes.map((rowIndex) => {
+              return that.$refs.myGrid.getrowid(rowIndex)
+            })
+            that.delete(ids)
+          },
+          onCancel() {},
+          class: 'test',
+        })
+      })
+
+      // 编辑按钮
       const editButton = jqwidgets.createInstance(
         `#${editButtonID}`,
-        "jqxButton",
+        'jqxButton',
         {
-          imgSrc: require(`@/assets/iconfont/custom/edit.svg`)
+          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
         }
-      );
-      jqwidgets.createInstance(`#${editButtonID}`, "jqxTooltip", {
-        content: "编辑",
-        position: "bottom"
-      });
+      )
+      jqwidgets.createInstance(`#${editButtonID}`, 'jqxTooltip', {
+        content: '编辑',
+        position: 'bottom',
+      })
 
+      editButton.addEventHandler('click', (event) => {
+        const index = this.$refs.myGrid.getselectedrowindex()
+        if (index < 0) {
+          this.$message.warning({ content: Message.NO_ROWS_SELECTED })
+          return false
+        }
+        const rowData = this.$refs.myGrid.getrowdata(index)
+        this.$refs.userWindow.open(EDIT_USER, rowData)
+      })
+
+      // 刷新按钮
       const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
-        "jqxButton",
+        'jqxButton',
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
-      );
-      jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
-        content: "刷新",
-        position: "bottom"
-      });
-
-      // 绑定事件
-      addButton.addEventHandler("click", (event) => {
-        this.$refs.myWindow.open(ADD_USER);
-      });
-
-      deleteButton.addEventHandler("click", (event) => {
-        const selectedrowindex = this.$refs.myGrid.getselectedrowindex();
-        if (selectedrowindex < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED });
-          return false;
-        }
-        const id = this.$refs.myGrid.getrowid(selectedrowindex);
-        this.$refs.myGrid.deleterow(id);
-      });
-
-      editButton.addEventHandler("click", (event) => {
-        const index = this.$refs.myGrid.getselectedrowindex();
-        if (index < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED });
-          return false;
-        }
-        const rowData = this.$refs.myGrid.getrowdata(index);
-        this.$refs.myWindow.open(EDIT_USER, rowData);
-      });
-
-      reloadButton.addEventHandler("click", (event) => {
-        this.$refs.myGrid.updatebounddata();
-      });
-    }
-  }
-};
+      )
+      jqwidgets.createInstance(`#${reloadButtonID}`, 'jqxTooltip', {
+        content: '刷新',
+        position: 'bottom',
+      })
+      reloadButton.addEventHandler('click', (event) => {
+        this.$refs.myGrid.updatebounddata()
+      })
+    },
+    delete(ids) {
+      const params = {
+        jsonParams: JSON.stringify({
+          items:ids
+        }),
+      }
+      deleteUser(params).then((res) => {
+        this.refresh()
+      })
+    },
+    refresh() {
+      this.$refs.myGrid.updatebounddata()
+    },
+  },
+}
 </script>
 
 <style scoped>

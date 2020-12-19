@@ -35,7 +35,7 @@ import QuoteHandle from 'views/quote/Handle'
 import Quotation from 'views/quote/Quotation'
 import QuoteManagement from 'views/quote/Management'
 // 客户管理
-import CustomerManagement from 'views/customer/Management'
+import CustomerManagement from 'views/customer/Customer'
 // 合同管理
 import ContractManagement from 'views/contract/Management'
 import ContractInvoice from 'views/contract/Invoice'

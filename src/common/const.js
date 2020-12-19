@@ -107,3 +107,6 @@ export const SIDE_WALL_BLOWER = '边墙风机'
 export const SIDE_WALL_BLOWER_EP = '边墙风机（防爆）'
 // 报价单管理部分
 export const ADD_QUOTATION = "添加报价信息"
+// 客户部分
+export const ADD_CUSTOMER = '添加客户信息'
+export const EDIT_CUSTOMER = '修改客户信息'

@@ -281,7 +281,6 @@ export default {
       addButton.addEventHandler('click', (event) => {
         this.$refs.myWindow.open(ADD_EMPLOYEE)
       })
-
       // 删除
       const deleteButton = jqwidgets.createInstance(
         `#${deleteButtonID}`,
@@ -404,7 +403,7 @@ export default {
           "<div class='jqx-rc-all' style='margin: 10px;'><b>照片：</b></div>"
         )
         const image = $("<div style='margin-top: 10px;'></div>")
-        let imgUrl = '../../script/images/'
+        let imgUrl = 'images/'
         imgUrl += datarecord.gender == '男' ? 'male.png' : 'female.png'
         const img = $('<img height="60" src="' + imgUrl + '"/>')
         image.append(img)
@@ -512,7 +511,7 @@ export default {
         }),
       }
       deleteEmployee(params).then((res) => {
-        this.$refs.myGrid.updatebounddata()
+        this.refresh()
       })
     },
     refresh() {

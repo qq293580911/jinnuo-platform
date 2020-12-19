@@ -39,7 +39,7 @@ module.exports = {
     }
   },
   chainWebpack: (config) => {
-    // config.module.rules.delete('eslint');
+    config.module.rules.delete('eslint');
   },
   css: {
     requireModuleExtension: true, // 启用 CSS modules

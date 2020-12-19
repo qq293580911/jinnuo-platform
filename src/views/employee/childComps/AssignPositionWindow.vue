@@ -3,158 +3,134 @@
     <JqxWindow
       ref="myWindow"
       :width="'400px'"
-      :height="'320px'"
       :autoOpen="false"
       :position="{ x: '40%', y: '30%' }"
     >
       <div>
-        <JqxValidator
-          ref="myValidator"
-          @validationSuccess="onValidationSuccess($event)"
-        >
-          <JqxForm ref="myForm" :template="template"> </JqxForm>
-        </JqxValidator>
+        <JqxForm
+          ref="myForm"
+          :template="template"
+        > </JqxForm>
       </div>
     </JqxWindow>
   </div>
 </template>
 
 <script>
-import JqxWindow from "jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue";
-import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
-import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
+import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue'
+import JqxForm from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue'
 
-import { getEmployeePosition, assignPosition } from "@/network/employee.js";
+import { getEmployeePosition, assignPosition } from '@/network/employee.js'
 export default {
   components: {
     JqxWindow,
-    JqxValidator,
-    JqxForm
+    JqxForm,
   },
   beforeCreate() {
     this.source = {
       datafields: [
-        { name: "id", type: "number" },
-        { name: "posId", map: "pos_id", type: "number" },
-        { name: "posName", map: "pos_name", type: "string" },
-        { name: "empId", map: "emp_id", type: "number" },
-        { name: "enable", type: "number" }
+        { name: 'id', type: 'number' },
+        { name: 'posId', map: 'pos_id', type: 'number' },
+        { name: 'posName', map: 'pos_name', type: 'string' },
+        { name: 'empId', map: 'emp_id', type: 'number' },
+        { name: 'enable', type: 'number' },
       ],
-      url: "/emp/getEmployeePositionList.do",
-      type: "get",
-      dataType: "json"
-    };
+      url: '/emp/getEmployeePositionList.do',
+      type: 'get',
+      dataType: 'json',
+    }
   },
   data() {
+    const that = this
     return {
       template: [
         {
-          name: "id",
-          type: "custom",
-          width: "250px",
-          rowHeight: "210px",
-          init: function(component) {
-            const div = document.createElement("div");
-            div.id = "positionId";
-            component[0].appendChild(div);
-          }
+          name: 'position',
+          type: 'custom',
+          init(component) {
+            that.listBoxInstance = jqwidgets.createInstance(
+              component,
+              'jqxListBox',
+              {
+                source: [],
+                checkboxes: true,
+                width: '100%',
+                height: 200,
+                displayMember: 'pos_name',
+                valueMember: 'pos_id',
+              }
+            )
+          },
         },
         {
-          name: "empId",
-          bind: "empId",
-          type: "custom",
-          init: function(component) {
-            component.append('<input type="hidden" id="empId"/>');
-          }
+          name: 'submitButton',
+          type: 'button',
+          text: '提交',
+          width: '60px',
+          rowHeight: '50px',
+          align: 'center',
         },
-        {
-          name: "submitButton",
-          type: "button",
-          text: "提交",
-          width: "60px",
-          rowHeight: "50px",
-          align: "center"
-        }
-      ]
-    };
+      ],
+    }
   },
   mounted() {
-    const myForm = this.$refs.myForm;
-    const $btn = myForm.getComponentByName("submitButton");
-    $btn[0].addEventListener("click", () => {
-      const items = this.listBoxInstance.getItems();
+    // 提交并验证表单
+    const confirmBtn = this.$refs.myForm.getComponentByName('submitButton')
+    confirmBtn[0].addEventListener('click', (event) => {
+      const items = this.listBoxInstance.getItems()
       const arr = items.map((item) => {
-        if (item["checked"] == true) {
-          item["originalItem"]["enable"] = 1;
+        const map = {}
+        map['id'] = item['originalItem']['id']
+        map['posId'] = item['originalItem']['pos_id']
+        if (item['checked'] == true) {
+          map['enable'] = 1
         } else {
-          item["originalItem"]["enable"] = 0;
+          map['enable'] = 0
         }
-        return item["originalItem"];
-      });
-
+        return map
+      })
       const params = {
         jsonParams: JSON.stringify({
           items: arr,
-          empId: this.empId
-        })
-      };
-
+          empId: this.empId,
+        }),
+      }
       assignPosition(params).then((res) => {
-        this.$refs.myWindow.close();
-        this.$parent.refresh();
-      });
-    });
+        this.$refs.myWindow.close()
+        this.$parent.refresh()
+      })
+    })
   },
   methods: {
-    open(...params) {
-      const that = this;
-      this.$refs.myWindow.setTitle(params[0]);
-      const empId = params[1];
-      this.empId = empId;
-      const dataAdapter = new jqx.dataAdapter(this.source, {
-        loadServerData(serverdata, source, callback) {
-          const params = {
-            jsonParams: JSON.stringify({
-              empId
-            })
-          };
-          getEmployeePosition(source.url, source, params).then((res) => {
-            callback({
-              records: res.records
-            });
-          });
-        },
-        beforeLoadComplete(records) {
-          const element = document.getElementById("positionId");
-          that.listBoxInstance = jqwidgets.createInstance(
-            element,
-            "jqxListBox",
-            {
-              source: records,
-              checkboxes: true,
-              width: "100%",
-              height: 200,
-              displayMember: "posName",
-              valueMember: "posId"
-            }
-          );
-        },
-        loadComplete(records) {
-          records.records.forEach((item, index) => {
-            if (item.enable) {
-              that.listBoxInstance.checkIndex(index);
-            }
-          });
-        }
-      });
-
-      dataAdapter.dataBind();
-
-      this.$refs.myWindow.open();
+    open(...param) {
+      const that = this
+      this.$refs.myWindow.setTitle(param[0])
+      const empId = param[1]
+      this.empId = empId
+      const params = {
+        jsonParams: JSON.stringify({
+          empId,
+        }),
+      }
+      getEmployeePosition(params).then((res) => {
+        this.listBoxInstance.source = res
+        this.listBoxInstance.refresh()
+        res
+          .filter((item, index) => {
+            item['index'] = index
+            return item['enable'] == 1
+          })
+          .map((item) => {
+            this.listBoxInstance.checkIndex(item['index'])
+          })
+      })
+      this.$refs.myWindow.open()
     },
-    onValidationSuccess(event) {}
-  }
-};
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.close()
+  },
+}
 </script>
 
 <style>

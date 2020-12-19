@@ -20,7 +20,7 @@ export function addDepartment(param) {
 
 export function deleteDepartment(param) {
   return request({
-    url: '/dept/deleteDepartment.do',
+    url: '/dept/delDepartment.do',
     method: 'Delete',
     data: param
   })
@@ -28,7 +28,7 @@ export function deleteDepartment(param) {
 
 export function updateDepartment(param) {
   return request({
-    url: '/dept/updateDepartment.do',
+    url: '/dept/updDepartment.do',
     method: 'Put',
     data: param
   })

@@ -44,14 +44,12 @@ export default {
         })
       },
       beforeLoadComplete(records) {
-        console.log(records)
         that.records = dataAdapter.getRecordsHierarchy(
           'id',
           'parentid',
           'items',
           [{ name: 'text', map: 'label' }]
         )
-        // console.log(that.records)
         that.$refs.myTree.source = that.records
       },
     })

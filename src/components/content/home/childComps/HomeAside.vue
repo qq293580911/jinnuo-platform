@@ -50,7 +50,6 @@ export default {
         content: menu.component,
         component: menu.component,
       }
-      console.log(params)
       this.$bus.$emit('addTab', params)
     },
     initMenu() {

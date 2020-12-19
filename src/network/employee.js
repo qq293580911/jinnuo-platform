@@ -44,11 +44,10 @@ export function showEmployeePosition(url, source, params) {
   })
 }
 
-export function getEmployeePosition(url, source, params) {
+export function getEmployeePosition(params) {
   return request({
-    url,
-    source,
-    method: source.type,
+    url:'/emp/getEmployeePositionList.do',
+    method: 'Get',
     params
   })
 }

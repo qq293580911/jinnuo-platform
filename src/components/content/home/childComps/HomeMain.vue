@@ -47,11 +47,11 @@ import SalesStatistics from 'views/sales/Statistics'
 // 用户,角色，权限
 import UserManagement from 'views/user/User'
 import RoleManagement from 'views/user/Role'
-
 // 部门，员工
+import DepartmentEmployee from 'views/department/DepartmentEmployee'
 import DepartmentManagement from 'views/department/Department'
 import SalesGroupManagement from 'views/group/SalesGroup'
-import EmployeeManagement from 'views/employee/Management'
+import EmployeeManagement from 'views/employee/Employee'
 // 用品类型，管理，统计
 import SuppliesCategory from 'views/supplies/Category'
 import SuppliesManagement from 'views/supplies/Management'
@@ -139,6 +139,9 @@ export default {
           break
         case Module.AUTHORITY_MANAGEMENT:
           component = Vue.extend(AuthorityManagement)
+          break
+        case Module.DEPARTMENT_EMPLOYEE:
+          component = Vue.extend(DepartmentEmployee)
           break
         case Module.DEPARTMENT_MANAGEMENT:
           component = Vue.extend(DepartmentManagement)

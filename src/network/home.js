@@ -1,18 +1,14 @@
-import {
-  request
-} from '@/network/request'
+import { request } from '@/network/request'
 
-import {
-  Module
-} from "@/common/const.js"
+import { Module } from '@/common/const.js'
 
 export function getMenus(params) {
   return request({
     url: 'permission/showMenuModule.do',
     method: 'GET',
     params: {
-      jsonParams: JSON.stringify(params)
-    }
+      jsonParams: JSON.stringify(params),
+    },
   })
 }
 
@@ -85,6 +81,8 @@ function getMenuComponent(munuName) {
       return Module.DELIVERY_MANAGEMENT
     case '销售统计':
       return Module.SALES_STATISTICS
+    case '部门员工':
+      return Module.DEPARTMENT_EMPLOYEE
     case '部门管理':
       return Module.DEPARTMENT_MANAGEMENT
     case '销售团队':
@@ -116,6 +114,6 @@ export function getPermissions(params) {
   return request({
     url: 'permission/findPermissionByUserId.do',
     method: 'Get',
-    params
+    params,
   })
 }

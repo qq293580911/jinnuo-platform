@@ -9,7 +9,7 @@ export function getCity(provinceValue) {
   let cities = []
   // 北京，天津，上海，重庆特别行政区只有两级
   // // 港，澳，台只有一级
-  if (['71', '81', '82'].includes(provinceValue, 0)) {
+  if (['11','12','31','50','71', '81', '82'].includes(provinceValue, 0)) {
     cities = province
       .filter((item) => {
         return item['province'] == provinceValue

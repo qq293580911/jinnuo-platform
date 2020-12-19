@@ -37,21 +37,18 @@ export const Module = {
   // 合同
   CONTRACT_MANAGEMENT: 'ContractManagement',
   CONTRACT_INVOICE: 'ContractInvoice',
-  // 下单
+  // 下单  送货
   ORDER_MANAGEMENT: 'OrderManagement',
-  // 销售
-  SALES_MANAGEMENT: 'SalesManagement',
-  // 用户
-  USER_MANAGEMENT: 'UserManagement',
-  // 角色
-  ROLE_MANAGEMENT: 'RoleManagement',
-  // 送货
   DELIVERY_MANAGEMENT: 'DeliveryManagement',
-  // 部门
+  // 销售统计
+  SALES_MANAGEMENT: 'SalesManagement',
+  // 用户 角色 
+  USER_MANAGEMENT: 'UserManagement',
+  ROLE_MANAGEMENT: 'RoleManagement',
+  // 部门员工 部门  销售组  员工
+  DEPARTMENT_EMPLOYEE:'DepartmentEmployee',
   DEPARTMENT_MANAGEMENT: 'DepartmentManagement',
-  // 销售组
   SALES_GROUP_MANAGEMENT: 'SalesGroup',
-  // 员工
   EMPLOYEE_MANAGEMENT: 'EmployeeManagement',
   // 客户
   CUSTOMER_MANAGEMENT: 'CustomerManagement',

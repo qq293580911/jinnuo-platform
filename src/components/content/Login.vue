@@ -92,7 +92,7 @@
           </a-form>
         </div>
         <div class="modal-right">
-          <img src="~assets/img/photo-1512486130939-2c4f79935e4f.jpg" alt />
+          <img src="images/mate.jpg" alt />
         </div>
         <button class="icon-button close-button" @click="closeModal">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
@@ -202,7 +202,7 @@ export default {
 
 .container {
   height: 200vh;
-  background-image: url("~assets/img/photo-1538137524007-21e48fa42f3f.jpg");
+  background-image: url("/images/background.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

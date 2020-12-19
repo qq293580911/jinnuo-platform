@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="base-tab-content-element">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -32,7 +32,9 @@ import { Message } from '@/common/const.js'
 import { getLocalization } from '@/common/localization.js'
 import { showPermissionList } from '@/network/system.js'
 export default {
-  components: {},
+  components: {
+    JqxGrid
+  },
   beforeCreate() {
     this.source = {
       filter: () => {
@@ -43,15 +45,15 @@ export default {
         { name: 'name', type: 'string' },
         { name: 'type', type: 'string' },
         { name: 'url', type: 'string' },
-        { name: 'per_code', type: 'string' },
+        { name: 'per_code',map:'perCode', type: 'string' },
         { name: 'available', type: 'string' },
       ],
       type: 'get',
       datatype: 'json',
       root: 'rows',
-      sortcolumn: 'user_id',
+      sortcolumn: 'id',
       sortdirection: 'asc',
-      id: 'user_id',
+      id: 'id',
       url: `/permission/showPermissionList.do`,
     }
   },

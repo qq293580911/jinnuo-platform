@@ -100,7 +100,14 @@ export function request(config) {
         res.data.records = dataArray
       }
       if (res.data.message != null) {
-        message.success(res.data.message)
+        switch (res.data.code) {
+          case 20606://记录已存在
+            message.warning(res.data.message)
+            break;
+          default:
+            message.success(res.data.message)
+            break;
+        }
       }
       if (res.data.state == 403) {
         logOutTip(res.data.msg)

@@ -33,7 +33,7 @@ import CustomerWindow from './childPoms/CustomerWindow'
 import { formatFilter } from '@/common/util.js'
 import { Message, ADD_CUSTOMER, EDIT_CUSTOMER } from '@/common/const.js'
 import { getLocalization } from '@/common/localization.js'
-import { showCustomerList } from '@/network/customer.js'
+import { showCustomerList, deleteCustomer } from '@/network/customer.js'
 export default {
   name: 'CustomerManagement',
   components: {
@@ -127,6 +127,7 @@ export default {
   },
   methods: {
     createButtonsContainers: function (toolbar) {
+      const that = this
       const buttonsContainer = document.createElement('div')
       buttonsContainer.style.cssText =
         'overflow: hidden; position: relative; margin: 5px;'
@@ -188,13 +189,27 @@ export default {
         position: 'bottom',
       })
       deleteButton.addEventHandler('click', (event) => {
-        const selectedrowindex = this.$refs.myGrid.getselectedrowindex()
-        if (selectedrowindex < 0) {
+        const selectedrowindexes = this.$refs.myGrid.getselectedrowindexes()
+        if (selectedrowindexes.length < 1) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED })
           return false
         }
-        const id = this.$refs.myGrid.getrowid(selectedrowindex)
-        this.delete(id)
+        this.$confirm({
+            title: `${Message.CONFIRM_DELETE}`,
+            okText: "确认",
+            cancelText: "取消",
+            centered: true,
+            okType: "danger",
+            content: (h) => <div style='color:red;'></div>,
+            onOk() {
+              const ids = selectedrowindexes.map(rowIndex=>{
+                return that.$refs.myGrid.getrowid(rowIndex)
+              })
+              that.delete(ids)
+            },
+            onCancel() {},
+            class: "test"
+          });
       })
       // 编辑
       const editButton = jqwidgets.createInstance(
@@ -231,13 +246,13 @@ export default {
         this.$refs.myGrid.updatebounddata()
       })
     },
-    delete(id){
+    delete(ids) {
       const params = {
-        jsonParams:JSON.stringify({
-          id
-        })
+        jsonParams: JSON.stringify({
+          items:ids,
+        }),
       }
-      deleteCustomer(params).then(res=>{
+      deleteCustomer(params).then((res) => {
         this.refresh()
       })
     },

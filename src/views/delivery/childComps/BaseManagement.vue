@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -47,6 +47,7 @@ import {
   EDIT_DELIVERY,
   IMPORT_DELIVERY,
 } from '@/common/const.js'
+import { contentHeight } from '@/common/mixin.js'
 import { showDeliveryList, deleteDelivery } from '@/network/delivery.js'
 export default {
   name: 'Delivery',
@@ -55,6 +56,7 @@ export default {
     DeliveryWindow,
     DeliveryImportWindow,
   },
+  mixins:[contentHeight],
   beforeCreate() {
     this.source = {
       filter: () => {
@@ -141,7 +143,6 @@ export default {
       ],
     }
   },
-  mounted() {},
   methods: {
     createButtonsContainers: function (toolbar) {
       const that = this

@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -44,6 +44,7 @@ import UploadWindow from "@/components/content/annex/UploadWindow.vue";
 
 import { getLocalization } from "@/common/localization.js";
 import { formatFilter } from "@/common/util.js";
+import { contentHeight } from '@/common/mixin.js'
 import {
   Message,
   ADD_CONTRACT_INVOICE,
@@ -62,6 +63,20 @@ export default {
     PreviewWindow,
     InvoiceWindow,
     UploadWindow
+  },
+  computed:{
+    contentStyle(){
+      const style = {}
+      switch (jqx.theme) {
+        case 'ui-smoothness':
+          style.height = 'calc(100vh - 103px)'
+          break;
+        default:
+          style.height = 'calc(100vh - 100px)'
+          break;
+      }
+      return style
+    }
   },
   beforeCreate() {
     this.source = {
@@ -93,15 +108,11 @@ export default {
       url: `/contrInv/showContractInvoiceList.do`
     };
   },
-  created() {
-    if (this.hasAuthority(this, "contrInv:update")) {
-      this.editable = true;
-    }
-  },
   data() {
     const that = this;
     return {
       annexType: "合同发票附件",
+      editable:true,
       // 数据网格
       localization: getLocalization("zh-CN"),
       dataAdapter: new jqx.dataAdapter(this.source, {
@@ -587,7 +598,5 @@ export default {
 </script>
 
 <style scoped>
-.base-tab-content-element {
-  height: calc(100vh - 105px);
-}
+
 </style>

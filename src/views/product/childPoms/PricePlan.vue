@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -33,6 +33,7 @@ import PricePlanWindow from "./PricePlanWindow";
 import { getLocalization } from "@/common/localization.js";
 import { formatFilter } from "@/common/util.js";
 import { Message, ADD_PRICE_PLAN, UPDATE_PRICE_PLAN } from "@/common/const.js";
+import { contentHeight } from '@/common/mixin.js'
 import {
   showPricePlan,
   deletePricePlan
@@ -43,6 +44,7 @@ export default {
     JqxGrid,
     PricePlanWindow
   },
+  mixins:[contentHeight],
   beforeCreate: function() {
     this.source = {
       filter: () => {

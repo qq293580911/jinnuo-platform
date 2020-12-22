@@ -161,4 +161,10 @@ export default {
 </script>
 
 <style scoped>
+.base-tab-content-element{
+  height:calc(100vh - 132px)
+}
+::v-deep .jqx-tabs-content-element{
+  overflow: hidden;
+}
 </style>

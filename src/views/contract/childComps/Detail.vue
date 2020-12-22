@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -73,6 +73,7 @@ import SetCustomerWindow from './SetCustomerWindow.vue'
 import UploadWindow from '@/components/content/annex/UploadWindow.vue'
 
 import { formatFilter, dataExport } from '@/common/util.js'
+import { contentHeight } from '@/common/mixin.js'
 import {
   Message,
   ADD_CONTRACT,
@@ -95,6 +96,7 @@ export default {
     SetCustomerWindow,
     UploadWindow,
   },
+  mixins:[contentHeight],
   props: {
     isSigned: {
       type: Boolean,
@@ -159,14 +161,12 @@ export default {
     }
   },
   created() {
-    if (this.hasAuthority(this, 'contrDtl:update')) {
-      this.editable = true
-    }
+
   },
   data() {
     const that = this
     return {
-      editable: false,
+      editable: true,
       annexType: '合同附件',
       // 数据网格
       localization: getLocalization('zh-CN'),
@@ -296,8 +296,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
-          pinned: true,
-          editable: false,
+          pinned: true
         })
         columns.push({
           text: '办事处',
@@ -305,8 +304,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
-          pinned: true,
-          editable: false,
+          pinned: true
         })
         columns.push({
           text: '业务员',
@@ -425,6 +423,8 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
+          aggregates: ["sum"],
+          aggregatesrenderer: that.aggregatesRenderer
         })
         columns.push({
           text: '底价',
@@ -994,7 +994,7 @@ export default {
       })
     },
     aggregatesRenderer(aggregates, column, element) {
-      var renderString = ''
+      let renderString = "<div class='jqx-widget-content jqx-widget-content-" + jqx.theme + "' style='float: left; width: 100%; height: 100%; '>";
       $.each(aggregates, function (key, value) {
         switch (key) {
           case 'sum':

@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -30,10 +30,10 @@
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
-
 import NonMachinePriceWindow from "./NonMachinePriceWindow";
 
 import { formatFilter } from "@/common/util.js";
+import { contentHeight } from '@/common/mixin.js'
 import {
   Message,
   ADD_PRODUCT_PRICE,
@@ -50,6 +50,7 @@ export default {
     JqxGrid,
     NonMachinePriceWindow
   },
+  mixins:[contentHeight],
   beforeCreate: function() {
     this.source = {
       filter: () => {

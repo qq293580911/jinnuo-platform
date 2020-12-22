@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <top-toolbar ref="topToolbar"></top-toolbar>
     <bottom-toolbar ref="bottomToolbar"></bottom-toolbar>
     <JqxLayout
@@ -104,6 +104,7 @@ import {
   SIDE_WALL_BLOWER,
   SIDE_WALL_BLOWER_EP
 } from "@/common/const.js";
+import { contentHeight } from '@/common/mixin.js'
 export default {
   name: "QuoteHandle",
   components: {
@@ -112,7 +113,7 @@ export default {
     TopToolbar,
     BottomToolbar
   },
-
+  mixins:[contentHeight],
   data() {
     const that = this;
     return {

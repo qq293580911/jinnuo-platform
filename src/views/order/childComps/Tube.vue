@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -62,6 +62,7 @@ import DeliveryWindow from "@/components/content/delivery/DeliveryWindow";
 
 import { getLocalization } from "@/common/localization.js";
 import { formatFilter, dataExport } from "@/common/util.js";
+import { contentHeight } from '@/common/mixin.js'
 import {
   Message,
   ADD_ORDER,
@@ -85,6 +86,7 @@ export default {
     OrderWindow,
     DeliveryWindow
   },
+  mixins:[contentHeight],
   beforeCreate() {
     this.source = {
       filter: () => {

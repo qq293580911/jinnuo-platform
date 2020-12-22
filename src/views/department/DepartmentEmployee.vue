@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div :style="contentStyle">
     <JqxLayout
       ref="myLayout"
       :width="'100%'"
@@ -31,6 +31,20 @@ export default {
     JqxLayout,
     Department,
     Employee,
+  },
+  computed: {
+    contentStyle() {
+      const style = {}
+      switch (jqx.theme) {
+        case 'ui-smoothness':
+          style.height = 'calc(100vh - 102px)'
+          break
+        default:
+          style.height = 'calc(100vh - 98px)'
+          break
+      }
+      return style
+    },
   },
   data() {
     const that = this
@@ -102,12 +116,6 @@ export default {
 </script>
 
 <style scoped>
-.content {
-  height: calc(100vh - 100px);
-}
-::v-deep .base-tab-content-element{
-  height: 100%;
-}
 ::v-deep .jqx-widget-content {
   overflow: hidden;
 }

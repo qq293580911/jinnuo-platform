@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -29,95 +29,105 @@
 </template>
 
 <script>
-import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
+import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
 
-import { getLocalization } from "@/common/localization.js";
-import { formatFilter, calc_misc_tax, calc_misc_log_manage_fee, calc_misc_warranty, calc_misc_freight, calc_rsv_p } from "@/common/util.js";
-import { showDeliveryDetailList } from "@/network/delivery.js";
+import { getLocalization } from '@/common/localization.js'
+import {
+  formatFilter,
+  calc_misc_tax,
+  calc_misc_log_manage_fee,
+  calc_misc_warranty,
+  calc_misc_freight,
+  calc_rsv_p,
+} from '@/common/util.js'
+import { showDeliveryDetailList } from '@/network/delivery.js'
+import { contentHeight } from '@/common/mixin.js'
 export default {
-  name: "Detail",
+  name: 'Detail',
   components: {
-    JqxGrid
+    JqxGrid,
   },
+  mixins:[contentHeight],
   beforeCreate() {
     this.source = {
       filter: () => {
-        this.$refs.myGrid.updatebounddata("filter");
+        this.$refs.myGrid.updatebounddata('filter')
       },
       dataFields: [
-        { name: "id", type: "number" },
-        { name: "delivery_date", type: "string" },
-        { name: "salesman_company", type: "string" },
-        { name: "salesman_agency", type: "string" },
-        { name: "salesman_name", type: "string" },
-        { name: "salesman", type: "number" },
-        { name: "province", type: "string" },
-        { name: "city", type: "string" },
-        { name: "county", type: "string" },
-        { name: "contract_number", type: "string" },
-        { name: "contract_amount", type: "number" },
-        { name: "order_number", type: "string" },
-        { name: "project_name", type: "string" },
-        { name: "order_amount", type: "number" },
-        { name: "delivery_amount", type: "string" },
-        { name: "consideration_commission_order_amount", type: "number" },
-        { name: "not_consideration_commission_order_amount", type: "number" },
-        { name: "logistics_management_fee", type: "string" },
-        { name: "freight", type: "string" },
-        { name: "tax", type: "string" },
-        { name: "warranty", type: "string" },
-        { name: "over_budget_bear", type: "string" },
-        { name: "actual_freight", type: "number" },
-        { name: "consideration_commission_status", type: "string" },
-        { name: "remark", type: "string" },
-        { name: "order_area", type: "float" },
-        { name: "delivery_area", type: "float" }
+        { name: 'id', type: 'number' },
+        { name: 'delivery_date', type: 'string' },
+        { name: 'salesman_company', type: 'string' },
+        { name: 'salesman_agency', type: 'string' },
+        { name: 'salesman_name', type: 'string' },
+        { name: 'salesman', type: 'number' },
+        { name: 'province', type: 'string' },
+        { name: 'city', type: 'string' },
+        { name: 'county', type: 'string' },
+        { name: 'contract_number', type: 'string' },
+        { name: 'contract_amount', type: 'number' },
+        { name: 'order_number', type: 'string' },
+        { name: 'project_name', type: 'string' },
+        { name: 'order_amount', type: 'number' },
+        { name: 'delivery_amount', type: 'string' },
+        { name: 'consideration_commission_order_amount', type: 'number' },
+        { name: 'not_consideration_commission_order_amount', type: 'number' },
+        { name: 'logistics_management_fee', type: 'string' },
+        { name: 'freight', type: 'string' },
+        { name: 'tax', type: 'string' },
+        { name: 'warranty', type: 'string' },
+        { name: 'over_budget_bear', type: 'string' },
+        { name: 'actual_freight', type: 'number' },
+        { name: 'consideration_commission_status', type: 'string' },
+        { name: 'remark', type: 'string' },
+        { name: 'order_area', type: 'float' },
+        { name: 'delivery_area', type: 'float' },
       ],
-      type: "get",
-      datatype: "json",
-      root: "rows",
-      sortcolumn: "id",
-      sortdirection: "desc",
-      id: "id",
-      url: `/dlvDtl/showDeliveryDetailList.do`
-    };
+      type: 'get',
+      datatype: 'json',
+      root: 'rows',
+      sortcolumn: 'id',
+      sortdirection: 'desc',
+      id: 'id',
+      url: `/dlvDtl/showDeliveryDetailList.do`,
+    }
   },
   data() {
     return {
-      localization: getLocalization("zh-CN"),
+      localization: getLocalization('zh-CN'),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        formatData: function(data) {
-          return data;
+        formatData: function (data) {
+          return data
         },
-        loadServerData: function(serverdata, source, callback) {
-          serverdata = formatFilter(serverdata);
+        loadServerData: function (serverdata, source, callback) {
+          serverdata = formatFilter(serverdata)
           showDeliveryDetailList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
-              totalrecords: res.total
-            });
-          });
+              totalrecords: res.total,
+            })
+          })
         },
         beforeLoadComplete(records) {
-          const orderNumbers = [];
-          records.forEach(function(value, index, array) {
-            const ordAmt = value["order_amount"];
-            const dlvAmt = value["delivery_amount"];
-            let logManageFee = value["logistics_management_fee"];
-            let freight = value["freight"];
-            let tax = value["tax"];
-            let warranty = value["warranty"];
+          const orderNumbers = []
+          records.forEach(function (value, index, array) {
+            const ordAmt = value['order_amount']
+            const dlvAmt = value['delivery_amount']
+            let logManageFee = value['logistics_management_fee']
+            let freight = value['freight']
+            let tax = value['tax']
+            let warranty = value['warranty']
 
             //  安装费只在一条送货数据里体现
-            const orderNumber = value['order_number'];
-            const has = orderNumbers.includes(orderNumber, 0);
-            let installFee = 0;
+            const orderNumber = value['order_number']
+            const has = orderNumbers.includes(orderNumber, 0)
+            let installFee = 0
             if (has == false) {
-              installFee = value['install_fee'] == null ? 0 : value['install_fee'];
+              installFee =
+                value['install_fee'] == null ? 0 : value['install_fee']
             } else {
               orderNumbers.push(orderNumber)
             }
-            value['install_fee'] = installFee;
+            value['install_fee'] = installFee
 
             if (logManageFee == '' || logManageFee == null) {
               logManageFee = 0
@@ -128,7 +138,7 @@ export default {
             }
 
             if (tax == '' || tax == null) {
-              tax = 0;
+              tax = 0
             }
 
             if (warranty == '' || warranty == null) {
@@ -136,21 +146,31 @@ export default {
             }
 
             // 计算送货税金
-            const dlvTax = calc_misc_tax(dlvAmt, installFee, tax);
-            value["delivery_tax"] = dlvTax;
+            const dlvTax = calc_misc_tax(dlvAmt, installFee, tax)
+            value['delivery_tax'] = dlvTax
 
             // 计算送货物流管理费
-            const dlvLogManageFee = calc_misc_log_manage_fee(dlvAmt, installFee, logManageFee);
-            value["delivery_logistics_management_fee"] = dlvLogManageFee;
+            const dlvLogManageFee = calc_misc_log_manage_fee(
+              dlvAmt,
+              installFee,
+              logManageFee
+            )
+            value['delivery_logistics_management_fee'] = dlvLogManageFee
 
             // 计算送货质保金
-            const dlvWrt = calc_misc_warranty(dlvAmt, installFee, warranty);
-            value["delivery_warranty"] = dlvWrt;
-
+            const dlvWrt = calc_misc_warranty(dlvAmt, installFee, warranty)
+            value['delivery_warranty'] = dlvWrt
 
             // 计算送货运费
-            const dlvFreight = calc_misc_freight(dlvAmt, installFee, dlvTax, dlvLogManageFee, dlvWrt, freight);
-            value["delivery_freight"] = dlvFreight;
+            const dlvFreight = calc_misc_freight(
+              dlvAmt,
+              installFee,
+              dlvTax,
+              dlvLogManageFee,
+              dlvWrt,
+              freight
+            )
+            value['delivery_freight'] = dlvFreight
 
             // 计算送货底价
             const dlvRsvP = calc_rsv_p(
@@ -160,209 +180,211 @@ export default {
               dlvFreight,
               dlvTax,
               dlvWrt
-            );
-            value["delivery_reserve_price"] = dlvRsvP;
+            )
+            value['delivery_reserve_price'] = dlvRsvP
             // 未送货金额
-            const unDlvAmt = ordAmt - dlvAmt;
-            isNaN(unDlvAmt) ? value['undelivered_amount'] = ordAmt : value['undelivered_amount'] = unDlvAmt;
-          });
-        }
+            const unDlvAmt = ordAmt - dlvAmt
+            isNaN(unDlvAmt)
+              ? (value['undelivered_amount'] = ordAmt)
+              : (value['undelivered_amount'] = unDlvAmt)
+          })
+        },
       }),
-      rendergridrows: function(obj) {
-        return obj.data;
+      rendergridrows: function (obj) {
+        return obj.data
       },
       columns: [
         {
-          text: "送货日期",
-          datafield: "delivery_date",
-          cellsAlign: "center",
-          align: "center",
-          width: 100
-        },
-        {
-          text: "大区",
-          datafield: "salesman_company",
-          align: "center",
-          cellsalign: "center",
-          width: 100
-        },
-        {
-          text: "办事处",
-          datafield: "salesman_agency",
-          align: "center",
-          cellsalign: "center",
-          width: 100
-        },
-        {
-          text: "业务员",
-          datafield: "salesman_name",
-          align: "center",
-          cellsalign: "center",
-          width: 100
-        },
-        {
-          text: "省",
-          datafield: "province",
-          align: "center",
-          cellsalign: "center",
-          width: 100
-        },
-        {
-          text: "市",
-          datafield: "city",
-          align: "center",
-          cellsalign: "center",
-          width: 100
-        },
-        {
-          text: "县",
-          datafield: "county",
-          align: "center",
-          cellsalign: "center",
-          width: 100
-        },
-        {
-          text: "合同编号",
-          datafield: "contract_number",
-          align: "center",
-          cellsalign: "center",
-          width: 150
-        },
-        {
-          text: "合同金额",
-          datafield: "contract_amount",
-          align: "center",
-          cellsalign: "center",
-          width: 100
-        },
-        {
-          text: "下单编号",
-          datafield: "order_number",
-          align: "center",
-          cellsalign: "center",
-          width: 150
-        },
-        {
-          text: "项目名称",
-          datafield: "project_name",
-          align: "center",
-          cellsalign: "center",
-          width: 180
-        },
-        {
-          text: "下单金额",
-          datafield: "order_amount",
-          align: "center",
-          cellsalign: "center",
+          text: '送货日期',
+          datafield: 'delivery_date',
+          cellsAlign: 'center',
+          align: 'center',
           width: 100,
-          aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer
         },
         {
-          text: "送货金额",
-          datafield: "delivery_amount",
-          cellsAlign: "center",
-          align: "center",
+          text: '大区',
+          datafield: 'salesman_company',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100,
+        },
+        {
+          text: '办事处',
+          datafield: 'salesman_agency',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100,
+        },
+        {
+          text: '业务员',
+          datafield: 'salesman_name',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100,
+        },
+        {
+          text: '省',
+          datafield: 'province',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100,
+        },
+        {
+          text: '市',
+          datafield: 'city',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100,
+        },
+        {
+          text: '县',
+          datafield: 'county',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100,
+        },
+        {
+          text: '合同编号',
+          datafield: 'contract_number',
+          align: 'center',
+          cellsalign: 'center',
+          width: 150,
+        },
+        {
+          text: '合同金额',
+          datafield: 'contract_amount',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100,
+        },
+        {
+          text: '下单编号',
+          datafield: 'order_number',
+          align: 'center',
+          cellsalign: 'center',
+          width: 150,
+        },
+        {
+          text: '项目名称',
+          datafield: 'project_name',
+          align: 'center',
+          cellsalign: 'center',
+          width: 180,
+        },
+        {
+          text: '下单金额',
+          datafield: 'order_amount',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100,
+          aggregates: ['sum'],
+          aggregatesrenderer: this.aggregatesRenderer,
+        },
+        {
+          text: '送货金额',
+          datafield: 'delivery_amount',
+          cellsAlign: 'center',
+          align: 'center',
           width: 125,
-          aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer
+          aggregates: ['sum'],
+          aggregatesrenderer: this.aggregatesRenderer,
         },
 
         {
-          text: "税金",
-          datafield: "tax",
-          cellsAlign: "center",
-          align: "center",
-          width: 80
-        },
-        {
-          text: "物流管理费",
-          datafield: "logistics_management_fee",
-          cellsAlign: "center",
-          align: "center",
-          width: 80
-        },
-        {
-          text: "质保金",
-          datafield: "warranty",
-          cellsAlign: "center",
-          align: "center",
+          text: '税金',
+          datafield: 'tax',
+          cellsAlign: 'center',
+          align: 'center',
           width: 80,
-          editable: false
         },
         {
-          text: "运费",
-          datafield: "freight",
-          cellsAlign: "center",
-          align: "center",
-          width: 80
+          text: '物流管理费',
+          datafield: 'logistics_management_fee',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 80,
+        },
+        {
+          text: '质保金',
+          datafield: 'warranty',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 80,
+          editable: false,
+        },
+        {
+          text: '运费',
+          datafield: 'freight',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 80,
         },
 
         {
-          text: "送货税金",
-          datafield: "delivery_tax",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
-        },
-        {
-          text: "送货物流管理费",
-          datafield: "delivery_logistics_management_fee",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
-        },
-        {
-          text: "送货质保金",
-          datafield: "delivery_warranty",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
-        },
-        {
-          text: "送货运费",
-          datafield: "delivery_freight",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
-        },
-        {
-          text: "送货底价",
-          datafield: "delivery_reserve_price",
-          cellsAlign: "center",
-          align: "center",
+          text: '送货税金',
+          datafield: 'delivery_tax',
+          cellsAlign: 'center',
+          align: 'center',
           width: 125,
-          aggregates: ["sum"],
-          aggregatesrenderer: this.aggregatesRenderer
         },
         {
-          text: "超点承担",
-          datafield: "over_budget_bear",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
-        },
-        {
-          text: "实际运费",
-          datafield: "actual_freight",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
-        },
-        {
-          text: "未送货金额",
-          datafield: "undelivered_amount",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
-        },
-        {
-          text: "计提成状态",
-          datafield: "consideration_commission_status",
-          cellsAlign: "center",
-          align: "center",
+          text: '送货物流管理费',
+          datafield: 'delivery_logistics_management_fee',
+          cellsAlign: 'center',
+          align: 'center',
           width: 125,
-          cellsrenderer: function(
+        },
+        {
+          text: '送货质保金',
+          datafield: 'delivery_warranty',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
+        },
+        {
+          text: '送货运费',
+          datafield: 'delivery_freight',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
+        },
+        {
+          text: '送货底价',
+          datafield: 'delivery_reserve_price',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
+          aggregates: ['sum'],
+          aggregatesrenderer: this.aggregatesRenderer,
+        },
+        {
+          text: '超点承担',
+          datafield: 'over_budget_bear',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
+        },
+        {
+          text: '实际运费',
+          datafield: 'actual_freight',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
+        },
+        {
+          text: '未送货金额',
+          datafield: 'undelivered_amount',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
+        },
+        {
+          text: '计提成状态',
+          datafield: 'consideration_commission_status',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
+          cellsrenderer: function (
             row,
             columnfield,
             value,
@@ -370,116 +392,108 @@ export default {
             columnproperties,
             rowdata
           ) {
-            if (value == "已终止") {
+            if (value == '已终止') {
               return (
                 '<span style="width:100%;display:block; text-align: ' +
                 columnproperties.cellsalign +
                 ';line-height:29px; color: #008000;">' +
                 value +
-                "</span>"
-              );
+                '</span>'
+              )
             }
-            if (value == "进行中") {
+            if (value == '进行中') {
               return (
                 '<span style="width:100%;display:block; text-align: ' +
                 columnproperties.cellsalign +
                 ';line-height:29px; color: #9CD7FF;">' +
                 value +
-                "</span>"
-              );
+                '</span>'
+              )
             }
             return (
               '<span style="width:100%;display:block; text-align: ' +
               columnproperties.cellsalign +
               ';line-height:29px; color: #ff0000;">' +
               value +
-              "</span>"
-            );
-          }
+              '</span>'
+            )
+          },
         },
         {
-          text: "备注",
-          datafield: "remark",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
+          text: '备注',
+          datafield: 'remark',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
         },
         {
-          text: "下单面积",
-          datafield: "order_area",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
+          text: '下单面积',
+          datafield: 'order_area',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
         },
         {
-          text: "送货面积",
-          datafield: "delivery_area",
-          cellsAlign: "center",
-          align: "center",
-          width: 125
-        }
-      ]
-    };
+          text: '送货面积',
+          datafield: 'delivery_area',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 125,
+        },
+      ],
+    }
   },
   mounted() {},
   methods: {
-    createButtonsContainers: function(toolbar) {
-      const buttonsContainer = document.createElement("div");
+    createButtonsContainers: function (toolbar) {
+      const buttonsContainer = document.createElement('div')
       buttonsContainer.style.cssText =
-        "overflow: hidden; position: relative; margin: 5px;";
-      const syncButtonContainer = document.createElement("div");
-      const exportButtonContainer = document.createElement("div");
-      const reloadButtonContainer = document.createElement("div");
-      const syncButtonID = JQXLite.generateID();
-      const exportButtonID = JQXLite.generateID();
-      const reloadButtonID = JQXLite.generateID();
-      syncButtonContainer.id = syncButtonID;
-      exportButtonContainer.id = exportButtonID;
-      reloadButtonContainer.id = reloadButtonID;
+        'overflow: hidden; position: relative; margin: 5px;'
+      const syncButtonContainer = document.createElement('div')
+      const exportButtonContainer = document.createElement('div')
+      const reloadButtonContainer = document.createElement('div')
+      const syncButtonID = JQXLite.generateID()
+      const exportButtonID = JQXLite.generateID()
+      const reloadButtonID = JQXLite.generateID()
+      syncButtonContainer.id = syncButtonID
+      exportButtonContainer.id = exportButtonID
+      reloadButtonContainer.id = reloadButtonID
       syncButtonContainer.style.cssText =
-        "float: left;margin-left: 5px;  cursor: pointer;";
+        'float: left;margin-left: 5px;  cursor: pointer;'
       exportButtonContainer.style.cssText =
-        "float: left;margin-left: 5px;  cursor: pointer;";
+        'float: left;margin-left: 5px;  cursor: pointer;'
       reloadButtonContainer.style.cssText =
-        "float:right;margin-left: 5px;  cursor: pointer;";
-      buttonsContainer.appendChild(syncButtonContainer);
-      buttonsContainer.appendChild(exportButtonContainer);
-      buttonsContainer.appendChild(reloadButtonContainer);
-      toolbar[0].appendChild(buttonsContainer);
+        'float:right;margin-left: 5px;  cursor: pointer;'
+      buttonsContainer.appendChild(syncButtonContainer)
+      buttonsContainer.appendChild(exportButtonContainer)
+      buttonsContainer.appendChild(reloadButtonContainer)
+      toolbar[0].appendChild(buttonsContainer)
       // 创建按钮
-      jqwidgets.createInstance(
-        `#${syncButtonID}`,
-        "jqxButton",
-        {
-          imgSrc: require(`@/assets/iconfont/custom/async.svg`)
-        }
-      );
-      jqwidgets.createInstance(`#${syncButtonID}`, "jqxTooltip", {
-        content: "同步数据到服务器",
-        position: "bottom"
-      });
+      jqwidgets.createInstance(`#${syncButtonID}`, 'jqxButton', {
+        imgSrc: require(`@/assets/iconfont/custom/async.svg`),
+      })
+      jqwidgets.createInstance(`#${syncButtonID}`, 'jqxTooltip', {
+        content: '同步数据到服务器',
+        position: 'bottom',
+      })
 
-      jqwidgets.createInstance(
-        `#${exportButtonID}`,
-        "jqxButton",
-        {
-          imgSrc: require(`@/assets/iconfont/custom/export.svg`)
-        }
-      );
-      jqwidgets.createInstance(`#${exportButtonID}`, "jqxTooltip", {
-        content: "导出",
-        position: "bottom"
-      });
+      jqwidgets.createInstance(`#${exportButtonID}`, 'jqxButton', {
+        imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+      })
+      jqwidgets.createInstance(`#${exportButtonID}`, 'jqxTooltip', {
+        content: '导出',
+        position: 'bottom',
+      })
 
       const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
-        "jqxButton",
+        'jqxButton',
         { imgSrc: require(`@/assets/iconfont/custom/refresh.svg`) }
-      );
-      jqwidgets.createInstance(`#${reloadButtonID}`, "jqxTooltip", {
-        content: "刷新",
-        position: "bottom"
-      });
+      )
+      jqwidgets.createInstance(`#${reloadButtonID}`, 'jqxTooltip', {
+        content: '刷新',
+        position: 'bottom',
+      })
 
       // 绑定事件
 
@@ -493,28 +507,28 @@ export default {
       //   this.$refs.myGrid.deleterow(id);
       // });
 
-      reloadButton.addEventHandler("click", (event) => {
-        this.$refs.myGrid.updatebounddata();
-      });
+      reloadButton.addEventHandler('click', (event) => {
+        this.$refs.myGrid.updatebounddata()
+      })
     },
     aggregatesRenderer(aggregates, column, element) {
-      var renderString = "";
-      $.each(aggregates, function(key, value) {
+      var renderString = ''
+      $.each(aggregates, function (key, value) {
         switch (key) {
-          case "sum":
+          case 'sum':
             renderString +=
               '<div style="position: relative; line-height: 30px; text-align: center; overflow: hidden;">' +
-              "合计" +
-              ": " +
+              '合计' +
+              ': ' +
               value +
-              "</div>";
-            break;
+              '</div>'
+            break
         }
-      });
-      return renderString;
-    }
-  }
-};
+      })
+      return renderString
+    },
+  },
+}
 </script>
 
 <style scoped>

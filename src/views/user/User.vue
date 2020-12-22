@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -38,6 +38,20 @@ export default {
   components: {
     JqxGrid,
     UserWindow,
+  },
+  computed: {
+    contentStyle() {
+      const style = {}
+      switch (jqx.theme) {
+        case 'ui-smoothness':
+          style.height = 'calc(100vh - 103px)'
+          break
+        default:
+          style.height = 'calc(100vh - 100px)'
+          break
+      }
+      return style
+    },
   },
   beforeCreate() {
     this.source = {
@@ -270,7 +284,7 @@ export default {
     delete(ids) {
       const params = {
         jsonParams: JSON.stringify({
-          items:ids
+          items: ids,
         }),
       }
       deleteUser(params).then((res) => {
@@ -285,7 +299,5 @@ export default {
 </script>
 
 <style scoped>
-.base-tab-content-element {
-  height: calc(100vh - 105px);
-}
+
 </style>

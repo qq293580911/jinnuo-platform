@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -39,6 +39,20 @@ export default {
   components: {
     JqxGrid,
     CustomerWindow,
+  },
+  computed: {
+    contentStyle() {
+      const style = {}
+      switch (jqx.theme) {
+        case 'ui-smoothness':
+          style.height = 'calc(100vh - 103px)'
+          break
+        default:
+          style.height = 'calc(100vh - 100px)'
+          break
+      }
+      return style
+    },
   },
   beforeCreate: function () {
     this.source = {
@@ -195,21 +209,21 @@ export default {
           return false
         }
         this.$confirm({
-            title: `${Message.CONFIRM_DELETE}`,
-            okText: "确认",
-            cancelText: "取消",
-            centered: true,
-            okType: "danger",
-            content: (h) => <div style='color:red;'></div>,
-            onOk() {
-              const ids = selectedrowindexes.map(rowIndex=>{
-                return that.$refs.myGrid.getrowid(rowIndex)
-              })
-              that.delete(ids)
-            },
-            onCancel() {},
-            class: "test"
-          });
+          title: `${Message.CONFIRM_DELETE}`,
+          okText: '确认',
+          cancelText: '取消',
+          centered: true,
+          okType: 'danger',
+          content: (h) => <div style="color:red;"></div>,
+          onOk() {
+            const ids = selectedrowindexes.map((rowIndex) => {
+              return that.$refs.myGrid.getrowid(rowIndex)
+            })
+            that.delete(ids)
+          },
+          onCancel() {},
+          class: 'test',
+        })
       })
       // 编辑
       const editButton = jqwidgets.createInstance(
@@ -249,7 +263,7 @@ export default {
     delete(ids) {
       const params = {
         jsonParams: JSON.stringify({
-          items:ids,
+          items: ids,
         }),
       }
       deleteCustomer(params).then((res) => {
@@ -264,7 +278,4 @@ export default {
 </script>
 
 <style scoped>
-.content {
-  height: calc(100vh - 100px);
-}
 </style>

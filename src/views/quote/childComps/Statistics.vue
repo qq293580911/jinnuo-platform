@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :style="contentStyle">
     <JqxTabs
       ref="myTabs"
       :width="'100%'"
@@ -66,13 +66,15 @@
 </template>
 
 <script>
-import JqxTabs from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtabs.vue";
-import ChartToolbar from "./ChartToolbar";
-import ChartLayout from "./ChartLayout";
-import ColumnChart from "./ColumnChart";
-import PieChartSingle from "./PieChartSingle";
-import PieChartAll from "./PieChartAll";
-import RatioGrid from "./RatioGrid";
+import JqxTabs from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxtabs.vue'
+import ChartToolbar from './ChartToolbar'
+import ChartLayout from './ChartLayout'
+import ColumnChart from './ColumnChart'
+import PieChartSingle from './PieChartSingle'
+import PieChartAll from './PieChartAll'
+import RatioGrid from './RatioGrid'
+
+import { contentHeight } from '@/common/mixin.js'
 export default {
   components: {
     JqxTabs,
@@ -81,59 +83,61 @@ export default {
     ColumnChart,
     PieChartSingle,
     PieChartAll,
-    RatioGrid
+    RatioGrid,
   },
+  mixins:[contentHeight],
   data() {
-    const that = this;
+    const that = this
     return {
-      dateMode: "days",
+      dateMode: 'days',
       startDate: (() => {
-        const date = new Date();
-        const startDate = new Date(date.getFullYear(), date.getMonth(), 1).format(
-          "yyyy-MM-dd"
-        );
-        return startDate;
+        const date = new Date()
+        const startDate = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          1
+        ).format('yyyy-MM-dd')
+        return startDate
       })(),
       endDate: (() => {
-        const date = new Date();
+        const date = new Date()
         const endDate = new Date(
           date.getFullYear(),
           date.getMonth() + 1,
           0
-        ).format("yyyy-MM-dd");
-        return endDate;
+        ).format('yyyy-MM-dd')
+        return endDate
       })(),
       subject: (() => {
-        const quoters = that.$store.state.quoters;
-        const firstQuoter = quoters[0]["emp_id"];
-        return firstQuoter;
-      })()
-    };
+        const quoters = that.$store.state.quoters
+        const firstQuoter = quoters[0]['emp_id']
+        return firstQuoter
+      })(),
+    }
   },
   mounted() {},
   methods: {
     init(data) {
-      this.subject = data["quoter"];
-      this.startDate = data["startDate"];
-      this.endDate = data["endData"];
-      this.dateMode = data["dateMode"];
-      this.model = "报价员";
+      this.subject = data['quoter']
+      this.startDate = data['startDate']
+      this.endDate = data['endData']
+      this.dateMode = data['dateMode']
+      this.model = '报价员'
     },
     changeSubject(data) {
-      this.subject = data;
+      this.subject = data
     },
     changeStartDate(data) {
-      this.startDate = data;
+      this.startDate = data
     },
     changeEndDate(data) {
-      this.endDate = data;
+      this.endDate = data
     },
     changeDateMode(data) {
-      this.dateMode = data;
-    }
+      this.dateMode = data
+    },
   },
-  beforeCreate() {}
-};
+}
 </script>
 
 <style scoped>

@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -25,12 +25,14 @@ import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
 
 import { formatFilter, dataExport } from '@/common/util.js'
 import { getLocalization } from '@/common/localization.js'
+import { contentHeight } from '@/common/mixin.js'
 import { showTubeList } from '@/network/sales.js'
 export default {
   name: 'SalesTube',
   components: {
     JqxGrid,
   },
+  mixins:[contentHeight],
   beforeCreate() {
     this.params = {
       startDate: (function () {

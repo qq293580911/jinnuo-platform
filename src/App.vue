@@ -32,6 +32,13 @@ export default {
 </script>
 
 <style scoped>
+html,
+body,
+#app {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
 @import '../public/styles/jqx.base.css';
 @import '../public/styles/jqx.base.css';
 @import '../public/styles/jqx.android.css';

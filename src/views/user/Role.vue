@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -38,6 +38,20 @@ export default {
   components: {
     JqxGrid,
     RoleWindow,
+  },
+  computed: {
+    contentStyle() {
+      const style = {}
+      switch (jqx.theme) {
+        case 'ui-smoothness':
+          style.height = 'calc(100vh - 103px)'
+          break
+        default:
+          style.height = 'calc(100vh - 100px)'
+          break
+      }
+      return style
+    },
   },
   beforeCreate() {
     this.source = {

@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div :style="contentStyle">
     <div class="top"><slot name="top"></slot></div>
     <div class="bottom">
       <div class="left"><slot name="bottomLeft"></slot></div>
@@ -10,12 +10,21 @@
 </template>
 
 <script>
-export default {};
+export default {
+  computed:{
+    contentStyle(){
+      return {
+        width:'100%',
+        height:'calc(100vh - 202px)'
+      }
+    }
+  }
+};
 </script>
 <style scoped>
 .content {
   width: 100%;
-  height: calc(100vh - 200px);
+  height:95%;
   /* background-color: green; */
   /* display: flex; */
 }

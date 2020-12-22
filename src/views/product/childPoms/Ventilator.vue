@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -20,8 +20,6 @@
       :selectionmode="'multiplerowsextended'"
       :virtualmode="true"
       :rendergridrows="rendergridrows"
-      :showstatusbar="true"
-      :statusbarheight="30"
     >
     </JqxGrid>
     <ventilator-window ref="ventilatorWindow"></ventilator-window>
@@ -33,6 +31,7 @@ import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
 import VentilatorWindow from "./VentilatorWindow.vue";
 
 import { formatFilter } from "@/common/util.js";
+import { contentHeight } from '@/common/mixin.js'
 import { getLocalization } from "@/common/localization.js";
 import {
   Message,
@@ -46,6 +45,7 @@ export default {
     JqxGrid,
     VentilatorWindow
   },
+  mixins:[contentHeight],
   beforeCreate() {
     this.source = {
       datafields: [

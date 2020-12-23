@@ -40,27 +40,22 @@ body,
   margin: 0;
 }
 @import '../public/styles/jqx.base.css';
-@import '../public/styles/jqx.base.css';
 @import '../public/styles/jqx.android.css';
-
 @import '../public/styles/jqx.arctic.css';
 @import '../public/styles/jqx.black.css';
 @import '../public/styles/jqx.blackberry.css';
-
-@import '../public/styles/jqx.blue.css';
+/* @import '../public/styles/jqx.blue.css'; */
 @import '../public/styles/jqx.bootstrap.css';
 @import '../public/styles/jqx.classic.css';
 @import '../public/styles/jqx.dark-ie.css';
 @import '../public/styles/jqx.darkblue.css';
 @import '../public/styles/jqx.energyblue.css';
 @import '../public/styles/jqx.flat.css';
-
 @import '../public/styles/jqx.fresh.css';
-
 @import '../public/styles/jqx.glacier.css';
 @import '../public/styles/jqx.highcontrast.css';
-@import '../public/styles/jqx.light-ie.css';
-@import '../public/styles/jqx.light.css';
+/* @import '../public/styles/jqx.light-ie.css';
+@import '../public/styles/jqx.light.css'; */
 @import '../public/styles/jqx.material-green.css';
 @import '../public/styles/jqx.material-purple.css';
 @import '../public/styles/jqx.material.css';
@@ -79,8 +74,6 @@ body,
 @import '../public/styles/jqx.ui-smoothness.css';
 @import '../public/styles/jqx.ui-start.css';
 @import '../public/styles/jqx.ui-sunny.css';
-
 @import '../public/styles/jqx.web.css';
-
-@import '../public/styles/jqx.windowsphone.css';
+/* @import '../public/styles/jqx.windowsphone.css'; */
 </style>

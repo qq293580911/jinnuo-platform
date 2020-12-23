@@ -3,6 +3,45 @@ export const contentHeight = {
     contentStyle() {
       const style = {}
       switch (jqx.theme) {
+        case 'android':
+          style.height = 'calc(100vh - 135px)'
+          break
+        case 'blackberry':
+          style.height = 'calc(100vh - 135px)'
+          break
+        case 'classic':
+          style.height = 'calc(100vh - 132px)'
+          break
+        case 'dark':
+          style.height = 'calc(100vh - 132px)'
+          break
+        case 'energyblue':
+          style.height = 'calc(100vh - 132px)'
+          break
+        case 'flat':
+          style.height = 'calc(100vh - 132px)'
+          break
+        case 'material-green':
+          style.height = 'calc(100vh - 133px)'
+          break
+        case 'material-purple':
+          style.height = 'calc(100vh - 133px)'
+          break
+        case 'material':
+          style.height = 'calc(100vh - 133px)'
+          break
+        case 'metrodark':
+          style.height = 'calc(100vh - 132px)'
+          break
+        case 'mobile':
+          style.height = 'calc(100vh - 132px)'
+          break
+        case 'shinyblack':
+          style.height = 'calc(100vh - 132px)'
+          break
+        case 'summer':
+          style.height = 'calc(100vh - 132px)'
+          break
         case 'ui-darkness':
           style.height = 'calc(100vh - 133px)'
           break

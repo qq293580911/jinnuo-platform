@@ -70,7 +70,11 @@ export default {
                       contentContainer: 'LeftPanel',
                       initContent: function (div) {
                         const Component = Vue.extend(RoleGrid)
-                        const instance = new Component({}).$mount(
+                        const instance = new Component({
+                          propsData:{
+                            height:'100%'
+                          }
+                        }).$mount(
                           document.getElementsByClassName('roleGrid')[0]
                         )
                       },

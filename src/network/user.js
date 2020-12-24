@@ -81,3 +81,19 @@ export function saveRoleAuthority(params) {
     data: params,
   })
 }
+
+export function showUserGroupAuthorityList(params) {
+  return request({
+    url: '/permission/showUserGroupAuthorityList.do',
+    method: 'Get',
+    params,
+  })
+}
+
+export function saveUserGroupAuthority(params) {
+  return request({
+    url: '/permission/saveUserGroupAuthority.do',
+    method: 'Post',
+    data: params,
+  })
+}

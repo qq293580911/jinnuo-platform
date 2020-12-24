@@ -43,15 +43,27 @@ export default {
   computed: {
     contentStyle() {
       const style = {}
-      switch (jqx.theme) {
-        case 'ui-smoothness':
-          style.height = 'calc(100vh - 103px)'
-          break
-        default:
-          style.height = 'calc(100vh - 100px)'
-          break
+      if (this.height) {
+        style.height = this.height
+      } else {
+        switch (jqx.theme) {
+          case 'ui-smoothness':
+            style.height = 'calc(100vh - 103px)'
+            break
+          default:
+            style.height = 'calc(100vh - 100px)'
+            break
+        }
       }
       return style
+    },
+  },
+  props: {
+    height: {
+      type: String,
+      default() {
+        return ''
+      },
     },
   },
   beforeCreate() {
@@ -275,10 +287,10 @@ export default {
     refresh() {
       this.$refs.myGrid.updatebounddata()
     },
-    onRowSelect(event){
+    onRowSelect(event) {
       const rowData = event.args.row
-      this.$bus.$emit('sendRole',rowData)
-    }
+      this.$bus.$emit('sendRole', rowData)
+    },
   },
 }
 </script>

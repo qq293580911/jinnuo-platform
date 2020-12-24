@@ -20,6 +20,7 @@
       :selectionmode="'multiplerowsextended'"
       :virtualmode="true"
       :rendergridrows="rendergridrows"
+      @rowselect="onRowSelect($event)"
     >
     </JqxGrid>
     <user-window ref="userWindow"></user-window>
@@ -42,15 +43,27 @@ export default {
   computed: {
     contentStyle() {
       const style = {}
-      switch (jqx.theme) {
-        case 'ui-smoothness':
-          style.height = 'calc(100vh - 103px)'
-          break
-        default:
-          style.height = 'calc(100vh - 100px)'
-          break
+      if (this.height) {
+        style.height = this.height
+      } else {
+        switch (jqx.theme) {
+          case 'ui-smoothness':
+            style.height = 'calc(100vh - 103px)'
+            break
+          default:
+            style.height = 'calc(100vh - 100px)'
+            break
+        }
       }
       return style
+    },
+  },
+  props: {
+    height: {
+      type: String,
+      default() {
+        return ''
+      },
     },
   },
   beforeCreate() {
@@ -75,6 +88,7 @@ export default {
       url: `/user/showUserList.do`,
     }
   },
+  created() {},
   data() {
     return {
       localization: getLocalization('zh-CN'),
@@ -294,10 +308,13 @@ export default {
     refresh() {
       this.$refs.myGrid.updatebounddata()
     },
+    onRowSelect(event) {
+      const rowData = event.args.row
+      this.$bus.$emit('sendUser', rowData)
+    },
   },
 }
 </script>
 
 <style scoped>
-
 </style>

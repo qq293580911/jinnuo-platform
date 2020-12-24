@@ -1,35 +1,28 @@
 <template>
   <div style="width:100%;height:300px">
-    <column-chart
-      ref="columnChart"
-      :date-mode="dateMode"
-      :start-date="startDate"
-      :end-date="endDate"
-      :subject="subject"
-      :model="'报价员'"
-    >
-    </column-chart>
+    <set-customer-window
+      ref="setCustomerWindow"
+    ></set-customer-window>
   </div>
 </template>
 
 <script>
-import ColumnChart from "@/views/quote/childComps/ColumnChart";
+import SetCustomerWindow from '@/views/contract/childComps/SetCustomerWindow.vue'
 export default {
   components: {
-    ColumnChart
+    SetCustomerWindow,
   },
-  created() {},
+  created() {
+
+  },
+  mounted() {
+    this.$refs.setCustomerWindow.open()
+  },
   data() {
-    console.log(11)
-    return {
-      dateMode: "days",
-      startDate: "2020-7-01",
-      endDate: "2020-7-31",
-      subject: 280
-    };
+    return {}
   },
-  methods: {}
-};
+  methods: {},
+}
 </script>
 
 <style scoped>

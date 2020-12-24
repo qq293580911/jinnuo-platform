@@ -42,9 +42,10 @@ export const Module = {
   DELIVERY_MANAGEMENT: 'DeliveryManagement',
   // 销售统计
   SALES_MANAGEMENT: 'SalesManagement',
-  // 用户 角色 
+  // 用户 角色 权限分配
   USER_MANAGEMENT: 'UserManagement',
   ROLE_MANAGEMENT: 'RoleManagement',
+  AUTHORITY_ASSIGN:'AuthorityAssign',
   // 部门员工 部门  销售组  员工
   DEPARTMENT_EMPLOYEE:'DepartmentEmployee',
   DEPARTMENT_MANAGEMENT: 'DepartmentManagement',

@@ -44,9 +44,10 @@ import OrderManagement from 'views/order/Management'
 import DeliveryManagement from 'views/delivery/Management'
 // 销售统计
 import SalesStatistics from 'views/sales/Statistics'
-// 用户,角色，权限
+// 用户,角色，权限分配
 import UserManagement from 'views/user/User'
 import RoleManagement from 'views/user/Role'
+import AuthorityAssign from 'views/user/Authority'
 // 部门，员工
 import DepartmentEmployee from 'views/department/DepartmentEmployee'
 import DepartmentManagement from 'views/department/Department'
@@ -137,8 +138,8 @@ export default {
         case Module.ROLE_MANAGEMENT:
           component = Vue.extend(RoleManagement)
           break
-        case Module.AUTHORITY_MANAGEMENT:
-          component = Vue.extend(AuthorityManagement)
+        case Module.AUTHORITY_ASSIGN:
+          component = Vue.extend(AuthorityAssign)
           break
         case Module.DEPARTMENT_EMPLOYEE:
           component = Vue.extend(DepartmentEmployee)
@@ -160,6 +161,9 @@ export default {
           break
         case Module.SUPPLIES_STATISTICS:
           component = Vue.extend(SuppliesStatistics)
+          break
+        case Module.AUTHORITY_MANAGEMENT:
+          component = Vue.extend(AuthorityManagement)
           break
         case Module.TEST:
           component = Vue.extend(Test)

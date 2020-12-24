@@ -6,6 +6,7 @@
       :width="300"
       :height="650"
       :source="records"
+      :checkboxes="showCheckbox"
     ></JqxTree>
   </div>
 </template>
@@ -26,6 +27,9 @@ export default {
         { name: 'parentid', map: 'parentId', type: 'number' },
         { name: 'text', map: 'name', type: 'string' },
         { name: 'value', map: 'id', type: 'string' },
+        { name: 'checked', type: 'boolean' },
+        { name: 'expanded', type: 'boolean' },
+        { name: 'value', type: 'string' },
       ],
       datatype: 'json',
       id: 'id',
@@ -33,9 +37,40 @@ export default {
       url: '/permission/showPermissionTree.do',
     }
   },
+  props: {
+    showCheckbox: {
+      type: Boolean,
+      default: false,
+    },
+    roleAuthority: {
+      type: Array,
+      default() {
+        return []
+      },
+    },
+  },
+  watch: {
+    roleAuthority(data) {
+      delete this.source['url']
+      this.source.localdata = data
+      const dataAdapter = new jqx.dataAdapter(this.source, { autoBind: true })
+      const records = dataAdapter.getRecordsHierarchy(
+        'id',
+        'parentid',
+        'items',
+        [{ name: 'text', map: 'label' }]
+      )
+      this.$refs.myTree.source = records
+    },
+  },
+  data() {
+    return {
+      records: [],
+    }
+  },
   created() {
     const that = this
-    const dataAdapter = new jqx.dataAdapter(this.source, {
+    this.dataAdapter = new jqx.dataAdapter(this.source, {
       loadServerData(serverdata, source, callback) {
         showPermissionTree(source).then((res) => {
           callback({
@@ -44,7 +79,7 @@ export default {
         })
       },
       beforeLoadComplete(records) {
-        that.records = dataAdapter.getRecordsHierarchy(
+        that.records = that.dataAdapter.getRecordsHierarchy(
           'id',
           'parentid',
           'items',
@@ -53,15 +88,27 @@ export default {
         that.$refs.myTree.source = that.records
       },
     })
-    dataAdapter.dataBind()
-  },
-  data() {
-    return {
-       records: [],
-    }
+    that.dataAdapter.dataBind()
   },
   mounted() {},
-  methods: {},
+  methods: {
+    checkAll() {
+      this.$refs.myTree.checkAll()
+    },
+    uncheckAll() {
+      this.$refs.myTree.uncheckAll()
+    },
+    expandAll() {
+      this.$refs.myTree.expandAll()
+    },
+    collapseAll() {
+      this.$refs.myTree.collapseAll()
+    },
+    getItems(){
+      const items = this.$refs.myTree.getItems()
+      return items
+    }
+  },
 }
 </script>
 

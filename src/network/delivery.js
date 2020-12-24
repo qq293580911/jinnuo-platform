@@ -1,13 +1,11 @@
-import {
-  request
-} from "@/network/request"
+import { request } from '@/network/request'
 
 export function showDeliveryList(source, params) {
   return request({
     url: source.url,
     method: source.type,
     source,
-    params
+    params,
   })
 }
 
@@ -15,7 +13,7 @@ export function addDelivery(param) {
   return request({
     url: '/dlvDtl/addDeliveryDetail.do',
     method: 'Post',
-    data: param
+    data: param,
   })
 }
 
@@ -23,7 +21,7 @@ export function deleteDelivery(params) {
   return request({
     url: '/dlvDtl/deleteDeliveryDetailById.do',
     method: 'Delete',
-    data: params
+    data: params,
   })
 }
 
@@ -31,7 +29,7 @@ export function updateDelivery(param) {
   return request({
     url: '/dlvDtl/updateDeliveryDetail.do',
     method: 'Put',
-    data: param
+    data: param,
   })
 }
 
@@ -40,22 +38,31 @@ export function showDeliveryDetailList(source, params) {
     url: source.url,
     method: source.type,
     source,
-    params
+    params,
   })
 }
 
-export function getRelatedOrderInfo(params) {  
+export function getRelatedOrderInfo(params) {
   return request({
     url: '/dlvDtl/getOrderInfoListByOrderNumber.do',
     method: 'Post',
-    data: params
+    data: params,
   })
 }
 
-export function importDelivery(params) {  
+export function importDelivery(params) {
   return request({
     url: '/dlvDtl/importDeliveryDetail.do',
     method: 'Post',
-    data: params
+    data: params,
+  })
+}
+
+export function showDeliveryDoneList(source, params) {
+  return request({
+    url: source.url,
+    method: source.type,
+    source,
+    params,
   })
 }

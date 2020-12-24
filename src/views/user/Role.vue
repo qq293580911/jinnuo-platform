@@ -20,6 +20,7 @@
       :selectionmode="'multiplerowsextended'"
       :virtualmode="true"
       :rendergridrows="rendergridrows"
+      @rowselect="onRowSelect($event)"
     >
     </JqxGrid>
     <role-window ref="roleWindow"></role-window>
@@ -274,6 +275,10 @@ export default {
     refresh() {
       this.$refs.myGrid.updatebounddata()
     },
+    onRowSelect(event){
+      const rowData = event.args.row
+      this.$bus.$emit('sendRole',rowData)
+    }
   },
 }
 </script>

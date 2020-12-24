@@ -22,7 +22,7 @@
 
 <script>
 import JqxMenu from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue'
-import AuthorityTree from './childComps/AuthorityTree'
+import AuthorityTree from '@/components/content/authority/AuthorityTree'
 import AuthorityDetail from './childComps/AuthorityDetail'
 export default {
   components: {

@@ -8,11 +8,10 @@
       :position="{ x: '20%', y: '5%' }"
     >
       <div>
-        <div style="height: 100%; overflow: hidden">
-          <JqxGrid
+        <JqxGrid
             ref="myGrid"
-            :width="'100%'"
-            :height="'100%'"
+            :width="'99.8%'"
+            :height="'99.7%'"
             :localization="localization"
             :source="dataAdapter"
             :columns="columns"
@@ -23,7 +22,6 @@
             :selectionmode="'multiplerowsextended'"
           >
           </JqxGrid>
-        </div>
       </div>
     </JqxWindow>
   </div>

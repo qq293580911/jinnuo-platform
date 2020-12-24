@@ -344,7 +344,6 @@ export default {
               label: "备注",
               labelWidth: "150px",
               width: "250px",
-              height: "30px",
               required: false,
               columnWidth: "50%",
               rowHeight: "40px"
@@ -554,6 +553,11 @@ export default {
     const confirmBtn = this.$refs.myForm.getComponentByName("submitButton");
     confirmBtn[0].addEventListener("click", (event) => {
       this.$refs.myValidator.validate(document.getElementById("myForm"));
+    });
+
+    const cancelBtn = this.$refs.myForm.getComponentByName("cancelButton");
+    cancelBtn[0].addEventListener("click", (event) => {
+      this.$refs.myWindow.close()
     });
   },
   methods: {

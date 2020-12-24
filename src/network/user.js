@@ -42,7 +42,7 @@ export function showRoleList(source, params) {
   })
 }
 
-export function addRole(params) {  
+export function addRole(params) {
   return request({
     url: '/role/addRole.do',
     method: 'Post',
@@ -62,6 +62,22 @@ export function updateRole(params) {
   return request({
     url: '/role/updateRoleInfo.do',
     method: 'Put',
+    data: params,
+  })
+}
+
+export function findRoleAuthority(params) {
+  return request({
+    url: '/permission/findPermissionByRoleId.do',
+    method: 'Get',
+    params,
+  })
+}
+
+export function saveRoleAuthority(params) {
+  return request({
+    url: '/rolePermission/saveRolePermissions.do',
+    method: 'Post',
     data: params,
   })
 }

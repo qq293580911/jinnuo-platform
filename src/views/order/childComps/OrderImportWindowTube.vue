@@ -11,8 +11,8 @@
         <div style="height: 100%; overflow: hidden">
           <JqxGrid
             ref="myGrid"
-            :width="'100%'"
-            :height="'100%'"
+            :width="'99.8%'"
+            :height="'99.7%'"
             :localization="localization"
             :source="dataAdapter"
             :columns="columns"

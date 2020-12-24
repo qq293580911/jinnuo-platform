@@ -93,8 +93,8 @@ function getMenuComponent(munuName) {
       return Module.USER_MANAGEMENT
     case '角色管理':
       return Module.ROLE_MANAGEMENT
-    case '权限管理':
-      return Module.AUTHORITY_MANAGEMENT
+    case '权限分配':
+      return Module.AUTHORITY_ASSIGN
     case '客户管理':
       return Module.CUSTOMER_MANAGEMENT
     case '用品类型':
@@ -103,6 +103,8 @@ function getMenuComponent(munuName) {
       return Module.SUPPLIES_MANAGEMENT
     case '办公用品':
       return Module.SUPPLIES_STATISTICS
+    case '权限管理':
+      return Module.AUTHORITY_MANAGEMENT
     case '测试模块':
       return Module.TEST
     default:

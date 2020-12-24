@@ -2,7 +2,7 @@
   <div>
     <JqxWindow
       ref="myWindow"
-      :width="'440px'"
+      :width="'400px'"
       :autoOpen="false"
       :position="{ x: '40%', y: '30%' }"
     >
@@ -350,6 +350,11 @@ export default {
     const confirmBtn = this.$refs.myForm.getComponentByName('submitButton')
     confirmBtn[0].addEventListener('click', (event) => {
       this.$refs.myValidator.validate(document.getElementById('myForm'))
+    })
+
+    const cancelBtn = this.$refs.myForm.getComponentByName('cancelButton')
+    cancelBtn[0].addEventListener('click', (event) => {
+      this.$refs.myWindow.close()
     })
   },
   methods: {

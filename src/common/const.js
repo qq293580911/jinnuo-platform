@@ -22,8 +22,8 @@ export const Message = {
   END_DATE_LESS_THAN_START_DATE: '结束日期不能小于开始日期',
   END_ROW_LESS_THAN_START_ROW: '结束行不能小于开始行',
   NOT_FOUND_CONTENT: '未发现内容',
-  NOT_ALLOWED_FORMAT: '不允许的格式'
-};
+  NOT_ALLOWED_FORMAT: '不允许的格式',
+}
 
 export const Module = {
   // 产品
@@ -45,9 +45,9 @@ export const Module = {
   // 用户 角色 权限分配
   USER_MANAGEMENT: 'UserManagement',
   ROLE_MANAGEMENT: 'RoleManagement',
-  AUTHORITY_ASSIGN:'AuthorityAssign',
+  AUTHORITY_ASSIGN: 'AuthorityAssign',
   // 部门员工 部门  销售组  员工
-  DEPARTMENT_EMPLOYEE:'DepartmentEmployee',
+  DEPARTMENT_EMPLOYEE: 'DepartmentEmployee',
   DEPARTMENT_MANAGEMENT: 'DepartmentManagement',
   SALES_GROUP_MANAGEMENT: 'SalesGroup',
   EMPLOYEE_MANAGEMENT: 'EmployeeManagement',
@@ -60,7 +60,6 @@ export const Module = {
   // 系统
   TEST: 'Test',
   AUTHORITY_MANAGEMENT: 'AuthorityManagement',
-
 }
 
 // 用户部分
@@ -78,16 +77,16 @@ export const UPDATE_PRICE_PLAN = '修改价格方案'
 export const ADD_PRODUCT_PRICE = '添加产品价格'
 export const EDIT_PRODUCT_PRICE = '修改产品价格'
 // 员工部分
-export const ADD_EMPLOYEE = '添加员工';
-export const EDIT_EMPLOYEE = '修改员工';
-export const ASSIGN_POSITION = "分配职位"
+export const ADD_EMPLOYEE = '添加员工'
+export const EDIT_EMPLOYEE = '修改员工'
+export const ASSIGN_POSITION = '分配职位'
 // 下单部分
-export const ADD_ORDER = "添加下单信息"
-export const EDIT_ORDER = "编辑下单信息"
-export const IMPORT_ORDER = "导入下单信息"
+export const ADD_ORDER = '添加下单信息'
+export const EDIT_ORDER = '编辑下单信息'
+export const IMPORT_ORDER = '导入下单信息'
 // 送货部分
-export const ADD_DELIVERY = "添加送货信息"
-export const EDIT_DELIVERY = "修改送货信息"
+export const ADD_DELIVERY = '添加送货信息'
+export const EDIT_DELIVERY = '修改送货信息'
 export const IMPORT_DELIVERY = '导入送货信息'
 // 合同信息部分
 export const ADD_CONTRACT = '添加合同信息'
@@ -107,7 +106,10 @@ export const MUTE_BLOWER = '超静音送风机'
 export const SIDE_WALL_BLOWER = '边墙风机'
 export const SIDE_WALL_BLOWER_EP = '边墙风机（防爆）'
 // 报价单管理部分
-export const ADD_QUOTATION = "添加报价信息"
+export const ADD_QUOTATION = '添加报价信息'
 // 客户部分
 export const ADD_CUSTOMER = '添加客户信息'
 export const EDIT_CUSTOMER = '修改客户信息'
+// 组
+export const ADD_GROUP = '添加新组'
+export const EDIT_GROUP = '修改组名'

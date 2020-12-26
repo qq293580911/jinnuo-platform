@@ -4,9 +4,9 @@
     <a-layout-header>
       <home-nav-bar></home-nav-bar>
     </a-layout-header>
+    <!-- 下部操作面板 -->
     <a-layout
       id="components-layout-demo-custom-trigger"
-      class="content"
     >
       <!-- 左侧菜单 -->
       <a-layout-sider
@@ -318,7 +318,6 @@ export default {
 ::v-deep .ant-layout-header {
   padding-right: 20px;
 }
-
 .sider-header {
   height: 32px;
   display: flex;
@@ -335,11 +334,9 @@ export default {
   margin-right: 10px;
   transition: color 0.3s;
 }
-
 #components-layout-demo-custom-trigger .trigger:hover {
   color: #1890ff;
 }
-
 #components-layout-demo-custom-trigger .logo {
   width: 100%;
   height: 32px;

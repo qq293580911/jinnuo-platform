@@ -181,12 +181,12 @@ export default {
 </script>
 
 <style scoped>
+/* 很重要，不能删，删了窗体验证会扰乱布局 */
 .main {
-  height: calc(100vh);
+  height: calc(100vh - 64px);
+  overflow:hidden;
+}
+::v-deep .jqx-tabs-content-element{
   overflow: hidden;
 }
-/* ::v-deep .jqx-tabs-content-element {
-  height: 100%;
-  overflow: hidden;
-} */
 </style>

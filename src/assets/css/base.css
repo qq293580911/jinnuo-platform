@@ -7,13 +7,9 @@ html {
   overflow: hidden;
 }
 
-:root{
-  --ui-smoothness-tab-height:100%
-}
-
-/* .base-tab-content-element {
+.base-tab-content-element {
   height: 100%;
-} */
+}
 
 .green {
   color: black \9;

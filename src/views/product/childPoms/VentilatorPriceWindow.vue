@@ -6,7 +6,7 @@
       :autoOpen="false"
       :position="{ x: '40%', y: '30%' }"
     >
-      <div style="overflow:hidden;">
+      <div style="overflow: hidden;">
         <JqxValidator
           ref="myValidator"
           @validationSuccess="onValidationSuccess($event)"
@@ -26,16 +26,13 @@ import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue'
 import JqxValidator from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue'
 import JqxForm from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue'
 
-import { EDIT_PRODUCT_PRICE } from 'common/const.js'
-
+import { Message, EDIT_PRODUCT_PRICE } from 'common/const.js'
 import {
-  getAllMachineProduct,
-  addMachinePrice,
-  updateMachinePrice,
+  getAllVentilator,
+  addVentilatorPrice,
+  updateVentilatorPrice,
 } from '@/network/product.js'
-
 export default {
-  name: 'MachinePriceWindow',
   components: {
     JqxWindow,
     JqxValidator,
@@ -46,20 +43,22 @@ export default {
     return {
       template: [
         {
-          name: 'machine',
+          name: 'product',
           type: 'custom',
-          label: '选择设备',
+          label: '产品',
           labelWidth: '80px',
-          rowHeight: '40px',
+          width: '250px',
           required: true,
-          init: function (component) {
-            getAllMachineProduct().then((res) => {
+          rowHeight: '40px',
+          init(component) {
+            getAllVentilator().then((res) => {
               res.map((item) => {
                 item['html'] =
                   `<div tabIndex=0 style='padding: 1px;'>` +
-                  `<div>名称：${item['pm_name']}</div>` +
-                  `<div>功率：${item['power']}</div>` +
-                  `</div>`
+                  `<div>名称：${item['name']}</div>` +
+                  `<div>规格：${item['specification']}</div>` +
+                  `<div>面板材质：${item['panel_material']}</div>` +
+                  `<div>开孔尺寸：${item['hole_size']}</div><div>`
                 item['group'] = item['pc_name']
                 return item
               })
@@ -67,8 +66,8 @@ export default {
                 width: 250,
                 height: 30,
                 source: res,
-                displayMember: 'pnm_name',
-                valueMember: 'pnm_id',
+                displayMember: 'name',
+                valueMember: 'id',
                 animationType: 'none',
               })
             })
@@ -79,9 +78,10 @@ export default {
           type: 'custom',
           label: '价格方案',
           labelWidth: '80px',
-          rowHeight: '40px',
+          width: '250px',
           required: true,
-          init: function (component) {
+          rowHeight: '40px',
+          init(component) {
             const pricePlan = that.$store.state.pricePlan
             jqwidgets.createInstance(component, 'jqxComboBox', {
               width: 250,
@@ -89,42 +89,28 @@ export default {
               source: pricePlan,
               displayMember: 'rule',
               valueMember: 'id',
-              animationType: 'none',
             })
           },
         },
         {
-          name: 'priceNonCcc',
+          name: 'price',
+          label: '价格',
           type: 'custom',
-          label: '非3C价格',
           labelWidth: '80px',
-          rowHeight: '40px',
           required: false,
-          init: function (component) {
-            jqwidgets.createInstance(component, 'jqxNumberInput', {
-              width: 250,
-              height: 30,
-              inputMode: 'simple',
-              decimalDigits: 0,
-              spinButtons: true,
-            })
-          },
-        },
-        {
-          name: 'priceCcc',
-          type: 'custom',
-          label: '3C价格',
-          labelWidth: '80px',
           rowHeight: '40px',
-          required: false,
           init: function (component) {
-            jqwidgets.createInstance(component, 'jqxNumberInput', {
-              width: 250,
-              height: 30,
-              inputMode: 'simple',
-              decimalDigits: 0,
-              spinButtons: true,
-            })
+            that.priceInstance = jqwidgets.createInstance(
+              component,
+              'jqxNumberInput',
+              {
+                width: 250,
+                height: 30,
+                inputMode: 'simple',
+                decimalDigits: 0,
+                spinButtons: true,
+              }
+            )
           },
         },
         {
@@ -149,28 +135,26 @@ export default {
           ],
         },
       ],
-      id: null,
     }
   },
   mounted() {
     const that = this
-    const $machine = this.$refs.myForm.getComponentByName('machine')
+    // 获取组件对象
+    const $product = this.$refs.myForm.getComponentByName('product')
     const $pricePlan = this.$refs.myForm.getComponentByName('pricePlan')
-    const $priceCCC = this.$refs.myForm.getComponentByName('priceCcc')
-    const $priceNonCCC = this.$refs.myForm.getComponentByName('priceNonCcc')
+    const $price = this.$refs.myForm.getComponentByName('price')
 
-    this.machineInstance = $machine
+    this.productInstance = $product
     this.pricePlanInstance = $pricePlan
-    this.priceNonCCCInstance = $priceNonCCC
-    this.priceCCCInstance = $priceCCC
+    this.priceInstance = $price
 
     this.$refs.myValidator.rules = [
       {
-        input: $machine,
+        input: $product,
         message: '该项必选',
         action: 'select',
-        rule: function (input) {
-          const index = that.machineInstance.jqxComboBox('getSelectedIndex')
+        rule: function () {
+          var index = $product.jqxComboBox('getSelectedIndex')
           return index > -1
         },
       },
@@ -178,12 +162,13 @@ export default {
         input: $pricePlan,
         message: '该项必选',
         action: 'select',
-        rule(input) {
-          const index = that.pricePlanInstance.jqxComboBox('getSelectedIndex')
+        rule: function () {
+          var index = $pricePlan.jqxComboBox('getSelectedIndex')
           return index > -1
         },
       },
     ]
+
     // 提交并验证表单
     const confirmBtn = this.$refs.myForm.getComponentByName('submitButton')
     confirmBtn[0].addEventListener('click', (event) => {
@@ -198,27 +183,22 @@ export default {
   methods: {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0])
-      this.clearForm()
       if (params[0] == EDIT_PRODUCT_PRICE) {
-        const data = params[1]
-        this.machineInstance.jqxComboBox('selectItem', data['pm_id'])
-        this.pricePlanInstance.jqxComboBox('selectItem', data['ps_id'])
-        this.priceNonCCCInstance.jqxNumberInput(
-          'setDecimal',
-          data['price_non_ccc']
-        )
-        this.priceCCCInstance.jqxNumberInput('setDecimal', data['price_ccc'])
-        this.id = data['price_id']
+        const rowData = params[1]
+        console.log(rowData)
+        this.productInstance.jqxComboBox('selectItem', rowData['vent_id'])
+        this.pricePlanInstance.jqxComboBox('selectItem',rowData['plan_id'])
+        this.priceInstance.jqxNumberInput('setDecimal', rowData['price'])
+        this.id = rowData['id']
       }
       this.$refs.myWindow.open()
     },
     onValidationSuccess(event) {
       const formData = {
-        pmId: this.machineInstance.val(),
-        psId: this.pricePlanInstance.val(),
-        priceNonCcc: this.priceNonCCCInstance.val(),
-        priceCcc: this.priceCCCInstance.val(),
-        priceId: this.id,
+        ventId: this.productInstance.jqxComboBox('getSelectedItem').value,
+        planId: this.pricePlanInstance.val(),
+        price: this.priceInstance.val(),
+        id: this.id,
       }
       const title = this.$refs.myWindow.title
       if (title == EDIT_PRODUCT_PRICE) {
@@ -227,27 +207,20 @@ export default {
         this.add(formData)
       }
     },
-    clearForm() {
-      // 重置部件设置
-      this.machineInstance.jqxComboBox('clearSelection')
-      this.pricePlanInstance.jqxComboBox('clearSelection')
-      this.priceNonCCCInstance.jqxNumberInput('setDecimal', 0)
-      this.priceCCCInstance.jqxNumberInput('setDecimal', 0)
-    },
     add(formData) {
       const params = {
-        jsonParams: JSON.stringify(formData),
+        jsonParams:JSON.stringify(formData)
       }
-      addMachinePrice(params).then((res) => {
+      addVentilatorPrice(params).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.refresh()
       })
     },
     update(formData) {
-      const params = {
-        jsonParams: JSON.stringify(formData),
+       const params = {
+        jsonParams:JSON.stringify(formData)
       }
-      updateMachinePrice(params).then((res) => {
+      updateVentilatorPrice(params).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.refresh()
       })
@@ -259,5 +232,5 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 </style>

@@ -27,7 +27,7 @@ import store from '@/store'
 Vue.use(store)
 import JqxTabs from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxtabs.vue'
 // 产品管理
-import ProductManagement from 'views/product/Management'
+import ProductManagement from 'views/product/Product'
 import ProductCategory from 'views/product/Category'
 import ProductPrice from 'views/product/Price'
 // 报价管理

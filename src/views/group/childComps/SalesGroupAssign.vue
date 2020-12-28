@@ -138,6 +138,9 @@ export default {
     salesmans.forEach((item) => {
       item.html = `<div><div>${item.emp_name}</div></div>`
       item.group = `参考分组：${item.company}`
+      if(item['is_resign']=='离职'){
+        item.group = `参考分组：离职人员`
+      }
     })
     this.salesmans = salesmans
     this.renderGroups()
@@ -254,7 +257,6 @@ export default {
             this.originData.push(item)
           })
         }
-
         const list = []
         for (const key in res) {
           const map = {}

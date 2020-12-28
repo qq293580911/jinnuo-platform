@@ -27,7 +27,6 @@ import {
   updateMachineProduct
 } from "@/network/product.js";
 export default {
-  name: "MachineWindow",
   components: {
     JqxWindow,
     JqxValidator,

@@ -10,12 +10,8 @@
       :source="dataAdapter"
       :columns="columns"
       :showtoolbar="true"
-      :sortable="true"
       :filterable="true"
-      :altrows="true"
-      :enabletooltip="true"
       :editable="true"
-      :selectionmode="'multiplerowsextended'"
       @cellvaluechanged="onCellvaluechanged($event)"
     >
     </JqxGrid>
@@ -40,24 +36,27 @@ export default {
       datafields: [
         { name: 'id', type: 'number' },
         { name: 'user_id', type: 'number' },
-        { name: 'group_id', type: 'string' },
+        { name: 'group_id', type: 'number' },
         { name: 'group_name', type: 'string' },
-        { name: 'enabled', type: 'string' },
+        { name: 'enabled', type: 'number' },
       ],
       type: 'get',
       datatype: 'json',
-      id: 'id',
       localdata: [],
     }
   },
   data() {
+    const that = this
     return {
       localization: getLocalization('zh-CN'),
       dataAdapter: new jqx.dataAdapter(this.source, {
-        beforeLoadComplete(records) {
+        loadComplete(records) {
           records.forEach((item) => {
-            !item['enabled'] ? (item['enabled'] = 0) : item['enabled']
+            if (!item['enabled']) {
+              item['enabled'] = 0
+            }
           })
+          return records 
         },
       }),
       columns: [

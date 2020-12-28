@@ -68,6 +68,6 @@ export function getQuoter() {
 
 export function getSalesman() {
   return request({
-    url: '/emp/getAllInServiceSalesman.do'
+    url: '/emp/getAllSalesman.do'
   })
 }

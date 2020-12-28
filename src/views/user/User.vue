@@ -16,10 +16,14 @@
       :filterable="true"
       :altrows="true"
       :enabletooltip="true"
-      :editable="false"
+      :editable="true"
+      :editmode="'dblclick'"
       :selectionmode="'multiplerowsextended'"
       :virtualmode="true"
       :rendergridrows="rendergridrows"
+      :rowdetails="true"
+      :initrowdetails="initrowdetails"
+      :rowdetailstemplate="rowdetailstemplate"
       @rowselect="onRowSelect($event)"
     >
     </JqxGrid>
@@ -32,9 +36,14 @@ import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
 import UserWindow from './childComps/UserWindow.vue'
 
 import { formatFilter } from '@/common/util.js'
-import { Message, ADD_USER, EDIT_USER } from '@/common/const.js'
+import { Message, ADD_USER, EDIT_USER, ASSIGN_ROLE } from '@/common/const.js'
 import { getLocalization } from '@/common/localization.js'
-import { showUserList, deleteUser } from '@/network/user.js'
+import {
+  showUserList,
+  deleteUser,
+  getRoleListByUserId,
+  updateUserInfo,
+} from '@/network/user.js'
 export default {
   components: {
     JqxGrid,
@@ -86,9 +95,20 @@ export default {
       sortdirection: 'asc',
       id: 'user_id',
       url: `/user/showUserList.do`,
+      updaterow: function (rowid, rowdata, commit) {
+        console.log(rowid, rowdata)
+        const params = {
+          jsonParams: JSON.stringify({
+            userId: rowid,
+            locked: rowdata['locked'] == '已停用' ? 1 : 0,
+          }),
+        }
+        updateUserInfo(params).then((res) => {
+          commit(true)
+        })
+      },
     }
   },
-  created() {},
   data() {
     return {
       localization: getLocalization('zh-CN'),
@@ -164,8 +184,21 @@ export default {
               )
             }
           },
+          createeditor: function (row, cellvalue, editor) {
+            editor.jqxDropDownList({ source: ['已启用', '已停用'] })
+          },
         },
       ],
+      rowdetailstemplate: {
+        rowdetails:
+          "<div style='margin: 10px;'>" +
+          "<ul style='margin-left: 30px;'>" +
+          '<li>角色</li>' +
+          '</ul>' +
+          "<div class='role'></div>" +
+          '</div>',
+        rowdetailsheight: 200,
+      },
     }
   },
   methods: {
@@ -179,16 +212,19 @@ export default {
       const addButtonContainer = document.createElement('div')
       const deleteButtonContainer = document.createElement('div')
       const editButtonContainer = document.createElement('div')
+      const assignButtonContainer = document.createElement('div')
       const reloadButtonContainer = document.createElement('div')
 
       const addButtonID = JQXLite.generateID()
       const deleteButtonID = JQXLite.generateID()
       const editButtonID = JQXLite.generateID()
+      const assignButtonID = JQXLite.generateID()
       const reloadButtonID = JQXLite.generateID()
 
       addButtonContainer.id = addButtonID
       deleteButtonContainer.id = deleteButtonID
       editButtonContainer.id = editButtonID
+      assignButtonContainer.id = assignButtonID
       reloadButtonContainer.id = reloadButtonID
 
       addButtonContainer.style.cssText =
@@ -197,91 +233,121 @@ export default {
         'float: left; margin-left: 5px;cursor: pointer;'
       editButtonContainer.style.cssText =
         'float: left; margin-left: 5px;cursor: pointer;'
+      assignButtonContainer.style.cssText =
+        'float: left; margin-left: 5px;cursor: pointer;'
       reloadButtonContainer.style.cssText =
         'float: right; margin-left: 5px;cursor: pointer;'
 
-      buttonsContainer.appendChild(addButtonContainer)
-      buttonsContainer.appendChild(deleteButtonContainer)
-      buttonsContainer.appendChild(editButtonContainer)
-      buttonsContainer.appendChild(reloadButtonContainer)
-
       // 添加按钮
-      const addButtonIntance = jqwidgets.createInstance(
-        `#${addButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${addButtonID}`, 'jqxTooltip', {
-        content: '添加',
-        position: 'bottom',
-      })
-      addButtonIntance.addEventHandler('click', (event) => {
-        this.$refs.userWindow.open(ADD_USER)
-      })
+      if (this.hasAuthority(this, 'user:add')) {
+        buttonsContainer.appendChild(addButtonContainer)
+        const addButtonIntance = jqwidgets.createInstance(
+          `#${addButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${addButtonID}`, 'jqxTooltip', {
+          content: '添加',
+          position: 'bottom',
+        })
+        addButtonIntance.addEventHandler('click', (event) => {
+          this.$refs.userWindow.open(ADD_USER)
+        })
+      }
 
       // 删除按钮
-      const deleteButton = jqwidgets.createInstance(
-        `#${deleteButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${deleteButtonID}`, 'jqxTooltip', {
-        content: '删除',
-        position: 'bottom',
-      })
-
-      deleteButton.addEventHandler('click', (event) => {
-        const selectedrowindexes = this.$refs.myGrid.getselectedrowindexes()
-        if (selectedrowindexes.length < 1) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED })
-          return false
-        }
-        this.$confirm({
-          title: `${Message.CONFIRM_DELETE}`,
-          okText: '确认',
-          cancelText: '取消',
-          centered: true,
-          okType: 'danger',
-          content: (h) => <div style="color:red;"></div>,
-          onOk() {
-            const ids = selectedrowindexes.map((rowIndex) => {
-              return that.$refs.myGrid.getrowid(rowIndex)
-            })
-            that.delete(ids)
-          },
-          onCancel() {},
-          class: 'test',
+      if (this.hasAuthority(this, 'user:delete')) {
+        buttonsContainer.appendChild(deleteButtonContainer)
+        const deleteButton = jqwidgets.createInstance(
+          `#${deleteButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${deleteButtonID}`, 'jqxTooltip', {
+          content: '删除',
+          position: 'bottom',
         })
-      })
+        deleteButton.addEventHandler('click', (event) => {
+          const selectedrowindexes = this.$refs.myGrid.getselectedrowindexes()
+          if (selectedrowindexes.length < 1) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED })
+            return false
+          }
+          this.$confirm({
+            title: `${Message.CONFIRM_DELETE}`,
+            okText: '确认',
+            cancelText: '取消',
+            centered: true,
+            okType: 'danger',
+            content: (h) => <div style="color:red;"></div>,
+            onOk() {
+              const ids = selectedrowindexes.map((rowIndex) => {
+                return that.$refs.myGrid.getrowid(rowIndex)
+              })
+              that.delete(ids)
+            },
+            onCancel() {},
+            class: 'test',
+          })
+        })
+      }
 
       // 编辑按钮
-      const editButton = jqwidgets.createInstance(
-        `#${editButtonID}`,
+      if (this.hasAuthority(this, 'user:update')) {
+        buttonsContainer.appendChild(editButtonContainer)
+        const editButton = jqwidgets.createInstance(
+          `#${editButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${editButtonID}`, 'jqxTooltip', {
+          content: '编辑',
+          position: 'bottom',
+        })
+        editButton.addEventHandler('click', (event) => {
+          const index = this.$refs.myGrid.getselectedrowindex()
+          if (index < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED })
+            return false
+          }
+          const rowData = this.$refs.myGrid.getrowdata(index)
+          this.$refs.userWindow.open(EDIT_USER, rowData)
+        })
+      }
+
+      // 分配角色按钮
+      if (this.hasAuthority(this, 'user:assign')) {
+      }
+      buttonsContainer.appendChild(assignButtonContainer)
+      const assignButton = jqwidgets.createInstance(
+        `#${assignButtonID}`,
         'jqxButton',
         {
-          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+          imgSrc: require(`@/assets/iconfont/custom/assign.svg`),
         }
       )
-      jqwidgets.createInstance(`#${editButtonID}`, 'jqxTooltip', {
-        content: '编辑',
+      jqwidgets.createInstance(`#${assignButtonID}`, 'jqxTooltip', {
+        content: '分配角色',
         position: 'bottom',
       })
-
-      editButton.addEventHandler('click', (event) => {
+      assignButton.addEventHandler('click', (event) => {
         const index = this.$refs.myGrid.getselectedrowindex()
         if (index < 0) {
           this.$message.warning({ content: Message.NO_ROWS_SELECTED })
           return false
         }
         const rowData = this.$refs.myGrid.getrowdata(index)
-        this.$refs.userWindow.open(EDIT_USER, rowData)
+        this.$refs.assignWindow.open(ASSIGN_ROLE, rowData)
       })
 
       // 刷新按钮
+      buttonsContainer.appendChild(reloadButtonContainer)
       const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         'jqxButton',
@@ -294,6 +360,84 @@ export default {
       reloadButton.addEventHandler('click', (event) => {
         this.$refs.myGrid.updatebounddata()
       })
+    },
+    initrowdetails(index, parentElement, gridElement, datarecord) {
+      let tabsdiv = null
+      let roleGrid = null
+      tabsdiv = $($(parentElement).children()[0])
+      if (tabsdiv != null) {
+        roleGrid = tabsdiv.find('.role')
+        const id = datarecord.user_id
+        const params = {
+          jsonParams: JSON.stringify({
+            userId: id,
+          }),
+        }
+
+        getRoleListByUserId(params).then((res) => {
+          initNestedGrid(res)
+        })
+
+        const initNestedGrid = (data) => {
+          const source = {
+            dataFields: [
+              { name: 'role_id', map: 'roleId', type: 'number' },
+              { name: 'role_name', map: 'roleName', type: 'string' },
+              { name: 'role_desc', map: 'roleDesc', type: 'string' },
+            ],
+            localdata: data,
+          }
+          const nestedGridAdapter = new $.jqx.dataAdapter(source)
+          if (roleGrid != null) {
+            roleGrid.jqxGrid({
+              source: nestedGridAdapter,
+              width: '100%',
+              height: '100%',
+              localization: getLocalization('zh-CN'),
+              columns: [
+                {
+                  text: '角色ID',
+                  datafield: 'role_id',
+                  cellsAlign: 'center',
+                  align: 'center',
+                  hidden: true,
+                },
+                {
+                  text: '角色名称',
+                  datafield: 'role_name',
+                  cellsAlign: 'center',
+                  align: 'center',
+                },
+                {
+                  text: '角色描述',
+                  datafield: 'role_desc',
+                  cellsAlign: 'center',
+                  align: 'center',
+                },
+              ],
+            })
+          }
+        }
+
+        // const jsonParams = {}
+        // jsonParams.userId = id
+        // const source = {
+        //   dataFields: [
+        //     { name: 'role_id', map: 'roleId', type: 'number' },
+        //     { name: 'role_name', map: 'roleName', type: 'string' },
+        //     { name: 'role_desc', map: 'roleDesc', type: 'string' },
+        //   ],
+        //   url: '/user/showRoleListByUserId.do',
+        //   type: 'get',
+        //   data: { jsonParams: JSON.stringify(jsonParams) },
+        //   dataType: 'json',
+        //   id: 'role_id',
+        //   async: false,
+        //   localdata: [],
+        // }
+
+        $(tabsdiv).jqxTabs({ width: '96%', height: 160 })
+      }
     },
     delete(ids) {
       const params = {

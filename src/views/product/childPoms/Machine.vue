@@ -41,7 +41,7 @@ export default {
     JqxGrid,
     MachineWindow,
   },
-  mixins:[contentHeight],
+  mixins: [contentHeight],
   beforeCreate: function () {
     this.source = {
       filter: () => {
@@ -153,11 +153,12 @@ export default {
     }
   },
   methods: {
-    createButtonsContainers: function (statusbar) {
+    createButtonsContainers: function (toolbar) {
       const that = this
       const buttonsContainer = document.createElement('div')
       buttonsContainer.style.cssText =
         'overflow: hidden; position: relative; margin: 5px;'
+      toolbar[0].appendChild(buttonsContainer)
       const addButtonContainer = document.createElement('div')
       const deleteButtonContainer = document.createElement('div')
       const editButtonContainer = document.createElement('div')
@@ -181,92 +182,95 @@ export default {
       reloadButtonContainer.style.cssText =
         'float: right; margin-left: 5px; cursor: pointer;'
 
-      buttonsContainer.appendChild(addButtonContainer)
-      buttonsContainer.appendChild(deleteButtonContainer)
-      buttonsContainer.appendChild(editButtonContainer)
-      buttonsContainer.appendChild(reloadButtonContainer)
-      statusbar[0].appendChild(buttonsContainer)
-      // 创建按钮
-      const addButton = jqwidgets.createInstance(
-        `#${addButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${addButtonID}`, 'jqxTooltip', {
-        content: '添加',
-        position: 'bottom',
-      })
-
-      addButton.addEventHandler('click', (event) => {
-        this.$refs.myWindow.open(ADD_PRODUCT)
-      })
-
-      const deleteButton = jqwidgets.createInstance(
-        `#${deleteButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${deleteButtonID}`, 'jqxTooltip', {
-        content: '删除',
-        position: 'bottom',
-      })
-
-      deleteButton.addEventHandler('click', (event) => {
-        const selectedrowindex = this.$refs.myGrid.getselectedrowindex()
-        if (selectedrowindex < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED })
-          return false
-        }
-
-        this.$confirm({
-          title: `${Message.CONFIRM_DELETE}`,
-          okText: '确认',
-          cancelText: '取消',
-          centered: true,
-          okType: 'danger',
-          content: (h) => <div style="color:red;"></div>,
-          onOk() {
-            const selectedIndexes = that.$refs.myGrid.getselectedrowindexes()
-            const ids = selectedIndexes.map((rowIndex) => {
-              const id = that.$refs.myGrid.getrowid(rowIndex)
-              const map = {
-                pm_id: id,
-              }
-              return map
-            })
-            that.delete(ids)
-          },
-          onCancel() {},
-          class: 'test',
+      // 添加
+      if (this.hasAuthority(this, 'product:add')) {
+        buttonsContainer.appendChild(addButtonContainer)
+        const addButton = jqwidgets.createInstance(
+          `#${addButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${addButtonID}`, 'jqxTooltip', {
+          content: '添加',
+          position: 'bottom',
         })
-      })
+        addButton.addEventHandler('click', (event) => {
+          this.$refs.myWindow.open(ADD_PRODUCT)
+        })
+      }
+      // 删除
+      if (this.hasAuthority(this, 'product:delete')) {
+        buttonsContainer.appendChild(deleteButtonContainer)
+        const deleteButton = jqwidgets.createInstance(
+          `#${deleteButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${deleteButtonID}`, 'jqxTooltip', {
+          content: '删除',
+          position: 'bottom',
+        })
 
-      const editButton = jqwidgets.createInstance(
-        `#${editButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${editButtonID}`, 'jqxTooltip', {
-        content: '编辑',
-        position: 'bottom',
-      })
+        deleteButton.addEventHandler('click', (event) => {
+          const selectedrowindex = this.$refs.myGrid.getselectedrowindex()
+          if (selectedrowindex < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED })
+            return false
+          }
 
-      editButton.addEventHandler('click', (event) => {
-        const index = this.$refs.myGrid.getselectedrowindex()
-        if (index < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED })
-          return false
-        }
-        const rowData = this.$refs.myGrid.getrowdata(index)
-        this.$refs.myWindow.open(EDIT_PRODUCT, rowData)
-      })
-
+          this.$confirm({
+            title: `${Message.CONFIRM_DELETE}`,
+            okText: '确认',
+            cancelText: '取消',
+            centered: true,
+            okType: 'danger',
+            content: (h) => <div style="color:red;"></div>,
+            onOk() {
+              const selectedIndexes = that.$refs.myGrid.getselectedrowindexes()
+              const ids = selectedIndexes.map((rowIndex) => {
+                const id = that.$refs.myGrid.getrowid(rowIndex)
+                const map = {
+                  pm_id: id,
+                }
+                return map
+              })
+              that.delete(ids)
+            },
+            onCancel() {},
+            class: 'test',
+          })
+        })
+      }
+      // 修改
+      if (this.hasAuthority(this, 'product:update')) {
+        buttonsContainer.appendChild(editButtonContainer)
+        const editButton = jqwidgets.createInstance(
+          `#${editButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${editButtonID}`, 'jqxTooltip', {
+          content: '编辑',
+          position: 'bottom',
+        })
+        editButton.addEventHandler('click', (event) => {
+          const index = this.$refs.myGrid.getselectedrowindex()
+          if (index < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED })
+            return false
+          }
+          const rowData = this.$refs.myGrid.getrowdata(index)
+          this.$refs.myWindow.open(EDIT_PRODUCT, rowData)
+        })
+      }
+      // 刷新
+      buttonsContainer.appendChild(reloadButtonContainer)
       const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         'jqxButton',
@@ -299,5 +303,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

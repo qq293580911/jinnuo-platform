@@ -96,7 +96,7 @@ export default {
     SetCustomerWindow,
     UploadWindow,
   },
-  mixins:[contentHeight],
+  mixins: [contentHeight],
   props: {
     isSigned: {
       type: Boolean,
@@ -160,9 +160,7 @@ export default {
       },
     }
   },
-  created() {
-
-  },
+  created() {},
   data() {
     const that = this
     return {
@@ -240,7 +238,7 @@ export default {
         },
       }),
       pagesizeoptions: (() => {
-        return [25,30,50,100,500,1000,3000,5000,7000,10000]
+        return [25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
       })(),
       rendergridrows: function (obj) {
         return obj.data
@@ -296,7 +294,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
-          pinned: true
+          pinned: true,
         })
         columns.push({
           text: '办事处',
@@ -304,7 +302,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
-          pinned: true
+          pinned: true,
         })
         columns.push({
           text: '业务员',
@@ -423,8 +421,8 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
-          aggregates: ["sum"],
-          aggregatesrenderer: that.aggregatesRenderer
+          aggregates: ['sum'],
+          aggregatesrenderer: that.aggregatesRenderer,
         })
         columns.push({
           text: '底价',
@@ -994,7 +992,7 @@ export default {
       })
     },
     aggregatesRenderer(aggregates, column, element) {
-      let renderString = "<div class='jqx-widget-content jqx-widget-content-" + jqx.theme + "' style='float: left; width: 100%; height: 100%; '>";
+      let renderString = ''
       $.each(aggregates, function (key, value) {
         switch (key) {
           case 'sum':
@@ -1020,6 +1018,11 @@ export default {
     },
     refresh() {
       this.$refs.myGrid.updatebounddata()
+    },
+    forceReload() {
+      console.log(this)
+      this.$forceUpdate()
+      console.log(1)
     },
     onCellclick(event) {
       if (event.args.rightclick) {

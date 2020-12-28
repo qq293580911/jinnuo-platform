@@ -98,7 +98,6 @@ export default {
           columns: [
             {
               name: "newName",
-              bind: "newName",
               type: "text",
               align: "left",
               width: "230px",
@@ -106,7 +105,6 @@ export default {
             },
             {
               name: "submitBtn",
-              bind: "submitBtn",
               type: "button",
               text: "确认",
               width: "60px"
@@ -131,7 +129,6 @@ export default {
   },
   mounted() {
     const $newName = this.$refs.myForm.getComponentByName("newName");
-    this.$refs.myForm.hideComponent("newName");
     // 设置表单验证规则
     this.$refs.myValidator.rules = [
       {

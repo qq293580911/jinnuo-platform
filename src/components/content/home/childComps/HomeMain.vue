@@ -37,11 +37,11 @@ import QuoteManagement from 'views/quote/Management'
 // 客户管理
 import CustomerManagement from 'views/customer/Customer'
 // 合同管理
-import ContractManagement from 'views/contract/Management'
+import ContractManagement from 'views/contract/Contract'
 import ContractInvoice from 'views/contract/Invoice'
 // 下单，送货
-import OrderManagement from 'views/order/Management'
-import DeliveryManagement from 'views/delivery/Management'
+import OrderManagement from 'views/order/Order'
+import DeliveryManagement from 'views/delivery/Delivery'
 // 销售统计
 import SalesStatistics from 'views/sales/Statistics'
 // 用户,角色，权限分配

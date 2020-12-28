@@ -56,7 +56,7 @@ export default {
               item['enabled'] = 0
             }
           })
-          return records 
+          return records
         },
       }),
       columns: [

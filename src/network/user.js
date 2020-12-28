@@ -1,5 +1,6 @@
 import { request } from '@/network/request'
 
+// 用户
 export function showUserList(source, params) {
   return request({
     url: source.url,
@@ -33,6 +34,7 @@ export function updateUserInfo(params) {
   })
 }
 
+// 角色
 export function showRoleList(source, params) {
   return request({
     url: source.url,
@@ -66,6 +68,15 @@ export function updateRole(params) {
   })
 }
 
+export function getRoleListByUserId(params) {
+  return request({
+    url: '/user/showRoleListByUserId.do',
+    method: 'Get',
+    params,
+  })
+}
+
+// 角色权限
 export function findRoleAuthority(params) {
   return request({
     url: '/permission/findPermissionByRoleId.do',
@@ -82,6 +93,7 @@ export function saveRoleAuthority(params) {
   })
 }
 
+// 用户组权限
 export function showUserGroupAuthorityList(params) {
   return request({
     url: '/permission/showUserGroupAuthorityList.do',

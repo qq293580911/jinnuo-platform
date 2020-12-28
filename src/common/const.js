@@ -65,6 +65,7 @@ export const Module = {
 // 用户部分
 export const ADD_USER = '添加用户'
 export const EDIT_USER = '修改用户'
+export const ASSIGN_ROLE = '分配角色'
 // 角色部分
 export const ADD_ROLE = '添加角色'
 export const EDIT_ROLE = '修改角色'

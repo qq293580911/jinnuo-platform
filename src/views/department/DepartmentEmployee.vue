@@ -97,6 +97,9 @@ export default {
                         const Component = Vue.extend(Employee)
                         const instance = new Component({
                           // store,
+                          propsData:{
+                            height:'100%'
+                          }
                         }).$mount('#employee')
                         that.$refs.employeeInstance = instance
                       },

@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -55,11 +55,36 @@ import {
 } from '@/network/employee.js'
 
 export default {
-  name: 'Employee',
   components: {
     JqxGrid,
     EmployeeWindow,
     AssignWindow,
+  },
+  props: {
+    height: {
+      type: String,
+      default() {
+        return ''
+      },
+    },
+  },
+  computed: {
+    contentStyle() {
+      const style = {}
+      if (this.height) {
+        style.height = this.height
+      } else {
+        switch (jqx.theme) {
+          case 'ui-smoothness':
+            style.height = 'calc(100vh - 103px)'
+            break
+          default:
+            style.height = 'calc(100vh - 100px)'
+            break
+        }
+      }
+      return style
+    },
   },
   beforeCreate: function () {
     this.source = {
@@ -92,7 +117,7 @@ export default {
         const params = {
           jsonParams: JSON.stringify({
             empId: rowid,
-            isResign: rowdata['is_resign']=='离职'?1:0,
+            isResign: rowdata['is_resign'] == '离职' ? 1 : 0,
           }),
         }
         updateEmployee(params).then((res) => {
@@ -540,7 +565,4 @@ export default {
 </script>
 
 <style scoped>
-.base-tab-content-element {
-  height: calc(100vh - 100px);
-}
 </style>

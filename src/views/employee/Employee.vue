@@ -16,7 +16,8 @@
       :filterable="true"
       :altrows="true"
       :enabletooltip="true"
-      :editable="false"
+      :editable="true"
+      :editmode="'dblclick'"
       :selectionmode="'multiplerowsextended'"
       :virtualmode="true"
       :rendergridrows="rendergridrows"
@@ -50,6 +51,7 @@ import {
   showEmployeeList,
   deleteEmployee,
   showEmployeePosition,
+  updateEmployee,
 } from '@/network/employee.js'
 
 export default {
@@ -85,6 +87,18 @@ export default {
       sortdirection: 'desc',
       id: 'emp_id',
       url: `/emp/showEmployeeList.do`,
+      updaterow: function (rowid, rowdata, commit) {
+        console.log(rowid, rowdata)
+        const params = {
+          jsonParams: JSON.stringify({
+            empId: rowid,
+            isResign: rowdata['is_resign']=='离职'?1:0,
+          }),
+        }
+        updateEmployee(params).then((res) => {
+          commit(true)
+        })
+      },
     }
   },
   data() {
@@ -165,6 +179,7 @@ export default {
           columntype: 'dropdownlist',
           align: 'center',
           cellsalign: 'center',
+          editable: true,
           cellsrenderer: function (
             row,
             columnfield,
@@ -190,6 +205,9 @@ export default {
                 '</span>'
               )
             }
+          },
+          createeditor: function (row, cellvalue, editor) {
+            editor.jqxDropDownList({ source: ['在职', '离职'] })
           },
         },
       ],

@@ -11,27 +11,27 @@ export function showEmployeeList(url, source, params) {
   })
 }
 
-export function addEmployee(param) {
+export function addEmployee(params) {
   return request({
     url: '/emp/addEmployee.do',
     method: 'Post',
-    data: param
+    data: params
   })
 }
 
-export function deleteEmployee(param) {
+export function deleteEmployee(params) {
   return request({
     url: '/emp/deleteEmployee.do',
     method: 'Delete',
-    data: param
+    data: params
   })
 }
 
-export function updateEmployee(param) {
+export function updateEmployee(params) {
   return request({
     url: '/emp/updateEmployee.do',
     method: 'Put',
-    data: param
+    data: params
   })
 }
 

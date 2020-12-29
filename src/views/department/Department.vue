@@ -2,12 +2,14 @@
   <div>
     <JqxValidator
       ref="myValidator"
-      :hintType="'label'"
+      :hintType="'tooltip'"
+      :rtl="true"
       @validationSuccess="onValidationSuccess($event)"
     >
       <JqxForm
         ref="myForm"
         :template="template"
+        v-show="editable"
       > </JqxForm>
     </JqxValidator>
     <JqxTree
@@ -70,6 +72,7 @@ export default {
       type: 'get',
       url: '/dept/getDepartmentSource.do',
     }
+    this.editable = false
   },
   created() {
     const that = this
@@ -116,7 +119,39 @@ export default {
           ],
         },
       ],
-      buttonGroup: ['添加', '编辑', '删除', '展开全部', '收起全部', '查看员工'],
+      buttonGroup: (() => {
+        const arr = [
+          '添加',
+          '编辑',
+          '删除',
+          '展开全部',
+          '收起全部',
+          '查看员工',
+        ].filter((item) => {
+          switch (item) {
+            case '添加':
+              if (this.hasAuthority(this, 'prodCate:add')) {
+                return item
+              }
+              break
+            case '删除':
+              if (this.hasAuthority(this, 'prodCate:delete')) {
+                return item
+              }
+              break
+            case '编辑':
+              if (this.hasAuthority(this, 'prodCate:update')) {
+                this.editable = true
+                return item
+              }
+              break
+            default:
+              return item
+              break
+          }
+        })
+        return arr
+      })(),
     }
   },
   mounted() {
@@ -177,7 +212,7 @@ export default {
           this.$refs.myTree.collapseAll()
           break
         case '查看员工':
-          this.$bus.$emit('queryEmployee',item['label'])
+          this.$bus.$emit('queryEmployee', item['label'])
           break
       }
     },

@@ -273,6 +273,7 @@ export default {
       const buttonsContainer = document.createElement('div')
       buttonsContainer.style.cssText =
         'overflow: hidden; position: relative; margin: 5px;'
+      toolbar[0].appendChild(buttonsContainer)
 
       const addButtonContainer = document.createElement('div')
       const deleteButtonContainer = document.createElement('div')
@@ -303,114 +304,123 @@ export default {
       reloadButtonContainer.style.cssText =
         'float: right; margin-left: 5px;cursor:pointer;'
 
-      buttonsContainer.appendChild(addButtonContainer)
-      buttonsContainer.appendChild(deleteButtonContainer)
-      buttonsContainer.appendChild(editButtonContainer)
-      buttonsContainer.appendChild(assignButtonContainer)
-      buttonsContainer.appendChild(reloadButtonContainer)
-      toolbar[0].appendChild(buttonsContainer)
       // 添加
-      const addButton = jqwidgets.createInstance(
-        `#${addButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${addButtonID}`, 'jqxTooltip', {
-        content: '添加',
-        position: 'bottom',
-      })
-      addButton.addEventHandler('click', (event) => {
-        this.$refs.myWindow.open(ADD_EMPLOYEE)
-      })
-      // 删除
-      const deleteButton = jqwidgets.createInstance(
-        `#${deleteButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${deleteButtonID}`, 'jqxTooltip', {
-        content: '删除',
-        position: 'bottom',
-      })
-      deleteButton.addEventHandler('click', (event) => {
-        const selectedrowindex = this.$refs.myGrid.getselectedrowindex()
-        if (selectedrowindex < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED })
-          return false
-        }
-
-        this.$confirm({
-          title: `${Message.CONFIRM_DELETE}`,
-          okText: '确认',
-          cancelText: '取消',
-          centered: true,
-          okType: 'danger',
-          content: (h) => <div style="color:red;"></div>,
-          onOk() {
-            const selectedIndexes = that.$refs.myGrid.getselectedrowindexes()
-            const ids = []
-            selectedIndexes.forEach(function (value) {
-              const id = that.$refs.myGrid.getrowid(value)
-              ids.push(id)
-            })
-            that.delete(ids)
-          },
-          onCancel() {},
-          class: 'test',
+      if (this.hasAuthority(this, 'emp:add')) {
+        buttonsContainer.appendChild(addButtonContainer)
+        const addButton = jqwidgets.createInstance(
+          `#${addButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/add-circle.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${addButtonID}`, 'jqxTooltip', {
+          content: '添加',
+          position: 'bottom',
         })
-      })
+        addButton.addEventHandler('click', (event) => {
+          this.$refs.myWindow.open(ADD_EMPLOYEE)
+        })
+      }
 
+      // 删除
+      if (this.hasAuthority(this, 'emp:delete')) {
+        buttonsContainer.appendChild(deleteButtonContainer)
+        const deleteButton = jqwidgets.createInstance(
+          `#${deleteButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/ashbin.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${deleteButtonID}`, 'jqxTooltip', {
+          content: '删除',
+          position: 'bottom',
+        })
+        deleteButton.addEventHandler('click', (event) => {
+          const selectedrowindex = this.$refs.myGrid.getselectedrowindex()
+          if (selectedrowindex < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED })
+            return false
+          }
+          this.$confirm({
+            title: `${Message.CONFIRM_DELETE}`,
+            okText: '确认',
+            cancelText: '取消',
+            centered: true,
+            okType: 'danger',
+            content: (h) => <div style="color:red;"></div>,
+            onOk() {
+              const selectedIndexes = that.$refs.myGrid.getselectedrowindexes()
+              const ids = []
+              selectedIndexes.forEach(function (value) {
+                const id = that.$refs.myGrid.getrowid(value)
+                ids.push(id)
+              })
+              that.delete(ids)
+            },
+            onCancel() {},
+            class: 'test',
+          })
+        })
+      }
+      
       // 修改
-      const editButton = jqwidgets.createInstance(
-        `#${editButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${editButtonID}`, 'jqxTooltip', {
-        content: '编辑',
-        position: 'bottom',
-      })
-      editButton.addEventHandler('click', (event) => {
-        const index = this.$refs.myGrid.getselectedrowindex()
-        if (index < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED })
-          return false
-        }
-        const rowData = this.$refs.myGrid.getrowdata(index)
-        this.$refs.myWindow.open(EDIT_EMPLOYEE, rowData)
-      })
+      if (this.hasAuthority(this, 'emp:update')) {
+        buttonsContainer.appendChild(editButtonContainer)
+        const editButton = jqwidgets.createInstance(
+          `#${editButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/edit.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${editButtonID}`, 'jqxTooltip', {
+          content: '编辑',
+          position: 'bottom',
+        })
+        editButton.addEventHandler('click', (event) => {
+          const index = this.$refs.myGrid.getselectedrowindex()
+          if (index < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED })
+            return false
+          }
+          const rowData = this.$refs.myGrid.getrowdata(index)
+          this.$refs.myWindow.open(EDIT_EMPLOYEE, rowData)
+        })
+      }
+
       // 分配职位
-      const assignButton = jqwidgets.createInstance(
-        `#${assignButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/assign.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${assignButtonID}`, 'jqxTooltip', {
-        content: '职位分配',
-        position: 'bottom',
-      })
-      assignButton.addEventHandler('click', (event) => {
-        const selectedIndexes = this.$refs.myGrid.getselectedrowindexes()
-        if (selectedIndexes.length < 1) {
-          this.$message.warning(Message.NO_ROWS_SELECTED)
-          return false
-        }
-        if (selectedIndexes.length > 1) {
-          this.$message.warning(Message.LIMIT_ONE_ROW)
-          return false
-        }
-        const empId = this.$refs.myGrid.getrowid(selectedIndexes[0])
-        this.$refs.assignWindow.open(ASSIGN_POSITION, empId)
-      })
+      if (this.hasAuthority(this, 'emp:assign')) {
+        buttonsContainer.appendChild(assignButtonContainer)
+        const assignButton = jqwidgets.createInstance(
+          `#${assignButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/assign.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${assignButtonID}`, 'jqxTooltip', {
+          content: '职位分配',
+          position: 'bottom',
+        })
+        assignButton.addEventHandler('click', (event) => {
+          const selectedIndexes = this.$refs.myGrid.getselectedrowindexes()
+          if (selectedIndexes.length < 1) {
+            this.$message.warning(Message.NO_ROWS_SELECTED)
+            return false
+          }
+          if (selectedIndexes.length > 1) {
+            this.$message.warning(Message.LIMIT_ONE_ROW)
+            return false
+          }
+          const empId = this.$refs.myGrid.getrowid(selectedIndexes[0])
+          this.$refs.assignWindow.open(ASSIGN_POSITION, empId)
+        })
+      }
+
       // 刷新
+      buttonsContainer.appendChild(reloadButtonContainer)
       const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         'jqxButton',

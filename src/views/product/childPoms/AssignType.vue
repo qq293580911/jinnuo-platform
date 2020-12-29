@@ -2,7 +2,8 @@
   <div>
     <JqxValidator
       ref="myValidator"
-      :hintType="'label'"
+      :hintType="'tooltip'"
+      :rtl="true"
       @validationSuccess="onValidationSuccess($event)"
     >
       <JqxForm

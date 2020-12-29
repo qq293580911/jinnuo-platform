@@ -22,6 +22,8 @@
 
 <script>
 import Vue from 'vue'
+import store from '@/store'
+Vue.use(store)
 import JqxLayout from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxlayout.vue'
 
 import Department from './Department'
@@ -71,7 +73,7 @@ export default {
                       initContent: function () {
                         const Component = Vue.extend(Department)
                         const instance = new Component({
-                          // store,
+                          store,
                         }).$mount('#department')
                         that.$refs.departmentInstance = instance
                       },
@@ -96,10 +98,10 @@ export default {
                       initContent: function () {
                         const Component = Vue.extend(Employee)
                         const instance = new Component({
-                          // store,
-                          propsData:{
-                            height:'100%'
-                          }
+                          store,
+                          propsData: {
+                            height: '100%',
+                          },
                         }).$mount('#employee')
                         that.$refs.employeeInstance = instance
                       },

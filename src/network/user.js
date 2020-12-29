@@ -76,6 +76,22 @@ export function getRoleListByUserId(params) {
   })
 }
 
+export function getAllRoleListByUserId(params) {  
+  return request({
+    url: '/user/getRoleListSelectionByUserId.do',
+    method: 'Get',
+    params,
+  })
+}
+
+export function assignRole(params) {  
+  return request({
+    url:'/userRole/assignUserRole.do',
+    method:'Post',
+    data:params
+  })
+}
+
 // 角色权限
 export function findRoleAuthority(params) {
   return request({

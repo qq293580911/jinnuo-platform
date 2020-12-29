@@ -20,32 +20,18 @@
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxwindow.vue'
 import JqxForm from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue'
 
-import { getEmployeePosition, assignPosition } from '@/network/employee.js'
+import { getAllRoleListByUserId, assignRole } from '@/network/user.js'
 export default {
   components: {
     JqxWindow,
     JqxForm,
   },
-  // beforeCreate() {
-  //   this.source = {
-  //     datafields: [
-  //       { name: 'id', type: 'number' },
-  //       { name: 'posId', map: 'pos_id', type: 'number' },
-  //       { name: 'posName', map: 'pos_name', type: 'string' },
-  //       { name: 'empId', map: 'emp_id', type: 'number' },
-  //       { name: 'enable', type: 'number' },
-  //     ],
-  //     url: '/emp/getEmployeePositionList.do',
-  //     type: 'get',
-  //     dataType: 'json',
-  //   }
-  // },
   data() {
     const that = this
     return {
       template: [
         {
-          name: 'position',
+          name: 'role',
           type: 'custom',
           init(component) {
             that.listBoxInstance = jqwidgets.createInstance(
@@ -56,8 +42,8 @@ export default {
                 checkboxes: true,
                 width: '100%',
                 height: 200,
-                displayMember: 'pos_name',
-                valueMember: 'pos_id',
+                displayMember: 'role_name',
+                valueMember: 'role_id',
               }
             )
           },
@@ -81,7 +67,7 @@ export default {
       const arr = items.map((item) => {
         const map = {}
         map['id'] = item['originalItem']['id']
-        map['posId'] = item['originalItem']['pos_id']
+        map['roleId'] = item['originalItem']['role_id']
         if (item['checked'] == true) {
           map['enable'] = 1
         } else {
@@ -92,27 +78,27 @@ export default {
       const params = {
         jsonParams: JSON.stringify({
           items: arr,
-          empId: this.empId,
+          userId: this.userId,
         }),
       }
-      assignPosition(params).then((res) => {
+      assignRole(params).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.refresh()
       })
     })
   },
   methods: {
-    open(...param) {
+    open(...params) {
       const that = this
-      this.$refs.myWindow.setTitle(param[0])
-      const empId = param[1]
-      this.empId = empId
-      const params = {
+      this.$refs.myWindow.setTitle(params[0])
+      const userId = params[1]
+      this.userId = userId
+      const jsonParams = {
         jsonParams: JSON.stringify({
-          empId,
+          userId,
         }),
       }
-      getEmployeePosition(params).then((res) => {
+      getAllRoleListByUserId(jsonParams).then((res) => {
         this.listBoxInstance.source = res
         this.listBoxInstance.refresh()
         res
@@ -133,5 +119,5 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 </style>

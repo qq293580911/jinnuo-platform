@@ -28,12 +28,14 @@
     >
     </JqxGrid>
     <user-window ref="userWindow"></user-window>
+    <assign-role-window ref="assignRoleWindow"></assign-role-window>
   </div>
 </template>
 
 <script>
 import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
 import UserWindow from './childComps/UserWindow.vue'
+import AssignRoleWindow from './childComps/AssignRoleWindow'
 
 import { formatFilter } from '@/common/util.js'
 import { Message, ADD_USER, EDIT_USER, ASSIGN_ROLE } from '@/common/const.js'
@@ -48,6 +50,7 @@ export default {
   components: {
     JqxGrid,
     UserWindow,
+    AssignRoleWindow
   },
   computed: {
     contentStyle() {
@@ -323,28 +326,28 @@ export default {
 
       // 分配角色按钮
       if (this.hasAuthority(this, 'user:assign')) {
+        buttonsContainer.appendChild(assignButtonContainer)
+        const assignButton = jqwidgets.createInstance(
+          `#${assignButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/assign.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${assignButtonID}`, 'jqxTooltip', {
+          content: '分配角色',
+          position: 'bottom',
+        })
+        assignButton.addEventHandler('click', (event) => {
+          const index = this.$refs.myGrid.getselectedrowindex()
+          if (index < 0) {
+            this.$message.warning({ content: Message.NO_ROWS_SELECTED })
+            return false
+          }
+          const userId = this.$refs.myGrid.getrowid(index)
+          this.$refs.assignRoleWindow.open(ASSIGN_ROLE, userId)
+        })
       }
-      buttonsContainer.appendChild(assignButtonContainer)
-      const assignButton = jqwidgets.createInstance(
-        `#${assignButtonID}`,
-        'jqxButton',
-        {
-          imgSrc: require(`@/assets/iconfont/custom/assign.svg`),
-        }
-      )
-      jqwidgets.createInstance(`#${assignButtonID}`, 'jqxTooltip', {
-        content: '分配角色',
-        position: 'bottom',
-      })
-      assignButton.addEventHandler('click', (event) => {
-        const index = this.$refs.myGrid.getselectedrowindex()
-        if (index < 0) {
-          this.$message.warning({ content: Message.NO_ROWS_SELECTED })
-          return false
-        }
-        const rowData = this.$refs.myGrid.getrowdata(index)
-        this.$refs.assignWindow.open(ASSIGN_ROLE, rowData)
-      })
 
       // 刷新按钮
       buttonsContainer.appendChild(reloadButtonContainer)

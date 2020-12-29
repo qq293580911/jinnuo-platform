@@ -548,14 +548,7 @@ export default {
               columnWidth: '50%',
             },
           ],
-        },
-        {
-          name: 'contrDtlId',
-          type: 'custom',
-          init: function (component) {
-            component.append('<input id="contrDtlId" type="hidden"/>')
-          },
-        },
+        }
       ],
     }
   },
@@ -821,7 +814,7 @@ export default {
         )
         this.signDateInstance.val(data['sign_date'])
         this.signBackDateInstance.val(data['sign_back_date'])
-        this.deductionBonusAmountInstance.val('')
+        this.deductionBonusAmountInstance.jqxNumberInput('setDecimal',data['deduction_bonus_amount'])
         const formulaModel = data['formula_model']
         that.formulaModelInstance.jqxComboBox('clearSelection')
         setTimeout(() => {
@@ -833,7 +826,7 @@ export default {
             that.formulaModelInstance.jqxComboBox('selectItem', formulaModel)
           }
         }, 100)
-
+        this.performanceBonusReimbursementInstance.val(data['performance_bonus_reimbursement'])
         this.riseDropPointInstance.val(data['rise_drop_point'])
         this.overBudgetBearInstance.val(data['over_budget_bear'])
         this.id = data['id']

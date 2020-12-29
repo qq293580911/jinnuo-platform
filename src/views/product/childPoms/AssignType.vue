@@ -5,7 +5,11 @@
       :hintType="'label'"
       @validationSuccess="onValidationSuccess($event)"
     >
-      <JqxForm ref="myForm" :template="template"> </JqxForm>
+      <JqxForm
+        ref="myForm"
+        :template="template"
+        v-show="editable"
+      > </JqxForm>
     </JqxValidator>
     <JqxTree
       style="margin-left: 5px; float: left; margin-top: 5px"
@@ -34,61 +38,62 @@
 </template>
 
 <script>
-import JqxTree from "jqwidgets-scripts/jqwidgets-vue/vue_jqxtree.vue";
-import JqxValidator from "jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue";
-import JqxForm from "jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue";
-import JqxButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue";
+import JqxTree from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxtree.vue'
+import JqxValidator from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue'
+import JqxForm from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue'
+import JqxButton from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue'
 
-import { Message } from "@/common/const.js";
+import { Message } from '@/common/const.js'
 import {
   getAssignType,
   addAssignType,
   deleteAssignType,
-  updateAssignType
-} from "@/network/product.js";
+  updateAssignType,
+} from '@/network/product.js'
 export default {
-  name: "AssignType",
+  name: 'AssignType',
   components: {
     JqxTree,
     JqxValidator,
     JqxForm,
-    JqxButton
+    JqxButton,
   },
   beforeCreate() {
     this.source = {
-      datatype: "json",
+      datatype: 'json',
       datafields: [
-        { name: "id", map: "at_id", type: "number" },
-        { name: "parentid", map: "at_pid", type: "number" },
-        { name: "text", map: "at_name", type: "string" },
-        { name: "value", map: "at_id", type: "string" }
+        { name: 'id', map: 'at_id', type: 'number' },
+        { name: 'parentid', map: 'at_pid', type: 'number' },
+        { name: 'text', map: 'at_name', type: 'string' },
+        { name: 'value', map: 'at_id', type: 'string' },
       ],
-      id: "id",
-      type: "json",
-      url: "/productCateg/getAssignTypeData.do"
-    };
+      id: 'id',
+      type: 'json',
+      url: '/productCateg/getAssignTypeData.do',
+    }
+    this.editable = false
   },
   created() {
-    const that = this;
+    const that = this
     const dataAdapter = new jqx.dataAdapter(that.source, {
       loadServerData(serverdata, source, callback) {
         getAssignType(source.url, source, serverdata).then((res) => {
           callback({
-            records: res.records
-          });
-        });
+            records: res.records,
+          })
+        })
       },
       beforeLoadComplete(records) {
         that.records = dataAdapter.getRecordsHierarchy(
-          "id",
-          "parentid",
-          "items",
-          [{ name: "text", map: "label" }]
-        );
-        that.$refs.myTree.source = that.records;
-      }
-    });
-    dataAdapter.dataBind();
+          'id',
+          'parentid',
+          'items',
+          [{ name: 'text', map: 'label' }]
+        )
+        that.$refs.myTree.source = that.records
+      },
+    })
+    dataAdapter.dataBind()
   },
   data() {
     return {
@@ -97,132 +102,163 @@ export default {
         {
           columns: [
             {
-              name: "newName",
-              type: "text",
-              align: "left",
-              width: "230px",
-              rowHeight: "40px"
+              name: 'newName',
+              type: 'text',
+              align: 'left',
+              width: '230px',
+              rowHeight: '40px',
             },
             {
-              name: "submitBtn",
-              type: "button",
-              text: "确认",
-              width: "60px"
-            }
-          ]
-        }
+              name: 'submitBtn',
+              type: 'button',
+              text: '确认',
+              width: '60px',
+            },
+          ],
+        },
       ],
       formValues: {},
       onValidationSuccess(event) {
-        const item = this.$refs.myTree.getSelectedItem();
+        const item = this.$refs.myTree.getSelectedItem()
         if (item) {
-          this.formValues.id = item.id;
-          const $newName = this.$refs.myForm.getComponentByName("newName");
-          this.formValues.name = $newName.val();
-          this.updateCategory(this.formValues);
+          this.formValues.id = item.id
+          const $newName = this.$refs.myForm.getComponentByName('newName')
+          this.formValues.name = $newName.val()
+          this.updateCategory(this.formValues)
         } else {
-          this.$message.warning(Message.NO_NODE_SELECTED);
+          this.$message.warning(Message.NO_NODE_SELECTED)
         }
       },
-      buttonGroup: ["添加", "编辑", "删除", "展开全部", "收起全部"]
-    };
+      buttonGroup: (() => {
+        const arr = [
+          '添加',
+          '编辑',
+          '删除',
+          '展开全部',
+          '收起全部',
+          '刷新',
+        ].filter((item) => {
+          switch (item) {
+            case '添加':
+              if (this.hasAuthority(this, 'prodCate:add')) {
+                return item
+              }
+              break
+            case '删除':
+              if (this.hasAuthority(this, 'prodCate:delete')) {
+                return item
+              }
+              break
+            case '编辑':
+              if (this.hasAuthority(this, 'prodCate:update')) {
+                this.editable = true
+                return item
+              }
+              break
+            default:
+              return item
+              break
+          }
+        })
+        return arr
+      })(),
+    }
   },
   mounted() {
-    const $newName = this.$refs.myForm.getComponentByName("newName");
+    const $newName = this.$refs.myForm.getComponentByName('newName')
     // 设置表单验证规则
     this.$refs.myValidator.rules = [
       {
         input: $newName,
-        message: "该项必填",
-        action: "blur,input",
-        rule: "required"
-      }
-    ];
+        message: '该项必填',
+        action: 'blur,input',
+        rule: 'required',
+      },
+    ]
     // 验证表单
-    const btn = this.$refs.myForm.getComponentByName("submitBtn");
-    btn.on("click", () => {
-      this.$refs.myValidator.validate(document.getElementById("myForm"));
-    });
+    const btn = this.$refs.myForm.getComponentByName('submitBtn')
+    btn.on('click', () => {
+      this.$refs.myValidator.validate(document.getElementById('myForm'))
+    })
   },
   methods: {
     buttonClick(type) {
-      const item = this.$refs.myTree.getSelectedItem();
+      const item = this.$refs.myTree.getSelectedItem()
       switch (type) {
-        case "添加":
+        case '添加':
           if (item) {
-            this.addCategory(item.id);
+            this.addCategory(item.id)
           } else {
-            this.addCategory(null);
+            this.addCategory(null)
           }
-          break;
-        case "编辑":
-        {
+          break
+        case '编辑': {
           if (!item) {
-            this.$message.warning(Message.NO_NODE_SELECTED);
-            return false;
+            this.$message.warning(Message.NO_NODE_SELECTED)
+            return false
           }
-          const $newName = this.$refs.myForm.getComponentByName("newName");
-          $newName.val(item.label);
-          break;
+          const $newName = this.$refs.myForm.getComponentByName('newName')
+          $newName.val(item.label)
+          break
         }
-        case "删除":
+        case '删除':
           if (!item) {
-            this.$message.warning(Message.NO_NODE_SELECTED);
-            return false;
+            this.$message.warning(Message.NO_NODE_SELECTED)
+            return false
           }
           if (item.hasItems) {
-            this.$message.warning(Message.UNLABLE_DELETE_HAS_ITEMS);
-            return false;
+            this.$message.warning(Message.UNLABLE_DELETE_HAS_ITEMS)
+            return false
           }
-          this.deleteCategory(item.id);
-          break;
-        case "展开全部":
-          this.$refs.myTree.expandAll();
-          break;
-        case "收起全部":
-          this.$refs.myTree.collapseAll();
-          break;
+          this.deleteCategory(item.id)
+          break
+        case '展开全部':
+          this.$refs.myTree.expandAll()
+          break
+        case '收起全部':
+          this.$refs.myTree.collapseAll()
+          break
       }
     },
     addCategory(id) {
       const params = {
         pid: id,
-        name: "item"
-      };
+        name: 'item',
+      }
       addAssignType({ jsonParams: JSON.stringify(params) }).then((res) => {
         // 添加节点
-        const item = this.$refs.myTree.getSelectedItem();
+        const item = this.$refs.myTree.getSelectedItem()
         this.$refs.myTree.addTo(
           {
-            label: "item",
-            id: id
+            label: 'item',
+            id: id,
           },
           item == null ? null : item.element,
           false
-        );
+        )
         // 重新渲染树
-        this.$refs.myTree.render();
-      });
+        this.$refs.myTree.render()
+      })
     },
     deleteCategory(id) {
       const params = {
-        id
-      };
+        id,
+      }
       deleteAssignType({ jsonParams: JSON.stringify(params) }).then((res) => {
-        const item = this.$refs.myTree.getSelectedItem();
-        this.$refs.myTree.removeItem(item.element);
-        this.$refs.myTree.render();
-      });
+        const item = this.$refs.myTree.getSelectedItem()
+        this.$refs.myTree.removeItem(item.element)
+        this.$refs.myTree.render()
+      })
     },
     updateCategory(params) {
       updateAssignType({ jsonParams: JSON.stringify(params) }).then((res) => {
-        const item = this.$refs.myTree.getSelectedItem();
-        this.$refs.myTree.updateItem(item.element, { label: params.name });
-        this.$refs.myTree.render();
-      });
-    }
-  }
-};
+        const item = this.$refs.myTree.getSelectedItem()
+        this.$refs.myTree.updateItem(item.element, { label: params.name })
+        this.$refs.myTree.render()
+      })
+    },
+  },
+}
 </script>
 
 <style scoped>

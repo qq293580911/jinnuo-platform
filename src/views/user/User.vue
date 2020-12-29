@@ -365,6 +365,7 @@ export default {
       })
     },
     initrowdetails(index, parentElement, gridElement, datarecord) {
+      parentElement.style['z-index'] = 1000
       let tabsdiv = null
       let roleGrid = null
       tabsdiv = $($(parentElement).children()[0])

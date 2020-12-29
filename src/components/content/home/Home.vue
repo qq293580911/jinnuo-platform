@@ -5,9 +5,7 @@
       <home-nav-bar></home-nav-bar>
     </a-layout-header>
     <!-- 下部操作面板 -->
-    <a-layout
-      id="components-layout-demo-custom-trigger"
-    >
+    <a-layout id="components-layout-demo-custom-trigger">
       <!-- 左侧菜单 -->
       <a-layout-sider
         v-model="collapsed"
@@ -193,18 +191,15 @@ export default {
       })
     },
     getPermissions() {
-      const permissions = this.$store.state.permissions
-      if (Array.isArray(permissions) == false) {
-        this.user = JSON.parse(window.sessionStorage.getItem('user'))
-        const params = {
-          jsonParams: JSON.stringify({
-            userId: this.user.id,
-          }),
-        }
-        getPermissions(params).then((responese) => {
-          this.$store.dispatch('savePermissions', responese)
-        })
+      this.user = JSON.parse(window.sessionStorage.getItem('user'))
+      const params = {
+        jsonParams: JSON.stringify({
+          userId: this.user.id,
+        }),
       }
+      getPermissions(params).then((responese) => {
+        this.$store.dispatch('savePermissions', responese)
+      })
     },
     getQuoters() {
       const quoters = this.$store.state.quoters

@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       menus: ['基本权限', '部门权限'],
-      currentMenuName: '部门权限',
+      currentMenuName: '基本权限',
     }
   },
   methods: {

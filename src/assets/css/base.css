@@ -11,6 +11,12 @@ html {
   height: 100%;
 }
 
+input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+  background-color: rgb(250, 255, 189);
+  background-image: none;
+  color: rgb(0, 0, 0);
+}
+
 .green {
   color: black \9;
   background-color: #93D150 \9;
@@ -24,7 +30,7 @@ html {
 
 .yellow {
   color: black\9;
-  background-color: yellow\9;
+  background-color: yellow \9;
 }
 
 .yellow:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected),
@@ -35,7 +41,7 @@ html {
 
 .red {
   color: black\9;
-  background-color: #e83636\9;
+  background-color: #e83636 \9;
 }
 
 .red:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected),

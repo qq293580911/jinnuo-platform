@@ -2,14 +2,14 @@
   <div>
     <div class="scroll-down">
       向下滚动
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-        <path
-          d="M16 3C8.832031 3 3 8.832031 3 16s5.832031 13 13 13 13-5.832031 13-13S23.167969 3 16 3zm0 2c6.085938 0 11 4.914063 11 11 0 6.085938-4.914062 11-11 11-6.085937 0-11-4.914062-11-11C5 9.914063 9.914063 5 16 5zm-1 4v10.28125l-4-4-1.40625 1.4375L16 23.125l6.40625-6.40625L21 15.28125l-4 4V9z"
-        />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 32 32"
+      >
+        <path d="M16 3C8.832031 3 3 8.832031 3 16s5.832031 13 13 13 13-5.832031 13-13S23.167969 3 16 3zm0 2c6.085938 0 11 4.914063 11 11 0 6.085938-4.914062 11-11 11-6.085937 0-11-4.914062-11-11C5 9.914063 9.914063 5 16 5zm-1 4v10.28125l-4-4-1.40625 1.4375L16 23.125l6.40625-6.40625L21 15.28125l-4 4V9z" />
       </svg>
       <p class="modal-desc"></p>
     </div>
-    <div class="container"></div>
     <div class="modal">
       <div class="modal-container">
         <div class="modal-left">
@@ -21,7 +21,11 @@
             class="login-form"
             @submit="handleSubmit"
           >
-            <a-form-item>
+            <!-- 账号登录方式 -->
+            <a-form-item
+              v-if="isPhone==false"
+              has-feedback
+            >
               <a-input
                 v-decorator="[
                   'userAccount',
@@ -35,6 +39,7 @@
                   },
                 ]"
                 placeholder="Username"
+                auto-complete="new-account"
               >
                 <a-icon
                   slot="prefix"
@@ -42,8 +47,13 @@
                   style="color: rgba(0, 0, 0, 0.25)"
                 />
               </a-input>
+              <input type="text" style="display: none;">
             </a-form-item>
-            <a-form-item>
+            <a-form-item
+              v-if="isPhone==false"
+              has-feedback
+            >
+              <input type="password" style="display: none;">
               <a-input
                 v-decorator="[
                   'userPassword',
@@ -52,7 +62,7 @@
                       {
                         required: true,
                         message: '请输入你的密码!',
-                      },
+                      }
                     ],
                   },
                 ]"
@@ -66,19 +76,56 @@
                 />
               </a-input>
             </a-form-item>
-            <a-form-item>
-              <a-checkbox
+            <!-- 手机登录方式 -->
+            <a-form-item v-if="isPhone==true">
+              <a-input
                 v-decorator="[
-                  'remember',
+                  'phone',
                   {
-                    valuePropName: 'checked',
-                    initialValue: true,
+                    rules: [{ required: true, message: '请输入你的手机号码!' }],
                   },
                 ]"
+                style="width: 100%"
               >
+                <a-select
+                  slot="addonBefore"
+                  v-decorator="['prefix', { initialValue: '86' }]"
+                  style="width: 70px"
+                >
+                  <a-select-option value="86">
+                    +86
+                  </a-select-option>
+                  <a-select-option value="87">
+                    +87
+                  </a-select-option>
+                </a-select>
+              </a-input>
+            </a-form-item>
+            <a-form-item v-if="isPhone==true">
+              <a-row :gutter="8">
+                <a-col :span="12">
+                  <a-input v-decorator="[
+                    'captcha',
+                    { rules: [{ required: true, message: '请输入您获得的验证码!' }] },
+                  ]" />
+                </a-col>
+                <a-col :span="12">
+                  <a-button>获取验证码</a-button>
+                </a-col>
+              </a-row>
+            </a-form-item>
+            <!-- 记住我 -->
+            <a-form-item>
+              <a-checkbox v-decorator="[
+                'remember',
+                {
+                  valuePropName: 'checked',
+                  initialValue: remember,
+                },
+              ]">
                 记住我
               </a-checkbox>
-              <a class="login-form-forgot" href=""> 忘记密码？ </a>
+              <a class="login-form-forgot"> 忘记密码？ </a>
               <a-button
                 type="primary"
                 html-type="submit"
@@ -86,107 +133,192 @@
               >
                 登录
               </a-button>
-              或
-              <a href=""> 现在注册! </a>
+              <a
+                @click="changeLoginMode"
+                style="float:right;"
+              >
+                {{ modeLabel }}
+              </a>
             </a-form-item>
           </a-form>
         </div>
         <div class="modal-right">
-          <img src="images/mate.jpg" alt />
+          <img
+            src="images/mate.jpg"
+            alt
+          />
         </div>
-        <button class="icon-button close-button" @click="closeModal">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-            <path
-              d="M 25 3 C 12.86158 3 3 12.86158 3 25 C 3 37.13842 12.86158 47 25 47 C 37.13842 47 47 37.13842 47 25 C 47 12.86158 37.13842 3 25 3 z M 25 5 C 36.05754 5 45 13.94246 45 25 C 45 36.05754 36.05754 45 25 45 C 13.94246 45 5 36.05754 5 25 C 5 13.94246 13.94246 5 25 5 z M 16.990234 15.990234 A 1.0001 1.0001 0 0 0 16.292969 17.707031 L 23.585938 25 L 16.292969 32.292969 A 1.0001 1.0001 0 1 0 17.707031 33.707031 L 25 26.414062 L 32.292969 33.707031 A 1.0001 1.0001 0 1 0 33.707031 32.292969 L 26.414062 25 L 33.707031 17.707031 A 1.0001 1.0001 0 0 0 32.980469 15.990234 A 1.0001 1.0001 0 0 0 32.292969 16.292969 L 25 23.585938 L 17.707031 16.292969 A 1.0001 1.0001 0 0 0 16.990234 15.990234 z"
-            />
+        <button
+          class="icon-button close-button"
+          @click="closeModal"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 50 50"
+          >
+            <path d="M 25 3 C 12.86158 3 3 12.86158 3 25 C 3 37.13842 12.86158 47 25 47 C 37.13842 47 47 37.13842 47 25 C 47 12.86158 37.13842 3 25 3 z M 25 5 C 36.05754 5 45 13.94246 45 25 C 45 36.05754 36.05754 45 25 45 C 13.94246 45 5 36.05754 5 25 C 5 13.94246 13.94246 5 25 5 z M 16.990234 15.990234 A 1.0001 1.0001 0 0 0 16.292969 17.707031 L 23.585938 25 L 16.292969 32.292969 A 1.0001 1.0001 0 1 0 17.707031 33.707031 L 25 26.414062 L 32.292969 33.707031 A 1.0001 1.0001 0 1 0 33.707031 32.292969 L 26.414062 25 L 33.707031 17.707031 A 1.0001 1.0001 0 0 0 32.980469 15.990234 A 1.0001 1.0001 0 0 0 32.292969 16.292969 L 25 23.585938 L 17.707031 16.292969 A 1.0001 1.0001 0 0 0 16.990234 15.990234 z" />
           </svg>
         </button>
       </div>
-      <button class="modal-button" @click="openModal">点击此处登录</button>
+      <button
+        class="modal-button"
+        @click="openModal"
+      >点击此处登录</button>
     </div>
   </div>
 </template>
 
 <script>
-import { login, User } from "@/network/login.js";
+import { login, User } from '@/network/login.js'
+import { Base64 } from 'js-base64'
 export default {
-  name: "Login",
   data() {
     return {
       isOpened: false,
       hasErrors(fieldsError) {
-        return Object.keys(fieldsError).some((field) => fieldsError[field]);
+        return Object.keys(fieldsError).some((field) => fieldsError[field])
       },
-      form: this.$form.createForm(this, { name: "horizontal_login" }),
-      user: {}
-    };
+      user: {},
+      account: '',
+      password: '',
+      remember: false,
+      isPhone: false,
+    }
+  },
+  computed: {
+    modeLabel() {
+      return this.isPhone ? '账号登录' : '手机登录'
+    },
+  },
+  watch: {
+    isPhone() {
+      if (this.isPhone) {
+        this.$message.info('功能尚未实现')
+      }
+    },
+  },
+  beforeCreate() {
+    this.form = this.$form.createForm(this, { name: 'normal_login' })
   },
   created() {
     // 绑定滚动条事件
-    window.addEventListener("scroll", () => {
+    window.addEventListener('scroll', () => {
       if (window.scrollY > window.innerHeight / 3 && !this.isOpened) {
-        const scrollDown = document.querySelector(".scroll-down");
-        this.isOpened = true;
-        scrollDown.style.display = "none";
-        this.openModal();
+        const scrollDown = document.querySelector('.scroll-down')
+        this.isOpened = true
+        scrollDown.style.display = 'none'
+        this.openModal()
       }
-    });
+    })
   },
   mounted() {
+    // 在页面加载时从cookie获取登录信息
+    let account = this.getCookie('account')
+    // 如果存在赋值给表单，并且将记住密码勾选
+    if (account) {
+      this.form.setFieldsValue({ userAccount: account })
+      let password = Base64.decode(this.getCookie('password'))
+      this.form.setFieldsValue({ userPassword: password })
+      this.remember = true
+    }
+
     this.$nextTick(() => {
-      this.form.validateFields();
-    });
+      this.form.validateFields()
+    })
   },
   methods: {
     openModal() {
-      const body = document.querySelector("body");
-      const modal = document.querySelector(".modal");
-      modal.classList.add("is-open");
-      body.style.overflow = "hidden";
+      const body = document.querySelector('body')
+      const modal = document.querySelector('.modal')
+      modal.classList.add('is-open')
+      body.style.overflow = 'hidden'
     },
     closeModal() {
-      const body = document.querySelector("body");
-      const modal = document.querySelector(".modal");
-      modal.classList.remove("is-open");
-      body.style.overflow = "initial";
+      const body = document.querySelector('body')
+      const modal = document.querySelector('.modal')
+      modal.classList.remove('is-open')
+      body.style.overflow = 'initial'
+    },
+    changeLoginMode() {
+      this.isPhone = !this.isPhone
     },
     userNameError() {
-      const { getFieldError, isFieldTouched } = this.form;
-      return isFieldTouched("userName") && getFieldError("userName");
+      const { getFieldError, isFieldTouched } = this.form
+      return isFieldTouched('userName') && getFieldError('userName')
     },
     passwordError() {
-      const { getFieldError, isFieldTouched } = this.form;
-      return isFieldTouched("password") && getFieldError("password");
+      const { getFieldError, isFieldTouched } = this.form
+      return isFieldTouched('password') && getFieldError('password')
     },
     handleSubmit(e) {
-      e.preventDefault();
+      e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
           login(values).then((res) => {
-            if (res.msg == "success") {
-              this.user = new User(res.loginInfo);
-              this.$message.success(`欢迎回来，${this.user.name}`);
-              window.sessionStorage.setItem("token", "sdsdsdsd");
-              window.sessionStorage.setItem("user", JSON.stringify(this.user));
+            if (res.msg == 'success') {
+              this.user = new User(res.loginInfo)
+              this.$message.success(`欢迎回来，${this.user.name}`)
+              this.saveLoginInfo(values)
               this.$router.push({
-                path: `/home`
-              });
+                path: `/home`,
+              })
+            }else{
+              this.$message.warning(res.msg)
             }
-          });
+          })
         }
-      });
+      })
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log('success')
         } else {
-          return false;
+          return false
         }
-      });
-    }
-  }
-};
+      })
+    },
+    saveLoginInfo(formData) {
+      window.sessionStorage.setItem('token', 'sdsdsdsd')
+      window.sessionStorage.setItem('user', JSON.stringify(this.user))
+      // 判断用户是否勾选记住密码，如果勾选，向cookie中储存登录信息，
+      this.remember = this.form.getFieldValue('remember')
+      if (this.remember) {
+        this.setCookie('account', formData['userAccount'])
+        // base64加密密码
+        let password = Base64.encode(formData['userPassword'])
+        this.setCookie('password', password)
+        this.setCookie('remember', true)
+      } else {
+        // 如果没有勾选，储存的信息为空
+        this.setCookie('account', '')
+        this.setCookie('password', '')
+        this.setCookie('remember', false)
+      }
+    },
+    getCookie: function (key) {
+      if (document.cookie.length > 0) {
+        let start = document.cookie.indexOf(key + '=')
+        if (start !== -1) {
+          start = start + key.length + 1
+          let end = document.cookie.indexOf(';', start)
+          if (end === -1) end = document.cookie.length
+          return unescape(document.cookie.substring(start, end))
+        }
+      }
+      return ''
+    },
+    setCookie: function (cName, value, expiredays) {
+      const exdate = new Date()
+      exdate.setDate(exdate.getDate() + expiredays)
+      document.cookie =
+        cName +
+        '=' +
+        decodeURIComponent(value) +
+        (expiredays == null ? '' : ';expires=' + exdate.toGMTString())
+    },
+  },
+}
 </script>
 
 <style scoped>
@@ -202,7 +334,7 @@ export default {
 
 .container {
   height: 200vh;
-  background-image: url("/images/background.jpg");
+  background-image: url('/images/background.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -271,7 +403,7 @@ export default {
 
 .modal-button {
   color: #7d695e;
-  font-family: "Nunito", sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 18px;
   cursor: pointer;
   border: 0;
@@ -372,7 +504,7 @@ export default {
   color: #fff;
   border-radius: 4px;
   background: #8c7569;
-  font-family: "Nunito", sans-serif;
+  font-family: 'Nunito', sans-serif;
   -webkit-transition: 0.3s;
   transition: 0.3s;
   cursor: pointer;
@@ -385,7 +517,7 @@ export default {
 .input-label {
   font-size: 11px;
   text-transform: uppercase;
-  font-family: "Nunito", sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-weight: 600;
   letter-spacing: 0.7px;
   color: #8c7569;
@@ -412,7 +544,7 @@ export default {
   border: 0;
   padding: 4px 0 0;
   font-size: 14px;
-  font-family: "Nunito", sans-serif;
+  font-family: 'Nunito', sans-serif;
   border-radius: 5px;
 }
 

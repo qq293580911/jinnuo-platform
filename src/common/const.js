@@ -23,6 +23,7 @@ export const Message = {
   END_ROW_LESS_THAN_START_ROW: '结束行不能小于开始行',
   NOT_FOUND_CONTENT: '未发现内容',
   NOT_ALLOWED_FORMAT: '不允许的格式',
+  NO_DATA: '没有数据',
 }
 
 export const Module = {

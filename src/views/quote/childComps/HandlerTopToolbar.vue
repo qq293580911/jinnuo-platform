@@ -149,6 +149,7 @@ export default {
       if (menuToolIninitialization == false) {
         const that = this
         switch (index) {
+          // 文件上传选择器
           case 0: {
             const container = document.createElement('div')
             const containerID = JQXLite.generateID()
@@ -183,6 +184,7 @@ export default {
             }).$mount(`#${containerID}`)
             break
           }
+          // 上传，导入，处理，导出
           case 1: {
             const buttonGroup = document.createElement('div')
             buttonGroup.style.cssText =
@@ -244,6 +246,7 @@ export default {
             })
             break
           }
+          // 批量添加控制箱
           case 2: {
             tool[0].style.cssText = 'margin-left:10%;'
             const container = document.createElement('div')
@@ -265,6 +268,7 @@ export default {
             )
             break
           }
+          // 加点
           case 3: {
             tool[0].style.cssText = 'margin-left:10%;'
             const container = document.createElement('div')
@@ -304,6 +308,7 @@ export default {
             )
             break
           }
+          // 价格方案，拆分方案
           case 4: {
             tool[0].style.cssText = 'float:right;'
             const planContainer = document.createElement('div')

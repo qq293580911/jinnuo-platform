@@ -40,6 +40,7 @@
 import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
 import JqxLoader from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxloader.vue'
 import ShowMoreWindow from './ShowMoreWindow'
+import { Message } from '@/common/const.js'
 import { getLocalization } from '@/common/localization.js'
 import { dataExport } from '@/common/util.js'
 import { filterData, handle } from '@/network/quote.js'
@@ -393,7 +394,7 @@ export default {
     this.$bus.$off('handler').$on('handler', () => {
       const gridContent = this.$refs.myGrid.getrows()
       if (gridContent.length < 1) {
-        this.$message.warning('未发现待操作的数据')
+        this.$message.warning(Message.NO_DATA)
         return false
       }
       let content = []
@@ -443,7 +444,7 @@ export default {
     this.$bus.$off('filter').$on('filter', () => {
       const rows = this.$refs.myGrid.getrows()
       if (rows.length == 0) {
-        this.$message.warning('未发现待操作的数据')
+        this.$message.warning(Message.NO_DATA)
         return false
       }
       const selectedIndexes = this.$refs.myGrid.getselectedrowindexes()
@@ -481,6 +482,10 @@ export default {
       const name = `done_${this.$store.state.currentQuote.name}`
       const columns = this.$refs.myGrid.columns
       const content = this.$refs.myGrid.getrows()
+      if(content.length<1){
+        this.$message.warning(Message.NO_DATA)
+        return false
+      }
       content.forEach((rowData) => {
         const totalPrice = rowData['totalPrice']
         if (/\d+\.?\d+/.test(totalPrice) == false) {

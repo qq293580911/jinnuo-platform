@@ -416,7 +416,7 @@ export default {
           width: 100,
         })
         columns.push({
-          text: '成交价格',
+          text: '成交价',
           datafield: 'final_price',
           align: 'center',
           cellsalign: 'center',
@@ -785,7 +785,9 @@ export default {
         exportButton.addEventHandler('click', () => {
           const columns = this.$refs.myGrid.columns
           const rowsData = this.$refs.myGrid.getrows()
-          dataExport('合同数据汇总.xlsx', columns, rowsData)
+          dataExport('合同数据汇总.xlsx', columns, rowsData, {
+            numberCol: ['报价', '成交价', '底价', '安装费'],
+          })
         })
       }
 

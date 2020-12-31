@@ -33,6 +33,14 @@ export function updateDelivery(param) {
   })
 }
 
+export function syncToServer(params) {  
+  return request({
+    url: '/dlvDtl/syncToServer.do',
+    method: 'Put',
+    data: params,
+  })
+}
+
 export function showDeliveryDetailList(source, params) {
   return request({
     url: source.url,

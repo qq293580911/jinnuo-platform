@@ -39,15 +39,16 @@ import {
   calc_misc_warranty,
   calc_misc_freight,
   calc_rsv_p,
+  dataExport,
 } from '@/common/util.js'
-import { showDeliveryDetailList } from '@/network/delivery.js'
+import { Message } from '@/common/const.js'
+import { showDeliveryDetailList, syncToServer } from '@/network/delivery.js'
 import { contentHeight } from '@/common/mixin.js'
 export default {
-  name: 'Detail',
   components: {
     JqxGrid,
   },
-  mixins:[contentHeight],
+  mixins: [contentHeight],
   beforeCreate() {
     this.source = {
       filter: () => {
@@ -446,45 +447,110 @@ export default {
   mounted() {},
   methods: {
     createButtonsContainers: function (toolbar) {
+      const that = this
       const buttonsContainer = document.createElement('div')
       buttonsContainer.style.cssText =
         'overflow: hidden; position: relative; margin: 5px;'
+      toolbar[0].appendChild(buttonsContainer)
+
       const syncButtonContainer = document.createElement('div')
       const exportButtonContainer = document.createElement('div')
       const reloadButtonContainer = document.createElement('div')
+
       const syncButtonID = JQXLite.generateID()
       const exportButtonID = JQXLite.generateID()
       const reloadButtonID = JQXLite.generateID()
+
       syncButtonContainer.id = syncButtonID
       exportButtonContainer.id = exportButtonID
       reloadButtonContainer.id = reloadButtonID
+
       syncButtonContainer.style.cssText =
         'float: left;margin-left: 5px;  cursor: pointer;'
       exportButtonContainer.style.cssText =
         'float: left;margin-left: 5px;  cursor: pointer;'
       reloadButtonContainer.style.cssText =
         'float:right;margin-left: 5px;  cursor: pointer;'
-      buttonsContainer.appendChild(syncButtonContainer)
-      buttonsContainer.appendChild(exportButtonContainer)
+      // 同步
+      if (this.hasAuthority(this, 'dlvDtl:update')) {
+        buttonsContainer.appendChild(syncButtonContainer)
+        const syncInstance = jqwidgets.createInstance(
+          `#${syncButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/async.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${syncButtonID}`, 'jqxTooltip', {
+          content: '同步数据到服务器',
+          position: 'bottom',
+        })
+        syncInstance.addEventHandler('click', () => {
+          this.$confirm({
+            title: `${Message.CONFIRM_DELETE}`,
+            okText: '确认',
+            cancelText: '取消',
+            centered: true,
+            okType: 'danger',
+            content: (h) => <div style="color:red;"></div>,
+            onOk() {
+              const rowsData = that.$refs.myGrid.getrows()
+              const data = rowsData.map((item) => {
+                return {
+                  order_number: item['order_number'],
+                  delivery_date: item['delivery_date'],
+                  delivery_amount: item['delivery_amount'],
+                  delivery_reserve_price: item['delivery_reserve_price'],
+                  delivery_area: item['delivery_area'],
+                  id: item['id'],
+                }
+              })
+              that.syncToServer(data)
+            },
+            onCancel() {},
+            class: 'test',
+          })
+        })
+      }
+
+      // 导出
+      if (this.hasAuthority(this, 'dlvDtl:export')) {
+        buttonsContainer.appendChild(exportButtonContainer)
+        const exportInstance = jqwidgets.createInstance(
+          `#${exportButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${exportButtonID}`, 'jqxTooltip', {
+          content: '导出',
+          position: 'bottom',
+        })
+        exportInstance.addEventHandler('click', () => {
+          const columns = this.$refs.myGrid.columns
+          const rowsData = this.$refs.myGrid.getrows()
+          dataExport('送货详细数据汇总.xlsx', columns, rowsData, {
+            numberCol: [
+              '合同金额',
+              '下单金额',
+              '送货金额',
+              '送货税金',
+              '送货物流管理费',
+              '送货质保金',
+              '送货运费',
+              '送货底价',
+              '安装费',
+              '实际运费',
+              '未送货金额',
+              '下单面积',
+              '送货面积',
+            ],
+          })
+        })
+      }
+
       buttonsContainer.appendChild(reloadButtonContainer)
-      toolbar[0].appendChild(buttonsContainer)
-      // 创建按钮
-      jqwidgets.createInstance(`#${syncButtonID}`, 'jqxButton', {
-        imgSrc: require(`@/assets/iconfont/custom/async.svg`),
-      })
-      jqwidgets.createInstance(`#${syncButtonID}`, 'jqxTooltip', {
-        content: '同步数据到服务器',
-        position: 'bottom',
-      })
-
-      jqwidgets.createInstance(`#${exportButtonID}`, 'jqxButton', {
-        imgSrc: require(`@/assets/iconfont/custom/export.svg`),
-      })
-      jqwidgets.createInstance(`#${exportButtonID}`, 'jqxTooltip', {
-        content: '导出',
-        position: 'bottom',
-      })
-
       const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
         'jqxButton',
@@ -494,18 +560,6 @@ export default {
         content: '刷新',
         position: 'bottom',
       })
-
-      // 绑定事件
-
-      // deleteButton.addEventHandler("click", (event) => {
-      //   const selectedrowindex = this.$refs.myGrid.getselectedrowindex();
-      //   if (selectedrowindex < 0) {
-      //     this.$message.warning({ content: Message.NO_ROWS_SELECTED });
-      //     return false;
-      //   }
-      //   const id = this.$refs.myGrid.getrowid(selectedrowindex);
-      //   this.$refs.myGrid.deleterow(id);
-      // });
 
       reloadButton.addEventHandler('click', (event) => {
         this.$refs.myGrid.updatebounddata()
@@ -526,6 +580,19 @@ export default {
         }
       })
       return renderString
+    },
+    syncToServer(data) {
+      const params = {
+        jsonParams: JSON.stringify({
+          items: data,
+        }),
+      }
+      syncToServer(params).then((res) => {
+        this.refresh()
+      })
+    },
+    refresh() {
+      this.$refs.myGrid.updatebounddata()
     },
   },
 }

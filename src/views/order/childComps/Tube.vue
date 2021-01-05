@@ -47,7 +47,8 @@
     <order-import-window ref="orderImportWindow"></order-import-window>
     <delivery-window
       ref="deliveryWindow"
-      :install-fee-disabled="true"
+      :order-number-disabled="true"
+      :project-name-disabled="true"
     ></delivery-window>
   </div>
 </template>
@@ -58,7 +59,7 @@ import JqxMenu from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue'
 
 import OrderImportWindow from '../childComps/OrderImportWindowTube'
 import OrderWindow from '../childComps/OrderWindowTube'
-import DeliveryWindow from '@/components/content/delivery/DeliveryWindow'
+import DeliveryWindow from '@/components/content/delivery/DeliveryTubeWindow'
 
 import { getLocalization } from '@/common/localization.js'
 import { formatFilter, dataExport } from '@/common/util.js'

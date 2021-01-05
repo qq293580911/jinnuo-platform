@@ -239,7 +239,9 @@ export default {
           if (salesman) {
             salesman = salesman[0];
             const salesmans = that.$store.state.salesmans;
-            const emp = salesmans.find((salesm) => {
+            const emp = salesmans.filter(item=>{
+              return item['is_resign'] != '离职'
+            }).find((salesm) => {
               return salesm["emp_name"] == salesman;
             });
             if (emp) {

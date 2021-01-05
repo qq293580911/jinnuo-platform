@@ -1021,11 +1021,6 @@ export default {
     refresh() {
       this.$refs.myGrid.updatebounddata()
     },
-    forceReload() {
-      console.log(this)
-      this.$forceUpdate()
-      console.log(1)
-    },
     onCellclick(event) {
       if (event.args.rightclick) {
         const clickCellInfo = event.args

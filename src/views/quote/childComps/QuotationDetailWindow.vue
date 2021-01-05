@@ -97,6 +97,9 @@ export default {
               columnWidth: '50%',
               init: (component) => {
                 const salesmans = that.$store.state.salesmans
+                salesmans = salesmans.filter(item=>{
+                  return item['is_resign'] != '离职'
+                })
                 jqwidgets.createInstance(component, 'jqxComboBox', {
                   source: salesmans,
                   width: 250,
@@ -196,7 +199,7 @@ export default {
                       'county'
                     )
                     jqwidgets.createInstance($county, 'jqxComboBox', {
-                      source: getArea(provinceValue, cityValue,cityLabel),
+                      source: getArea(provinceValue, cityValue, cityLabel),
                     })
                   }
                 })

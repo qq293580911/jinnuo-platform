@@ -174,6 +174,7 @@ export function calc_misc_tax(...params) {
   if (typeof rate == 'string' && rate.indexOf('%') > -1) {
     rate = rate.replace('%', '') / 100
   }
+  rate = parseFloat(rate)
   let result = ((amount - installFee) / (1 + rate)) * rate
   result = Math.round(result)
   return isNaN(result) ? 0 : result
@@ -193,6 +194,7 @@ export function calc_misc_log_manage_fee(...params) {
   if (typeof rate == 'string' && rate.indexOf('%') > -1) {
     rate = rate.replace('%', '') / 100
   }
+  rate = parseFloat(rate)
   let result = (amount - installFee) * rate
   result = Math.round(result)
   return isNaN(result) ? 0 : result
@@ -212,6 +214,7 @@ export function calc_misc_warranty(...params) {
   if (typeof rate == 'string' && rate.indexOf('%') > -1) {
     rate = rate.replace('%', '') / 100
   }
+  rate = parseFloat(rate)
   let result = (amount - installFee) * rate
   result = Math.round(result)
   return isNaN(result) ? 0 : result
@@ -224,13 +227,17 @@ export function calc_misc_freight(...params) {
   const tax = params[2]
   const logManageFee = params[3]
   const warranty = params[4]
-  const rate = params[5]
+  let rate = params[5]
   if (amount === 0) {
     return 0
   }
   if (rate % 1 === 0) {
     return rate
   }
+  if (typeof rate == 'string' && rate.indexOf('%') > -1) {
+    rate = rate.replace('%', '') / 100
+  }
+  rate = parseFloat(rate)
   let result = (amount - installFee - tax - logManageFee - warranty) * rate
   result = Math.round(result)
   return isNaN(result) ? 0 : result

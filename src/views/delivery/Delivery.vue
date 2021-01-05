@@ -14,12 +14,16 @@
       </ul>
     </JqxMenu>
     <keep-alive>
-      <base-management
+      <machine
         v-if="currentMenuName == menus[1]"
-        :key="`baseKey${baseKey}`"
-      ></base-management>
-      <delivery-done
+        :key="`machineKey${machineKey}`"
+      ></machine>
+      <tube
         v-if="currentMenuName == menus[2]"
+        :key="`tubeKey${tubeKey}`"
+      ></tube>
+      <delivery-done
+        v-if="currentMenuName == menus[3]"
         :key="`doneKey${doneKey}`"
       ></delivery-done>
       <detail
@@ -32,22 +36,25 @@
 
 <script>
 import JqxMenu from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue'
-import BaseManagement from './childComps/BaseManagement'
+import Machine from './childComps/Machine'
+import Tube from './childComps/Tube'
 import Detail from './childComps/Detail'
 import DeliveryDone from './childComps/Done'
 export default {
   name: 'DeleveryManagement',
   components: {
     JqxMenu,
-    BaseManagement,
+    Machine,
+    Tube,
     Detail,
     DeliveryDone,
   },
   data() {
     return {
-      menus: ['数据汇总', '数据管理', '送货完成'],
+      menus: ['数据汇总', '设备', '风管', '送货完成'],
       currentMenuName: '数据汇总',
-      baseKey: 0,
+      machineKey: 0,
+      tubeKey: 0,
       doneKey: 0,
       detailKey: 0,
     }
@@ -61,12 +68,14 @@ export default {
           this.detailKey += 1
           break
         case this.menus[1]:
-          this.baseKey += 1
+          this.machineKey += 1
           break
         case this.menus[2]:
+          this.tubeKey += 1
+          break
+        case this.menus[3]:
           this.doneKey += 1
           break
-
         default:
           break
       }

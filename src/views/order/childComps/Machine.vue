@@ -60,7 +60,7 @@ import JqxMenu from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue'
 
 import OrderImportWindow from '../childComps/OrderImportWindowMachine'
 import OrderWindow from '../childComps/OrderWindowMachine'
-import DeliveryWindow from '@/components/content/delivery/DeliveryWindow'
+import DeliveryWindow from '@/components/content/delivery/DeliveryMachineWindow'
 
 import { getLocalization } from '@/common/localization.js'
 import { contentHeight } from '@/common/mixin.js'

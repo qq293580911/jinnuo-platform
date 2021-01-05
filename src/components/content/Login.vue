@@ -21,6 +21,14 @@
             class="login-form"
             @submit="handleSubmit"
           >
+            <input
+              type="text"
+              style="display: none;"
+            >
+            <input
+              type="password"
+              style="display: none;"
+            >
             <!-- 账号登录方式 -->
             <a-form-item
               v-if="isPhone==false"
@@ -39,7 +47,6 @@
                   },
                 ]"
                 placeholder="Username"
-                auto-complete="new-account"
               >
                 <a-icon
                   slot="prefix"
@@ -47,13 +54,12 @@
                   style="color: rgba(0, 0, 0, 0.25)"
                 />
               </a-input>
-              <input type="text" style="display: none;">
+
             </a-form-item>
             <a-form-item
               v-if="isPhone==false"
               has-feedback
             >
-              <input type="password" style="display: none;">
               <a-input
                 v-decorator="[
                   'userPassword',
@@ -262,7 +268,7 @@ export default {
               this.$router.push({
                 path: `/home`,
               })
-            }else{
+            } else {
               this.$message.warning(res.msg)
             }
           })

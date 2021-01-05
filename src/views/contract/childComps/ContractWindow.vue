@@ -116,6 +116,13 @@ export default {
               columnWidth: '50%',
               init: (component) => {
                 const salesmans = this.$store.state.salesmans
+                salesmans.forEach((item) => {
+                  item.html = `<div><div>${item.emp_name}</div></div>`
+                  item.group = `参考分组：${item.company}`
+                  if (item['is_resign'] == '离职') {
+                    item.group = `参考分组：离职人员`
+                  }
+                })
                 component.jqxComboBox({
                   source: salesmans,
                   width: 250,
@@ -228,7 +235,7 @@ export default {
                       'county'
                     )
                     jqwidgets.createInstance($county, 'jqxComboBox', {
-                      source: getArea(provinceValue, cityValue,cityLabel),
+                      source: getArea(provinceValue, cityValue, cityLabel),
                     })
                   }
                 })
@@ -548,7 +555,7 @@ export default {
               columnWidth: '50%',
             },
           ],
-        }
+        },
       ],
     }
   },
@@ -814,7 +821,10 @@ export default {
         )
         this.signDateInstance.val(data['sign_date'])
         this.signBackDateInstance.val(data['sign_back_date'])
-        this.deductionBonusAmountInstance.jqxNumberInput('setDecimal',data['deduction_bonus_amount'])
+        this.deductionBonusAmountInstance.jqxNumberInput(
+          'setDecimal',
+          data['deduction_bonus_amount']
+        )
         const formulaModel = data['formula_model']
         that.formulaModelInstance.jqxComboBox('clearSelection')
         setTimeout(() => {
@@ -826,7 +836,9 @@ export default {
             that.formulaModelInstance.jqxComboBox('selectItem', formulaModel)
           }
         }, 100)
-        this.performanceBonusReimbursementInstance.val(data['performance_bonus_reimbursement'])
+        this.performanceBonusReimbursementInstance.val(
+          data['performance_bonus_reimbursement']
+        )
         this.riseDropPointInstance.val(data['rise_drop_point'])
         this.overBudgetBearInstance.val(data['over_budget_bear'])
         this.id = data['id']

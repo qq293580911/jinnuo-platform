@@ -30,14 +30,14 @@
       :order-number-disabled="false"
       :project-name-disabled="false"
     ></delivery-window>
-    <delivery-import-window ref="deliveryImportWindow"></delivery-import-window>
+    <import-tube-window ref="deliveryImportWindow"></import-tube-window>
   </div>
 </template>
 
 <script>
 import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
-import DeliveryWindow from '@/components/content/delivery/DeliveryWindow.vue'
-import DeliveryImportWindow from './DeliveryImportWindow'
+import DeliveryWindow from '@/components/content/delivery/DeliveryTubeWindow.vue'
+import ImportTubeWindow from './ImportTubeWindow'
 
 import { getLocalization } from '@/common/localization.js'
 import { formatFilter, dataExport } from '@/common/util.js'
@@ -48,15 +48,14 @@ import {
   IMPORT_DELIVERY,
 } from '@/common/const.js'
 import { contentHeight } from '@/common/mixin.js'
-import { showDeliveryList, deleteDelivery } from '@/network/delivery.js'
+import { showDeliveryTubeList, deleteDelivery } from '@/network/delivery.js'
 export default {
-  name: 'Delivery',
   components: {
     JqxGrid,
     DeliveryWindow,
-    DeliveryImportWindow,
+    ImportTubeWindow,
   },
-  mixins:[contentHeight],
+  mixins: [contentHeight],
   beforeCreate() {
     this.source = {
       filter: () => {
@@ -67,7 +66,6 @@ export default {
         { name: 'order_number', type: 'string' },
         { name: 'delivery_date', type: 'string' },
         { name: 'delivery_amount', type: 'number' },
-        { name: 'delivery_reserve_price', type: 'number' },
         { name: 'delivery_area', type: 'float' },
       ],
       type: 'get',
@@ -76,7 +74,7 @@ export default {
       sortcolumn: 'id',
       sortdirection: 'desc',
       id: 'id',
-      url: `/dlvDtl/showDeliveryInfoList.do`,
+      url: `/dlvDtl/showDeliveryTubeList.do`,
     }
   },
   data() {
@@ -88,7 +86,7 @@ export default {
         },
         loadServerData: function (serverdata, source, callback) {
           serverdata = formatFilter(serverdata)
-          showDeliveryList(source, serverdata).then((res) => {
+          showDeliveryTubeList(source, serverdata).then((res) => {
             callback({
               records: res.rows,
               totalrecords: res.total,
@@ -116,15 +114,6 @@ export default {
         {
           text: '送货金额',
           datafield: 'delivery_amount',
-          align: 'center',
-          cellsalign: 'center',
-          aggregates: ['sum'],
-          aggregatesRenderer: this.aggregatesRenderer,
-          cellsformat: 'n',
-        },
-        {
-          text: '送货底价',
-          datafield: 'delivery_reserve_price',
           align: 'center',
           cellsalign: 'center',
           aggregates: ['sum'],
@@ -294,7 +283,22 @@ export default {
         position: 'bottom',
       })
       exportInstance.addEventHandler('click', () => {
-        this.exportToExcel()
+        const columns = this.$refs.myGrid.columns
+        const rowsData = this.$refs.myGrid.getrows()
+        dataExport('送货-风管.xlsx', columns, rowsData, {
+          rowConfig: {
+            start: 30,
+            end: 30,
+            other: 30,
+          },
+          colConfig: {
+            A: 120,
+            B: 120,
+            C: 120,
+            D: 120,
+          },
+          numberCol: ['送货金额'],
+        })
       })
 
       // 创建刷新按钮
@@ -328,11 +332,6 @@ export default {
       deleteDelivery(params).then((res) => {
         this.refresh()
       })
-    },
-    exportToExcel() {
-      const columns = this.$refs.myGrid.columns
-      const rowsData = this.$refs.myGrid.getrows()
-      dataExport('送货数据.xlsx', columns, rowsData)
     },
     refresh() {
       this.$refs.myGrid.updatebounddata()

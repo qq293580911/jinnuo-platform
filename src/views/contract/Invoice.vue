@@ -51,7 +51,7 @@ import InvoiceWindow from './childComps/InvoiceWindow'
 import UploadWindow from '@/components/content/annex/UploadWindow.vue'
 
 import { getLocalization } from '@/common/localization.js'
-import { formatFilter } from '@/common/util.js'
+import { formatFilter, dataExport } from '@/common/util.js'
 import { contentHeight } from '@/common/mixin.js'
 import {
   Message,
@@ -391,12 +391,24 @@ export default {
         exportButtonContainer.style.cssText =
           'float: left;margin-left: 5px;  cursor: pointer;'
         buttonsContainer.appendChild(exportButtonContainer)
-        jqwidgets.createInstance(`#${exportButtonID}`, 'jqxButton', {
-          imgSrc: require(`@/assets/iconfont/custom/export.svg`),
-        })
+        const exportInstance = jqwidgets.createInstance(
+          `#${exportButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+          }
+        )
         jqwidgets.createInstance(`#${exportButtonID}`, 'jqxTooltip', {
           content: '导出',
           position: 'bottom',
+        })
+
+        exportInstance.addEventHandler('click', () => {
+          const columns = this.$refs.myGrid.columns
+          const rowsData = this.$refs.myGrid.getrows()
+          dataExport('合同开票.xlsx', columns, rowsData, {
+            numberCol: ['合同金额', '发票金额'],
+          })
         })
       }
 

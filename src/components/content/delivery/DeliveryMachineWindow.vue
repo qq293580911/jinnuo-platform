@@ -167,7 +167,7 @@ export default {
           type: 'custom',
           label: '送货底价',
           labelWidth: '100px',
-          required: true,
+          required: false,
           rowHeight: '40px',
           init: (component) => {
             jqwidgets.createInstance(component, 'jqxNumberInput', {
@@ -247,6 +247,7 @@ export default {
       'deliveryReservePrice'
     )
     this.deliveryReservePriceInstance = $deliveryReservePrice
+    
     // 验证规则
     this.$refs.myValidator.rules = [
       {
@@ -455,7 +456,6 @@ export default {
       this.warrantyInstance.val('')
       this.installFeeInstance.jqxNumberInput('setDecimal', 0)
       this.deliveryReservePriceInstance.jqxNumberInput('setDecimal', 0)
-      $('#dlvDtlId').val('')
     },
   },
   beforeDestroy() {

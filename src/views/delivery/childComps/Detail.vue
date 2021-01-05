@@ -11,7 +11,7 @@
       :rendertoolbar="createButtonsContainers"
       :pageable="true"
       :pagesize="20"
-      :pagesizeoptions="[5, 10, 15, 20, 25, 30]"
+      :pagesizeoptions="pagesizeoptions"
       :sortable="true"
       :filterable="true"
       :altrows="true"
@@ -191,6 +191,9 @@ export default {
           })
         },
       }),
+      pagesizeoptions: (() => {
+        return [25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
+      })(),
       rendergridrows: function (obj) {
         return obj.data
       },

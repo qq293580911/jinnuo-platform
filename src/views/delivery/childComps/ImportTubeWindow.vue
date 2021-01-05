@@ -9,19 +9,19 @@
     >
       <div>
         <JqxGrid
-            ref="myGrid"
-            :width="'99.8%'"
-            :height="'99.7%'"
-            :localization="localization"
-            :source="dataAdapter"
-            :columns="columns"
-            :showtoolbar="true"
-            :rendertoolbar="createButtonsContainers"
-            :altrows="true"
-            :enabletooltip="true"
-            :selectionmode="'multiplerowsextended'"
-          >
-          </JqxGrid>
+          ref="myGrid"
+          :width="'99.8%'"
+          :height="'99.7%'"
+          :localization="localization"
+          :source="dataAdapter"
+          :columns="columns"
+          :showtoolbar="true"
+          :rendertoolbar="createButtonsContainers"
+          :altrows="true"
+          :enabletooltip="true"
+          :selectionmode="'multiplerowsextended'"
+        >
+        </JqxGrid>
       </div>
     </JqxWindow>
   </div>
@@ -34,14 +34,7 @@ import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
 import CustomUploader from '@/components/common/CustomUploader'
 import { getLocalization } from '@/common/localization.js'
 import { Message } from '@/common/const'
-import {
-  calc_misc_log_manage_fee,
-  calc_misc_freight,
-  calc_misc_tax,
-  calc_misc_warranty,
-  calc_rsv_p,
-} from '@/common/util'
-import { getRelatedOrderInfo, importDelivery } from '@/network/delivery.js'
+import { importDelivery } from '@/network/delivery.js'
 export default {
   components: {
     JqxWindow,
@@ -53,11 +46,6 @@ export default {
         { name: 'delivery_date', type: 'string' },
         { name: 'order_number', type: 'string' },
         { name: 'delivery_amount', type: 'number' },
-        { name: 'logistics_management_fee', type: 'string' },
-        { name: 'freight', type: 'string' },
-        { name: 'tax', type: 'string' },
-        { name: 'warranty', type: 'string' },
-        { name: 'install_fee', type: 'string' },
         { name: 'delivery_area', type: 'float' },
       ],
       dataType: 'json',
@@ -68,44 +56,7 @@ export default {
     const that = this
     return {
       localization: getLocalization('zh-CN'),
-      dataAdapter: new jqx.dataAdapter(this.source, {
-        beforeLoadComplete(records) {
-          records.forEach((item) => {
-            const dlvAmt = item['delivery_amount']
-            const logManageFee = item['logistics_management_fee']
-            const freight = item['freight']
-            const tax = item['tax']
-            const warranty = item['warranty']
-            const installFee = item['install_fee']
-            // 计算送货杂费
-            const dlvLogManageFee = calc_misc_log_manage_fee(
-              dlvAmt,
-              installFee,
-              logManageFee
-            )
-            const dlvTax = calc_misc_tax(dlvAmt, installFee, tax)
-            const dlvWarranty = calc_misc_warranty(dlvAmt, installFee, warranty)
-            const dlvFreight = calc_misc_freight(
-              dlvAmt,
-              installFee,
-              dlvLogManageFee,
-              dlvTax,
-              dlvWarranty,
-              freight
-            )
-            // 计算送货底价
-            const dlvRsvP = calc_rsv_p(
-              dlvAmt,
-              dlvLogManageFee,
-              dlvFreight,
-              dlvTax,
-              dlvWarranty,
-              installFee
-            )
-            item['delivery_reserve_price'] = dlvRsvP
-          })
-        },
-      }),
+      dataAdapter: new jqx.dataAdapter(this.source),
       columns: [
         {
           text: '送货日期',
@@ -134,42 +85,6 @@ export default {
           align: 'center',
         },
         {
-          text: '物流管理费',
-          dataField: 'logistics_management_fee',
-          cellsAlign: 'center',
-          align: 'center',
-        },
-        {
-          text: '运费',
-          dataField: 'freight',
-          cellsAlign: 'center',
-          align: 'center',
-        },
-        {
-          text: '税金',
-          dataField: 'tax',
-          cellsAlign: 'center',
-          align: 'center',
-        },
-        {
-          text: '质保金',
-          dataField: 'warranty',
-          cellsAlign: 'center',
-          align: 'center',
-        },
-        {
-          text: '安装费',
-          dataField: 'install_fee',
-          cellsAlign: 'center',
-          align: 'center',
-        },
-        {
-          text: '送货底价',
-          dataField: 'delivery_reserve_price',
-          cellsAlign: 'center',
-          align: 'center',
-        },
-        {
           text: '送货面积',
           dataField: 'delivery_area',
           cellsAlign: 'center',
@@ -189,21 +104,8 @@ export default {
       } else {
         this.allowedFormat = true
         const data = this.fileContent.slice(this.startRow, this.endRow)
-        data.forEach((item) => {
-          item['deliveryDate'] = item['delivery_date']
-          item['deliveryAmount'] = item['delivery_amount']
-          item['orderNumber'] = item['order_number']
-          item['deliveryArea'] = item['delivery_area']
-        })
-        const params = {
-          jsonParams: JSON.stringify({
-            items: data,
-          }),
-        }
-        getRelatedOrderInfo(params).then((res) => {
-          this.source.localdata = res
-          this.$refs.myGrid.updatebounddata()
-        })
+        this.source.localdata = data
+        this.$refs.myGrid.updatebounddata()
       }
     },
     endRow() {
@@ -212,21 +114,8 @@ export default {
       } else {
         this.allowedFormat = true
         const data = this.fileContent.slice(this.startRow, this.endRow)
-        data.forEach((item) => {
-          item['deliveryDate'] = item['delivery_date']
-          item['deliveryAmount'] = item['delivery_amount']
-          item['orderNumber'] = item['order_number']
-          item['deliveryArea'] = item['delivery_area']
-        })
-        const params = {
-          jsonParams: JSON.stringify({
-            items: data,
-          }),
-        }
-        getRelatedOrderInfo(params).then((res) => {
-          this.source.localdata = res
-          this.$refs.myGrid.updatebounddata()
-        })
+        this.source.localdata = data
+        this.$refs.myGrid.updatebounddata()
       }
     },
   },
@@ -379,44 +268,8 @@ export default {
         content: '确认导入',
         position: 'bottom',
       })
-
-      // 批量修改按钮
-      // const batchUpdateContainer = document.createElement('div')
-      // batchUpdateContainer.classList.add('tool-item')
-      // const batchUpdateButtonID = JQXLite.generateID()
-      // batchUpdateContainer.id = batchUpdateButtonID
-      // buttonsContainer.appendChild(batchUpdateContainer)
-      // this.batchUpdateInstance = jqwidgets.createInstance(
-      //   `#${batchUpdateButtonID}`,
-      //   'jqxButton',
-      //   {
-      //     width: 25,
-      //     height: 25,
-      //     imgSrc: require(`@/assets/iconfont/custom/batch-update.svg`),
-      //   }
-      // )
-      // jqwidgets.createInstance(`#${batchUpdateButtonID}`, 'jqxTooltip', {
-      //   content: '批量更新',
-      //   position: 'bottom',
-      // })
-      // 字段选择
-      // const fieldSelection = document.createElement('div')
-      // const fieldSelectionID = JQXLite.generateID()
-      // fieldSelection.id = fieldSelectionID
-      // fieldSelection.classList.add('tool-item')
-      // buttonsContainer.appendChild(fieldSelection)
-      // this.fieldSelectionInstance = jqwidgets.createInstance(
-      //   `#${fieldSelectionID}`,
-      //   'jqxDropDownList',
-      //   {
-      //     source: ['实际运费', '计提成状态'],
-      //     width: 100,
-      //     height: 25,
-      //   }
-      // )
     },
     open(...params) {
-      console.log(params)
       this.$refs.myWindow.setTitle(params[0])
       this.$refs.myWindow.open()
     },

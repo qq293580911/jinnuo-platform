@@ -220,7 +220,7 @@ export default {
           text: '业务员',
           cellsAlign: 'center',
           align: 'center',
-          datafield: 'salesman',
+          datafield: 'salesman_name',
           width: 100,
           cellclassname: 'green',
         },

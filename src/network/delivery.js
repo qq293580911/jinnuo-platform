@@ -1,6 +1,15 @@
 import { request } from '@/network/request'
 
-export function showDeliveryList(source, params) {
+export function showDeliveryMachineList(source, params) {
+  return request({
+    url: source.url,
+    method: source.type,
+    source,
+    params,
+  })
+}
+
+export function showDeliveryTubeList(source, params) {  
   return request({
     url: source.url,
     method: source.type,

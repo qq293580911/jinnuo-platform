@@ -30,14 +30,12 @@
       :order-number-disabled="false"
       :project-name-disabled="false"
     ></delivery-window>
-    <import-machine-window ref="deliveryImportWindow"></import-machine-window>
   </div>
 </template>
 
 <script>
 import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
 import DeliveryWindow from '@/components/content/delivery/DeliveryMachineWindow.vue'
-import ImportMachineWindow from './ImportMachineWindow'
 
 import { getLocalization } from '@/common/localization.js'
 import { formatFilter, dataExport } from '@/common/util.js'
@@ -53,8 +51,7 @@ export default {
   name: 'Delivery',
   components: {
     JqxGrid,
-    DeliveryWindow,
-    ImportMachineWindow,
+    DeliveryWindow
   },
   mixins: [contentHeight],
   beforeCreate() {
@@ -241,29 +238,29 @@ export default {
       }
 
       // 创建导入按钮
-      if (this.hasAuthority(this, 'dlvDtl:import')) {
-        const importButtonContainer = document.createElement('div')
-        const importButtonID = JQXLite.generateID()
-        importButtonContainer.id = importButtonID
-        importButtonContainer.style.cssText =
-          'float: left;margin-left: 5px;  cursor: pointer;'
-        buttonsContainer.appendChild(importButtonContainer)
-        const importInstance = jqwidgets.createInstance(
-          `#${importButtonID}`,
-          'jqxButton',
-          {
-            imgSrc: require(`@/assets/iconfont/custom/import.svg`),
-          }
-        )
-        jqwidgets.createInstance(`#${importButtonID}`, 'jqxTooltip', {
-          content: '导入',
-          position: 'bottom',
-        })
+      // if (this.hasAuthority(this, 'dlvDtl:import')) {
+      //   const importButtonContainer = document.createElement('div')
+      //   const importButtonID = JQXLite.generateID()
+      //   importButtonContainer.id = importButtonID
+      //   importButtonContainer.style.cssText =
+      //     'float: left;margin-left: 5px;  cursor: pointer;'
+      //   buttonsContainer.appendChild(importButtonContainer)
+      //   const importInstance = jqwidgets.createInstance(
+      //     `#${importButtonID}`,
+      //     'jqxButton',
+      //     {
+      //       imgSrc: require(`@/assets/iconfont/custom/import.svg`),
+      //     }
+      //   )
+      //   jqwidgets.createInstance(`#${importButtonID}`, 'jqxTooltip', {
+      //     content: '导入',
+      //     position: 'bottom',
+      //   })
 
-        importInstance.addEventHandler('click', () => {
-          this.$refs.deliveryImportWindow.open(IMPORT_DELIVERY)
-        })
-      }
+      //   importInstance.addEventHandler('click', () => {
+      //     this.$refs.deliveryImportWindow.open(IMPORT_DELIVERY)
+      //   })
+      // }
 
       // 创建导出按钮
       const exportButtonContainer = document.createElement('div')

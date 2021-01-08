@@ -25,12 +25,13 @@
       :statusbarheight="30"
     >
     </JqxGrid>
+    <import-window ref="deliveryImportWindow"></import-window>
   </div>
 </template>
 
 <script>
 import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
-
+import ImportWindow from './ImportWindow'
 import { getLocalization } from '@/common/localization.js'
 import {
   formatFilter,
@@ -41,12 +42,13 @@ import {
   calc_rsv_p,
   dataExport,
 } from '@/common/util.js'
-import { Message } from '@/common/const.js'
+import { Message, IMPORT_DELIVERY } from '@/common/const.js'
 import { showDeliveryDetailList, syncToServer } from '@/network/delivery.js'
 import { contentHeight } from '@/common/mixin.js'
 export default {
   components: {
     JqxGrid,
+    ImportWindow,
   },
   mixins: [contentHeight],
   beforeCreate() {
@@ -76,6 +78,7 @@ export default {
         { name: 'freight', type: 'string' },
         { name: 'tax', type: 'string' },
         { name: 'warranty', type: 'string' },
+        { name: 'install_fee', type: 'number' },
         { name: 'over_budget_bear', type: 'string' },
         { name: 'actual_freight', type: 'number' },
         { name: 'consideration_commission_status', type: 'string' },
@@ -323,7 +326,14 @@ export default {
           align: 'center',
           width: 80,
         },
-
+        {
+          text: '安装费',
+          datafield: 'install_fee',
+          cellsAlign: 'center',
+          align: 'center',
+          width: 80,
+          editable: false,
+        },
         {
           text: '送货税金',
           datafield: 'delivery_tax',
@@ -457,18 +467,23 @@ export default {
       toolbar[0].appendChild(buttonsContainer)
 
       const syncButtonContainer = document.createElement('div')
+      const importButtonContainer = document.createElement('div')
       const exportButtonContainer = document.createElement('div')
       const reloadButtonContainer = document.createElement('div')
 
       const syncButtonID = JQXLite.generateID()
+      const importButtonID = JQXLite.generateID()
       const exportButtonID = JQXLite.generateID()
       const reloadButtonID = JQXLite.generateID()
 
       syncButtonContainer.id = syncButtonID
+      importButtonContainer.id = importButtonID
       exportButtonContainer.id = exportButtonID
       reloadButtonContainer.id = reloadButtonID
 
       syncButtonContainer.style.cssText =
+        'float: left;margin-left: 5px;  cursor: pointer;'
+      importButtonContainer.style.cssText =
         'float: left;margin-left: 5px;  cursor: pointer;'
       exportButtonContainer.style.cssText =
         'float: left;margin-left: 5px;  cursor: pointer;'
@@ -490,11 +505,10 @@ export default {
         })
         syncInstance.addEventHandler('click', () => {
           this.$confirm({
-            title: `${Message.CONFIRM_DELETE}`,
+            title: `${Message.CONFIRM_SYNCHRONIZE}`,
             okText: '确认',
             cancelText: '取消',
             centered: true,
-            okType: 'danger',
             content: (h) => <div style="color:red;"></div>,
             onOk() {
               const rowsData = that.$refs.myGrid.getrows()
@@ -513,6 +527,26 @@ export default {
             onCancel() {},
             class: 'test',
           })
+        })
+      }
+
+      // 导入
+      if (this.hasAuthority(this, 'dlvDtl:import')) {
+        buttonsContainer.appendChild(importButtonContainer)
+        const importInstance = jqwidgets.createInstance(
+          `#${importButtonID}`,
+          'jqxButton',
+          {
+            imgSrc: require(`@/assets/iconfont/custom/import.svg`),
+          }
+        )
+        jqwidgets.createInstance(`#${importButtonID}`, 'jqxTooltip', {
+          content: '导入',
+          position: 'bottom',
+        })
+
+        importInstance.addEventHandler('click', () => {
+          this.$refs.deliveryImportWindow.open(IMPORT_DELIVERY)
         })
       }
 

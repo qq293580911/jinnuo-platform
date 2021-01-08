@@ -9,19 +9,19 @@
     >
       <div>
         <JqxGrid
-            ref="myGrid"
-            :width="'99.8%'"
-            :height="'99.7%'"
-            :localization="localization"
-            :source="dataAdapter"
-            :columns="columns"
-            :showtoolbar="true"
-            :rendertoolbar="createButtonsContainers"
-            :altrows="true"
-            :enabletooltip="true"
-            :selectionmode="'multiplerowsextended'"
-          >
-          </JqxGrid>
+          ref="myGrid"
+          :width="'99.8%'"
+          :height="'99.7%'"
+          :localization="localization"
+          :source="dataAdapter"
+          :columns="columns"
+          :showtoolbar="true"
+          :rendertoolbar="createButtonsContainers"
+          :altrows="true"
+          :enabletooltip="true"
+          :selectionmode="'multiplerowsextended'"
+        >
+        </JqxGrid>
       </div>
     </JqxWindow>
   </div>
@@ -57,7 +57,8 @@ export default {
         { name: 'freight', type: 'string' },
         { name: 'tax', type: 'string' },
         { name: 'warranty', type: 'string' },
-        { name: 'install_fee', type: 'string' }
+        { name: 'install_fee', type: 'string' },
+        { name: 'delivery_area', type: 'float' },
       ],
       dataType: 'json',
       localdata: [],
@@ -167,7 +168,13 @@ export default {
           dataField: 'delivery_reserve_price',
           cellsAlign: 'center',
           align: 'center',
-        }
+        },
+        {
+          text: '送货面积',
+          dataField: 'delivery_area',
+          cellsAlign: 'center',
+          align: 'center',
+        },
       ],
       fileContent: [],
       startRow: 0,
@@ -186,6 +193,7 @@ export default {
           item['deliveryDate'] = item['delivery_date']
           item['deliveryAmount'] = item['delivery_amount']
           item['orderNumber'] = item['order_number']
+          item['deliveryArea'] = item['delivery_area']
         })
         const params = {
           jsonParams: JSON.stringify({
@@ -208,6 +216,7 @@ export default {
           item['deliveryDate'] = item['delivery_date']
           item['deliveryAmount'] = item['delivery_amount']
           item['orderNumber'] = item['order_number']
+          item['deliveryArea'] = item['delivery_area']
         })
         const params = {
           jsonParams: JSON.stringify({
@@ -236,6 +245,7 @@ export default {
           value['delivery_amount'] = parseFloat(
             value['delivery_amount']
           ).toFixed(2)
+          value['delivery_area'] = parseFloat(value['delivery_area']).toFixed(2)
         }
       })
       that.fileContent = fileContent
@@ -303,7 +313,8 @@ export default {
             fields: {
               delivery_date: 'A',
               order_number: 'B',
-              delivery_amount: 'C'
+              delivery_amount: 'C',
+              delivery_area: 'D',
             },
           },
         },
@@ -368,41 +379,6 @@ export default {
         content: '确认导入',
         position: 'bottom',
       })
-
-      // 批量修改按钮
-      // const batchUpdateContainer = document.createElement('div')
-      // batchUpdateContainer.classList.add('tool-item')
-      // const batchUpdateButtonID = JQXLite.generateID()
-      // batchUpdateContainer.id = batchUpdateButtonID
-      // buttonsContainer.appendChild(batchUpdateContainer)
-      // this.batchUpdateInstance = jqwidgets.createInstance(
-      //   `#${batchUpdateButtonID}`,
-      //   'jqxButton',
-      //   {
-      //     width: 25,
-      //     height: 25,
-      //     imgSrc: require(`@/assets/iconfont/custom/batch-update.svg`),
-      //   }
-      // )
-      // jqwidgets.createInstance(`#${batchUpdateButtonID}`, 'jqxTooltip', {
-      //   content: '批量更新',
-      //   position: 'bottom',
-      // })
-      // 字段选择
-      // const fieldSelection = document.createElement('div')
-      // const fieldSelectionID = JQXLite.generateID()
-      // fieldSelection.id = fieldSelectionID
-      // fieldSelection.classList.add('tool-item')
-      // buttonsContainer.appendChild(fieldSelection)
-      // this.fieldSelectionInstance = jqwidgets.createInstance(
-      //   `#${fieldSelectionID}`,
-      //   'jqxDropDownList',
-      //   {
-      //     source: ['实际运费', '计提成状态'],
-      //     width: 100,
-      //     height: 25,
-      //   }
-      // )
     },
     open(...params) {
       this.$refs.myWindow.setTitle(params[0])

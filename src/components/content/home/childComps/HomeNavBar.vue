@@ -20,7 +20,7 @@
         </span>
       </a-sub-menu>
       <a-menu-item key="alipay">
-        <a target="_blank">联系我们</a>
+        <a target="_blank" @click="contactUs">联系我们</a>
       </a-menu-item>
       <a-dropdown :placement="'bottomRight'">
         <a-avatar
@@ -77,6 +77,9 @@ export default {
     }
   },
   methods: {
+    contactUs(){
+      window.open('http://www.kingnuo.net/AboutSt_jndljj.html')
+    },
     getRamdom(min, max) {
       return Math.floor(Math.random() * (max - min)) + min
     },

@@ -15,6 +15,7 @@ export const Message = {
   CONFIRM_UPLOAD: '确认上传吗？',
   CONFIRM_IMPORT: '确认导入吗？',
   CONFIRM_ACTION: '确认进行此操作吗？',
+  CONFIRM_SYNCHRONIZE:'确认同步吗？',
   SERVICE_ERROR: '服务器错误',
   UNLABLE_DELETE_HAS_ITEMS: '无法删除包含子集的元素',
   NO_REPEAT_SUBMIT: '不要重复提交',

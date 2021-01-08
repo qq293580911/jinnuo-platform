@@ -11,7 +11,7 @@
       :rendertoolbar="createButtonsContainers"
       :pageable="true"
       :pagesize="20"
-      :pagesizeoptions="[5, 10, 15, 20, 25, 30]"
+      :pagesizeoptions="pagesizeoptions"
       :sortable="true"
       :filterable="true"
       :altrows="true"
@@ -161,6 +161,9 @@ export default {
           })
         },
       }),
+      pagesizeoptions: (() => {
+        return [25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
+      })(),
       rendergridrows: function (obj) {
         return obj.data
       },
@@ -491,16 +494,32 @@ export default {
       })
 
       // 导出
-      const exportButtonInstance = jqwidgets.createInstance(`#${exportButtonID}`, 'jqxButton', {
-        imgSrc: require(`@/assets/iconfont/custom/export.svg`),
-      })
+      const exportButtonInstance = jqwidgets.createInstance(
+        `#${exportButtonID}`,
+        'jqxButton',
+        {
+          imgSrc: require(`@/assets/iconfont/custom/export.svg`),
+        }
+      )
       jqwidgets.createInstance(`#${exportButtonID}`, 'jqxTooltip', {
         content: '导出',
         position: 'bottom',
       })
 
       exportButtonInstance.addEventHandler('click', () => {
-        this.exportToExcel()
+        const columns = this.$refs.myGrid.columns
+        const rowsData = this.$refs.myGrid.getrows()
+        dataExport('下单详细数据汇总—风管.xlsx', columns, rowsData, {
+          numberCol: [
+            '合同金额',
+            '下单金额',
+            '送货金额',
+            '未送货金额',
+            '下单面积',
+            '送货面积',
+            '实际运费',
+          ],
+        })
       })
 
       // 刷新
@@ -520,11 +539,6 @@ export default {
       reloadButton.addEventHandler('click', (event) => {
         this.$refs.myGrid.updatebounddata()
       })
-    },
-    exportToExcel() {
-      const columns = this.$refs.myGrid.columns
-      const rowsData = this.$refs.myGrid.getrows()
-      dataExport('下单详细数据汇总—风管.xlsx', columns, rowsData)
     },
     cellClass(row, columnfield, value) {
       const deliveryDate = this.$refs.myGrid.getcellvalue(row, 'delivery_date')

@@ -254,6 +254,18 @@ export default {
           pinned: true,
           width: 100,
         })
+        if (that.isSigned) {
+          columns.pop()
+          columns.push({
+            text: '签订日期',
+            datafield: 'sign_date',
+            cellsformat: 'yyyy-MM-dd',
+            align: 'center',
+            cellsalign: 'center',
+            pinned: true,
+            width: 100,
+          })
+        }
         columns.push({
           text: '是否重复',
           datafield: 'is_repeat',
@@ -344,6 +356,15 @@ export default {
           pinned: true,
           width: 150,
         })
+        if (that.hasAuthority(that, 'contrDtl:customer_company')) {
+          columns.push({
+            text: '客户公司',
+            datafield: 'customer_company',
+            align: 'center',
+            cellsalign: 'center',
+            width: 100,
+          })
+        }
         if (that.hasAuthority(that, 'contrDtl:customer')) {
           columns.push({
             text: '采购人',
@@ -367,15 +388,6 @@ export default {
                 '</span>'
               )
             },
-          })
-        }
-        if (that.hasAuthority(that, 'contrDtl:customer_company')) {
-          columns.push({
-            text: '客户公司',
-            datafield: 'customer_company',
-            align: 'center',
-            cellsalign: 'center',
-            width: 100,
           })
         }
         if (that.hasAuthority(that, 'contrDtl:customer_phone')) {
@@ -466,6 +478,9 @@ export default {
           cellsalign: 'center',
           width: 100,
         })
+        if(that.isSigned){
+          columns.pop()
+        }
         columns.push({
           text: '签订状态',
           datafield: 'sign_status',
@@ -506,6 +521,9 @@ export default {
           cellsalign: 'center',
           width: 100,
         })
+        if (that.isSigned) {
+          columns.pop()
+        }
         columns.push({
           text: '签回日期',
           datafield: 'sign_back_date',

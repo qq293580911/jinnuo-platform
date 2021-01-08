@@ -30,14 +30,12 @@
       :order-number-disabled="false"
       :project-name-disabled="false"
     ></delivery-window>
-    <import-tube-window ref="deliveryImportWindow"></import-tube-window>
   </div>
 </template>
 
 <script>
 import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
 import DeliveryWindow from '@/components/content/delivery/DeliveryTubeWindow.vue'
-import ImportTubeWindow from './ImportTubeWindow'
 
 import { getLocalization } from '@/common/localization.js'
 import { formatFilter, dataExport } from '@/common/util.js'
@@ -52,8 +50,7 @@ import { showDeliveryTubeList, deleteDelivery } from '@/network/delivery.js'
 export default {
   components: {
     JqxGrid,
-    DeliveryWindow,
-    ImportTubeWindow,
+    DeliveryWindow
   },
   mixins: [contentHeight],
   beforeCreate() {
@@ -236,31 +233,6 @@ export default {
           }
           const rowData = this.$refs.myGrid.getrowdata(selectedIndex)
           this.$refs.deliveryWindow.open(EDIT_DELIVERY, rowData)
-        })
-      }
-
-      // 创建导入按钮
-      if (this.hasAuthority(this, 'dlvDtl:import')) {
-        const importButtonContainer = document.createElement('div')
-        const importButtonID = JQXLite.generateID()
-        importButtonContainer.id = importButtonID
-        importButtonContainer.style.cssText =
-          'float: left;margin-left: 5px;  cursor: pointer;'
-        buttonsContainer.appendChild(importButtonContainer)
-        const importInstance = jqwidgets.createInstance(
-          `#${importButtonID}`,
-          'jqxButton',
-          {
-            imgSrc: require(`@/assets/iconfont/custom/import.svg`),
-          }
-        )
-        jqwidgets.createInstance(`#${importButtonID}`, 'jqxTooltip', {
-          content: '导入',
-          position: 'bottom',
-        })
-
-        importInstance.addEventHandler('click', () => {
-          this.$refs.deliveryImportWindow.open(IMPORT_DELIVERY)
         })
       }
 

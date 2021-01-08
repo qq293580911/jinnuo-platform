@@ -1198,7 +1198,40 @@ export default {
           position: 'bottom',
         })
         exportButton.addEventHandler('click', () => {
-          this.exportToExcel()
+          const columns = this.$refs.myGrid.columns
+          const rowsData = this.$refs.myGrid.getrows()
+          dataExport('下单详细数据汇总—设备.xlsx', columns, rowsData, {
+            numberCol: [
+              '下单金额',
+              '3C风阀下单金额',
+              '非3C风阀下单金额',
+              '税金',
+              '物流管理费',
+              '质保金',
+              '运费',
+              '安装费',
+              '下单税金',
+              '下单物流管理费',
+              '下单质保金',
+              '下单运费',
+              '下单底价',
+              '非3C风阀下单底价',
+              '送货金额',
+              '送货税金',
+              '送货物流管理费',
+              '送货质保金',
+              '送货运费',
+              '送货底价',
+              '非3C风阀送货金额',
+              '非3C风阀送货税金',
+              '非3C风阀送货物流管理费',
+              '非3C风阀送货质保金',
+              '非3C风阀送货运费',
+              '非3C风阀送货底价',
+              '实际运费',
+              '未送货金额',
+            ],
+          })
         })
       }
       // 刷新
@@ -1220,11 +1253,6 @@ export default {
       reloadButton.addEventHandler('click', (event) => {
         this.$refs.myGrid.updatebounddata()
       })
-    },
-    exportToExcel() {
-      const columns = this.$refs.myGrid.columns
-      const rowsData = this.$refs.myGrid.getrows()
-      dataExport('下单详细数据汇总—设备.xlsx', columns, rowsData)
     },
     cellClass(row, columnfield, value) {
       const deliveryDate = this.$refs.myGrid.getcellvalue(row, 'delivery_date')

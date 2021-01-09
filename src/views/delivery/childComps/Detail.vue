@@ -113,9 +113,9 @@ export default {
         },
         beforeLoadComplete(records) {
           const orderNumbers = []
-          records.forEach(function (value, index, array) {
-            const ordAmt = value['order_amount']
-            const dlvAmt = value['delivery_amount']
+          records.forEach((value) => {
+            let ordAmt = value['order_amount']
+            let dlvAmt = value['delivery_amount']
             let logManageFee = value['logistics_management_fee']
             let freight = value['freight']
             let tax = value['tax']
@@ -128,10 +128,9 @@ export default {
             if (has == false) {
               installFee =
                 value['install_fee'] == null ? 0 : value['install_fee']
-            } else {
-              orderNumbers.push(orderNumber)
-            }
+            } 
             value['install_fee'] = installFee
+            orderNumbers.push(orderNumber)
 
             if (logManageFee == '' || logManageFee == null) {
               logManageFee = 0

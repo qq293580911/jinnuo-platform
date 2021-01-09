@@ -265,8 +265,7 @@ export default {
               nCsdCmsOrdLogMngFee,
               nCndCmsOrdFreight,
               nCsdCmsOrdTax,
-              nCndCmsOrdWrt,
-              installFee
+              nCndCmsOrdWrt
             )
             value[
               'not_consideration_commission_order_reserve_price'
@@ -302,6 +301,7 @@ export default {
             // 计算送货底价
             const dlvRsvP = calc_rsv_p(
               dlvAmt,
+              installFee,
               dlvLogManageFee,
               dlvFreight,
               dlvTax,

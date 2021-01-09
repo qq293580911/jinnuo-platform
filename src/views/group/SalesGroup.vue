@@ -11,26 +11,23 @@
       </ul>
     </JqxMenu>
     <keep-alive>
-      <group-management v-if="currentMenuName == menus[0]"></group-management>
-      <sales-group-assign v-if="currentMenuName == menus[1]"></sales-group-assign>
+      <sales-group-assign v-if="currentMenuName == menus[0]"></sales-group-assign>
     </keep-alive>
   </div>
 </template>
 
 <script>
 import JqxMenu from "jqwidgets-scripts/jqwidgets-vue/vue_jqxmenu.vue";
-import GroupManagement from './childComps/GroupManagement.vue'
 import SalesGroupAssign from './childComps/SalesGroupAssign.vue'
 export default {
   name: "ProductManagement",
   components: {
     JqxMenu,
-    GroupManagement,
     SalesGroupAssign
   },
   data: function() {
     return {
-      menus: ["组管理", "组人员分配"],
+      menus: ["组人员分配"],
       currentMenuName: "组人员分配"
     }
   },

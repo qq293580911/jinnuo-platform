@@ -96,7 +96,7 @@ export default {
               required: true,
               columnWidth: '50%',
               init: (component) => {
-                const salesmans = that.$store.state.salesmans
+                let salesmans = that.$store.state.salesmans
                 salesmans = salesmans.filter(item=>{
                   return item['is_resign'] != '离职'
                 })

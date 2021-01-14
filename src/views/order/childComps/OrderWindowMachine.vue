@@ -43,6 +43,13 @@ export default {
   },
   created() {
     this.salesmans = this.$store.state.salesmans
+    this.salesmans.forEach((item) => {
+      item.html = `<div><div>${item.emp_name}</div></div>`
+      item.group = `参考分组：${item.company}`
+      if (item['is_resign'] == '离职') {
+        item.group = `参考分组：离职人员`
+      }
+    })
   },
   data() {
     return {
@@ -618,9 +625,15 @@ export default {
       this.installFeeInstance.jqxNumberInput('setDecimal', 0)
       this.orderReservePriceInstance.jqxNumberInput('setDecimal', 0)
       this.actualFreightInstance.jqxNumberInput('setDecimal', 0)
-      this.considerationCommissionOrderAmountInstance.jqxNumberInput('setDecimal', 0)
+      this.considerationCommissionOrderAmountInstance.jqxNumberInput(
+        'setDecimal',
+        0
+      )
       this.considerationCommissionStatusInstance.jqxComboBox('clearSelection')
-      this.notConsiderationCommissionOrderAmountInstance.jqxNumberInput('setDecimal', 0)
+      this.notConsiderationCommissionOrderAmountInstance.jqxNumberInput(
+        'setDecimal',
+        0
+      )
       this.remarkInstance.val('')
     },
     open(...params) {

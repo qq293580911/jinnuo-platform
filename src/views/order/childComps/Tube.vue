@@ -162,7 +162,7 @@ export default {
         },
       }),
       pagesizeoptions: (() => {
-        return [25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
+        return [20,25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
       })(),
       rendergridrows: function (obj) {
         return obj.data
@@ -554,7 +554,7 @@ export default {
           deliveryDate == null ||
           deliveryDate == ''
         ) {
-          return 'green'
+          return ''
         }
         if (deliveryDate != null && deliveryDate != '') {
           return 'green'

@@ -34,7 +34,7 @@
 
 <script>
 import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
-import UserWindow from './childComps/UserWindow.vue'
+import UserWindow from '@/components/content/user/UserWindow.vue'
 import AssignRoleWindow from './childComps/AssignRoleWindow'
 
 import { formatFilter } from '@/common/util.js'

@@ -176,6 +176,7 @@
 
 <script>
 import { login, User } from '@/network/login.js'
+import { getCookie, setCookie } from '@/common/util.js'
 import { Base64 } from 'js-base64'
 export default {
   data() {
@@ -219,11 +220,11 @@ export default {
   },
   mounted() {
     // 在页面加载时从cookie获取登录信息
-    let account = this.getCookie('account')
+    let account = getCookie('account')
     // 如果存在赋值给表单，并且将记住密码勾选
     if (account) {
       this.form.setFieldsValue({ userAccount: account })
-      let password = Base64.decode(this.getCookie('password'))
+      let password = Base64.decode(getCookie('password'))
       this.form.setFieldsValue({ userPassword: password })
       this.remember = true
     }
@@ -262,6 +263,7 @@ export default {
         if (!err) {
           login(values).then((res) => {
             if (res.msg == 'success') {
+              this.token = res.loginInfo.token
               this.user = new User(res.loginInfo)
               this.$message.success(`欢迎回来，${this.user.name}`)
               this.saveLoginInfo(values)
@@ -285,44 +287,23 @@ export default {
       })
     },
     saveLoginInfo(formData) {
-      window.sessionStorage.setItem('token', 'sdsdsdsd')
+      window.sessionStorage.setItem('token', this.token)
       window.sessionStorage.setItem('user', JSON.stringify(this.user))
       // 判断用户是否勾选记住密码，如果勾选，向cookie中储存登录信息，
       this.remember = this.form.getFieldValue('remember')
       if (this.remember) {
-        this.setCookie('account', formData['userAccount'])
+        setCookie('account', formData['userAccount'])
         // base64加密密码
         let password = Base64.encode(formData['userPassword'])
-        this.setCookie('password', password)
-        this.setCookie('remember', true)
+        setCookie('password', password)
+        setCookie('remember', true)
       } else {
         // 如果没有勾选，储存的信息为空
-        this.setCookie('account', '')
-        this.setCookie('password', '')
-        this.setCookie('remember', false)
+        setCookie('account', '')
+        setCookie('password', '')
+        setCookie('remember', false)
       }
-    },
-    getCookie: function (key) {
-      if (document.cookie.length > 0) {
-        let start = document.cookie.indexOf(key + '=')
-        if (start !== -1) {
-          start = start + key.length + 1
-          let end = document.cookie.indexOf(';', start)
-          if (end === -1) end = document.cookie.length
-          return unescape(document.cookie.substring(start, end))
-        }
-      }
-      return ''
-    },
-    setCookie: function (cName, value, expiredays) {
-      const exdate = new Date()
-      exdate.setDate(exdate.getDate() + expiredays)
-      document.cookie =
-        cName +
-        '=' +
-        decodeURIComponent(value) +
-        (expiredays == null ? '' : ';expires=' + exdate.toGMTString())
-    },
+    }
   },
 }
 </script>

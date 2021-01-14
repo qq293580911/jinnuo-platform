@@ -268,9 +268,13 @@ export default {
         this.passwordInstance.jqxPasswordInput({ disabled: true })
         this.passwordInstance.val('0000000000000000')
         this.confirmPasswordInstance.jqxPasswordInput({ disabled: true })
-         this.confirmPasswordInstance.val('0000000000000000')
+        this.confirmPasswordInstance.val('0000000000000000')
         this.userNameInstance.val(rowData['user_name'])
         this.id = rowData['user_id']
+      }
+
+      if (params[0] == '修改密码') {
+        console.log(window.sessionStorage)
       }
 
       this.$refs.myWindow.open()
@@ -279,8 +283,7 @@ export default {
       const title = this.$refs.myWindow.title
       const formData = {}
       formData['userName'] = this.userNameInstance.val()
-      formData['gender'] =
-        $('#male').val() == true ? '男' : '女'
+      formData['gender'] = $('#male').val() == true ? '男' : '女'
       if (title == EDIT_USER) {
         formData['userId'] = this.id
         this.update(formData)

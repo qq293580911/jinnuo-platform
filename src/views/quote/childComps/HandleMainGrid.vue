@@ -481,18 +481,42 @@ export default {
     this.$bus.$off('export').$on('export', () => {
       const name = `done_${this.$store.state.currentQuote.name}`
       const columns = this.$refs.myGrid.columns
-      const content = this.$refs.myGrid.getrows()
-      if(content.length<1){
+      let content = this.$refs.myGrid.getrows()
+      if (content.length < 1) {
         this.$message.warning(Message.NO_DATA)
         return false
       }
-      content.forEach((rowData) => {
-        const totalPrice = rowData['totalPrice']
-        if (/\d+\.?\d+/.test(totalPrice) == false) {
-          rowData['totalPrice'] = 0
+      content = content.map((item) => {
+        let unitPrice = item['unitPrice']
+        if (/\d+\.?\d+/.test(unitPrice) == false) {
+          unitPrice = ''
         }
+        let totalPrice = item['totalPrice']
+        if (/\d+\.?\d+/.test(totalPrice) == false) {
+          totalPrice = 0
+        }
+        const map = {
+          serialNumber: item['serialNumber'],
+          productName: item['productName'],
+          specModel: item['specModel'],
+          unit: item['unit'],
+          quantity: item['quantity'],
+          unitPrice: unitPrice,
+          totalPrice: totalPrice,
+          remark: item['remark'],
+          selection: item['selection'],
+          transfer: item['transfer'],
+          formula: item['formula'],
+        }
+        return map
       })
-      dataExport(name, columns, content, {
+      const newColumns = {}
+      newColumns.records = columns.records
+      newColumns.records = newColumns.records.filter(item=>{
+        return item['datafield'] != 'designateType'
+      })
+
+      dataExport(name, newColumns, content, {
         rowConfig: {
           start: 30,
           end: 30,

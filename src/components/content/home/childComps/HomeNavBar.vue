@@ -20,7 +20,10 @@
         </span>
       </a-sub-menu>
       <a-menu-item key="alipay">
-        <a target="_blank" @click="contactUs">联系我们</a>
+        <a
+          target="_blank"
+          @click="contactUs"
+        >联系我们</a>
       </a-menu-item>
       <a-dropdown :placement="'bottomRight'">
         <a-avatar
@@ -34,18 +37,24 @@
           size="large"
         >{{ avatarValue }}</a-avatar>
         <a-menu slot="overlay">
-          <a-menu-item>更换头像</a-menu-item>
+          <!-- <a-menu-item>更换头像</a-menu-item> -->
           <a-menu-item @click="updatePassword">修改密码</a-menu-item>
           <a-menu-item @click="signOut()">退出登录</a-menu-item>
         </a-menu>
       </a-dropdown>
     </a-menu>
+
+    <update-password-window ref="updatePasswordWindow"></update-password-window>
   </div>
 </template>
 
 <script>
+import UpdatePasswordWindow from '@/views/user/childComps/UpdatePasswordWindow.vue'
 const colorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae']
 export default {
+  components: {
+    UpdatePasswordWindow,
+  },
   data() {
     return {
       current: [''],
@@ -77,17 +86,17 @@ export default {
     }
   },
   methods: {
-    contactUs(){
+    contactUs() {
       window.open('http://www.kingnuo.net/AboutSt_jndljj.html')
     },
     getRamdom(min, max) {
       return Math.floor(Math.random() * (max - min)) + min
     },
     updatePassword() {
-      console.log('')
+      this.$refs.updatePasswordWindow.open('修改密码')
     },
     signOut() {
-      window.sessionStorage.removeItem("token");
+      window.sessionStorage.removeItem('token')
       this.$router.replace({ path: '/login' })
     },
   },

@@ -9,7 +9,7 @@ export function getCity(provinceValue) {
   let cities = []
   // 北京，天津，上海，重庆特别行政区只有两级
   // // 港，澳，台只有一级
-  if (['11','12','31','50','71', '81', '82'].includes(provinceValue, 0)) {
+  if (['11', '12', '31', '50', '71', '81', '82'].includes(provinceValue, 0)) {
     cities = province
       .filter((item) => {
         return item['province'] == provinceValue
@@ -42,10 +42,10 @@ export function getArea(...params) {
   areas = area.filter((item) => {
     return item['province'] == provinceValue && item['city'] == cityValue
   })
-  const isCountyLevelCity = areas.some(item => {
+  const isCountyLevelCity = areas.some((item) => {
     return item['name'] == cityLabel
   })
-  if(isCountyLevelCity){
+  if (isCountyLevelCity) {
     return []
   }
   return areas
@@ -430,4 +430,27 @@ export function dataExport(...params) {
       '!rows': rowConfig,
     },
   })
+}
+
+export function getCookie(key) {
+  if (document.cookie.length > 0) {
+    let start = document.cookie.indexOf(key + '=')
+    if (start !== -1) {
+      start = start + key.length + 1
+      let end = document.cookie.indexOf(';', start)
+      if (end === -1) end = document.cookie.length
+      return unescape(document.cookie.substring(start, end))
+    }
+  }
+  return ''
+}
+
+export function setCookie(cName, value, expiredays) {
+  const exdate = new Date()
+  exdate.setDate(exdate.getDate() + expiredays)
+  document.cookie =
+    cName +
+    '=' +
+    decodeURIComponent(value) +
+    (expiredays == null ? '' : ';expires=' + exdate.toGMTString())
 }

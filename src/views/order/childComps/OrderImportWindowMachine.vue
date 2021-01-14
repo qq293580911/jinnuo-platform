@@ -157,7 +157,10 @@ export default {
       localization: getLocalization('zh-CN'),
       dataAdapter: new jqx.dataAdapter(this.source, {
         beforeLoadComplete(records) {
-          const salesmans = that.$store.state.salesmans
+          let salesmans = that.$store.state.salesmans
+          salesmans = salesmans.filter((item) => {
+            return item['is_resign'] != '离职'
+          })
           records.map((item) => {
             const ordAmt = item['order_amount']
             const logManageFee = item['logistics_management_fee']

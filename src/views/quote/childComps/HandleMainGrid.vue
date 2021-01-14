@@ -477,6 +477,7 @@ export default {
           that.$refs.myGrid.selectrow(item['uid'])
         })
     })
+
     // 接收到导出的请求，导出到excel
     this.$bus.$off('export').$on('export', () => {
       const name = `done_${this.$store.state.currentQuote.name}`
@@ -512,7 +513,7 @@ export default {
       })
       const newColumns = {}
       newColumns.records = columns.records
-      newColumns.records = newColumns.records.filter(item=>{
+      newColumns.records = newColumns.records.filter((item) => {
         return item['datafield'] != 'designateType'
       })
 
@@ -537,6 +538,12 @@ export default {
           L: 100,
         },
         numberCol: ['序号', '数量', '单价', '总价'],
+        mergeConf: [
+          ['A' + [content.length + 2], 'F' + [content.length + 2]],
+          ['G' + [content.length + 2], 'H' + [content.length + 2]],
+        ],
+        showTotalText: true,
+        totalTextCell: 'serialNumber',
       })
       this.$confirm({
         title: `要记录到今日报价吗？`,
@@ -575,6 +582,7 @@ export default {
       this.refresh()
     })
 
+    // 接收到网格刷新请求，对主网格进行刷新
     this.$bus.$off('refresh').$on('refresh', () => {
       this.refresh()
     })

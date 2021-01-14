@@ -168,7 +168,7 @@ export default {
     }
 
     this.getPermissions()
-    this.getSlasmans()
+    this.getSalasmans()
     this.getQuoters()
     this.getProductTypes()
     this.getAssignTypes()
@@ -209,7 +209,7 @@ export default {
         })
       }
     },
-    getSlasmans() {
+    getSalasmans() {
       const salesmans = this.$store.state.salesmans
       if (Array.isArray(salesmans) == false) {
         getSalesman().then((responese) => {

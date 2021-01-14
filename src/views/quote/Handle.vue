@@ -342,8 +342,6 @@ export default {
       ]
     };
   },
-  beforeCreate() {},
-  created() {},
   mounted() {
     const that = this;
     // 今日报价

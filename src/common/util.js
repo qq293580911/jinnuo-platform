@@ -399,9 +399,6 @@ export function dataExport(...params) {
   )
 
   let colConfig = LAY_EXCEL.makeColConfig(columnWidths, 80)
-  if (customConfig && customConfig.colConfig) {
-    colConfig = LAY_EXCEL.makeColConfig(customConfig.colConfig, 80)
-  }
 
   const end = data.length
   let rowConfig = LAY_EXCEL.makeRowConfig(
@@ -412,20 +409,39 @@ export function dataExport(...params) {
     25
   )
 
-  // 若果有自定义配置
-  if (customConfig && customConfig.rowConfig) {
-    rowConfig = LAY_EXCEL.makeRowConfig(
-      {
-        1: customConfig['rowConfig']['start'],
-        [end]: customConfig['rowConfig']['end'],
-      },
-      customConfig['rowConfig']['other']
-    )
-  }
+  let mergeConf = null
 
+  // 若果有自定义配置
+  if (customConfig) {
+    // 自定义的列宽度
+    if(customConfig.colConfig){
+      colConfig = LAY_EXCEL.makeColConfig(customConfig.colConfig, 80)
+    }
+    // 自定义的行高度
+    if(customConfig.rowConfig){
+      rowConfig = LAY_EXCEL.makeRowConfig(
+        {
+          1: customConfig['rowConfig']['start'],
+          [end]: customConfig['rowConfig']['end'],
+        },
+        customConfig['rowConfig']['other']
+      )
+    }
+    // 显示合计文本
+    if(customConfig.showTotalText){
+      const endRowData = data[data.length-1]
+      endRowData[customConfig.totalTextCell]['v'] = '合计'
+      data[data.length-1] = endRowData
+    }
+    // 自定义合并
+    if(customConfig.mergeConf){
+      mergeConf = LAY_EXCEL.makeMergeConfig(customConfig.mergeConf);
+    }
+  }
+  // 导出
   LAY_EXCEL.exportExcel(data, fileName, 'xlsx', {
     extend: {
-      // '!merges': mergeConf,
+      '!merges': mergeConf,
       '!cols': colConfig,
       '!rows': rowConfig,
     },

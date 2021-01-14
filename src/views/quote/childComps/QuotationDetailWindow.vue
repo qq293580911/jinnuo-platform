@@ -720,7 +720,7 @@ export default {
     clearForm() {
       this.projectNameInstance.val('')
       this.projectAddressInstance.val('')
-      this.quoterInstance.jqxComboBox('clearSelection')
+      // this.quoterInstance.jqxComboBox('clearSelection')
       this.salesmanInstance.jqxComboBox('clearSelection')
       this.provinceInstance.jqxComboBox('clearSelection')
       this.cityInstance.jqxComboBox('clearSelection')

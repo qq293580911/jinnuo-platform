@@ -16,12 +16,12 @@
     <keep-alive>
       <detail
         v-if="currentMenuName == menus[0]"
-        :key="`detail${detailKey}`"
+        :key="'detail'"
       ></detail>
       <detail
         v-if="currentMenuName == menus[1]"
         :is-signed="true"
-        :key="`signed${signedKey}`"
+        :key="'signed'"
       ></detail>
     </keep-alive>
   </div>
@@ -39,24 +39,12 @@ export default {
   data() {
     return {
       menus: ['数据汇总', '只看已签'],
-      currentMenuName: '数据汇总',
-      detailKey: 0,
-      signedKey: 0,
+      currentMenuName: '数据汇总'
     }
   },
-  created() {},
   methods: {
     onItemclick(event) {
       const menuName = event.args.textContent
-      switch (menuName) {
-        case this.menus[0]:
-          this.detailKey += 1
-          break
-        case this.menus[1]:
-          this.signedKey += 1
-        default:
-          break
-      }
       this.currentMenuName = menuName
     },
   },

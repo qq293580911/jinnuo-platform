@@ -381,7 +381,7 @@ export default {
       })
 
       reloadButton.addEventHandler('click', (event) => {
-        this.$refs.myGrid.updatebounddata()
+        this.$refs.myGrid.clearfilters()
       })
     },
   },

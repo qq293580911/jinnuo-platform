@@ -238,7 +238,7 @@ export default {
         },
       }),
       pagesizeoptions: (() => {
-        return [20,25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
+        return [20, 25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
       })(),
       rendergridrows: function (obj) {
         return obj.data
@@ -478,7 +478,7 @@ export default {
           cellsalign: 'center',
           width: 100,
         })
-        if(that.isSigned){
+        if (that.isSigned) {
           columns.pop()
         }
         columns.push({
@@ -546,6 +546,8 @@ export default {
             align: 'center',
             cellsalign: 'center',
             width: 110,
+            aggregates: ['sum'],
+            aggregatesrenderer: that.aggregatesRenderer,
           })
         }
         if (that.hasAuthority(that, 'contrDtl:delivery_amount')) {
@@ -555,6 +557,8 @@ export default {
             align: 'center',
             cellsalign: 'center',
             width: 100,
+            aggregates: ['sum'],
+            aggregatesrenderer: that.aggregatesRenderer,
           })
         }
         columns.push({
@@ -813,7 +817,7 @@ export default {
       const reloadButtonContainer = document.createElement('div')
       const reloadButtonID = JQXLite.generateID()
       reloadButtonContainer.id = reloadButtonID
-      reloadButtonContainer.style.cssText = 'float: right; margin-left: 5px;'
+      reloadButtonContainer.style.cssText = 'float: right; margin-left: 5px;cursor: pointer;'
       buttonsContainer.appendChild(reloadButtonContainer)
       const reloadButton = jqwidgets.createInstance(
         `#${reloadButtonID}`,
@@ -826,7 +830,7 @@ export default {
       })
 
       reloadButton.addEventHandler('click', (event) => {
-        this.$refs.myGrid.updatebounddata()
+        this.$refs.myGrid.clearfilters()
       })
     },
     initrowdetails(index, parentElement, gridElement, record) {

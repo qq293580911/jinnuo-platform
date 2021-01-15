@@ -373,7 +373,7 @@ export default {
         },
       }),
       pagesizeoptions: (() => {
-        return [20,25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
+        return [20, 25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
       })(),
       rendergridrows: function (obj) {
         return obj.data
@@ -1202,6 +1202,7 @@ export default {
           const rowsData = this.$refs.myGrid.getrows()
           dataExport('下单详细数据汇总—设备.xlsx', columns, rowsData, {
             numberCol: [
+              '合同金额',
               '下单金额',
               '3C风阀下单金额',
               '非3C风阀下单金额',
@@ -1251,7 +1252,7 @@ export default {
         position: 'bottom',
       })
       reloadButton.addEventHandler('click', (event) => {
-        this.$refs.myGrid.updatebounddata()
+        this.$refs.myGrid.clearfilters()
       })
     },
     cellClass(row, columnfield, value) {

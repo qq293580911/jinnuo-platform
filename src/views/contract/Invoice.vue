@@ -429,7 +429,7 @@ export default {
       })
 
       reloadButtonInstance.addEventHandler('click', (event) => {
-        this.$refs.myGrid.updatebounddata()
+        this.$refs.myGrid.clearfilters()
       })
     },
     initrowdetails(index, parentElement, gridElement, record) {

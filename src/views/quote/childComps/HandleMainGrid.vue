@@ -544,6 +544,7 @@ export default {
         ],
         showTotalText: true,
         totalTextCell: 'serialNumber',
+        formulaConfig: { totalPrice: ['E','*','F'] },
       })
       this.$confirm({
         title: `要记录到今日报价吗？`,

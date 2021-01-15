@@ -288,29 +288,54 @@ export function dataExport(...params) {
       columnWidths[`${String.fromCharCode(64 + index + 1)}`] = item['width']
       filterCofig[dataField] = dataField
       aggregatesRow[dataField] = ''
-      // 判断数字列
-      if (customConfig && customConfig['numberCol'].includes(item['text'])) {
-        filterCofig[dataField] = function (
-          value,
-          line,
-          data,
-          lineIndex,
-          newField
-        ) {
-          return {
-            v: value,
-            t: 'n',
+
+      if (customConfig) {
+        const formulaConfig = customConfig['formulaConfig']
+        // 判断数字列
+        if (customConfig['numberCol'].includes(item['text'])) {
+          filterCofig[dataField] = function (
+            value,
+            line,
+            data,
+            lineIndex,
+            newField
+          ) {
+            return {
+              v: value,
+              t: 'n',
+            }
+          }
+          // 如果有自定义公式
+          for (let key in formulaConfig) {
+            if (key == dataField) {
+              const formulaArr = formulaConfig[key]
+              filterCofig[dataField] = function (
+                value,
+                line,
+                data,
+                lineIndex,
+                newField
+              ) {
+                return {
+                  v: value,
+                  t: 'n',
+                  f: `${formulaArr[0]}${lineIndex + 2}${formulaArr[1]}${
+                    formulaArr[2]
+                  }${lineIndex + 2}`,
+                }
+              }
+            }
           }
         }
-      }
-      // 判断聚合列
-      if (item['aggregates'] != null) {
-        aggregatesRow[dataField] = {
-          t: 'n',
-          // 第2行开始是因为后面会加标题头，结尾行也响应加1
-          f: `${item['aggregates'][0]}(${createCellPos(index)}2:${createCellPos(
-            index
-          )}${rowsData.length + 1})`,
+        // 设置合计列
+        if (item['aggregates'] != null) {
+          aggregatesRow[dataField] = {
+            t: 'n',
+            // 第2行开始是因为后面会加标题头，结尾行也响应加1
+            f: `${item['aggregates'][0]}(${createCellPos(
+              index
+            )}2:${createCellPos(index)}${rowsData.length + 1})`,
+          }
         }
       }
     })
@@ -414,11 +439,11 @@ export function dataExport(...params) {
   // 若果有自定义配置
   if (customConfig) {
     // 自定义的列宽度
-    if(customConfig.colConfig){
+    if (customConfig.colConfig) {
       colConfig = LAY_EXCEL.makeColConfig(customConfig.colConfig, 80)
     }
     // 自定义的行高度
-    if(customConfig.rowConfig){
+    if (customConfig.rowConfig) {
       rowConfig = LAY_EXCEL.makeRowConfig(
         {
           1: customConfig['rowConfig']['start'],
@@ -428,14 +453,14 @@ export function dataExport(...params) {
       )
     }
     // 显示合计文本
-    if(customConfig.showTotalText){
-      const endRowData = data[data.length-1]
+    if (customConfig.showTotalText) {
+      const endRowData = data[data.length - 1]
       endRowData[customConfig.totalTextCell]['v'] = '合计'
-      data[data.length-1] = endRowData
+      data[data.length - 1] = endRowData
     }
     // 自定义合并
-    if(customConfig.mergeConf){
-      mergeConf = LAY_EXCEL.makeMergeConfig(customConfig.mergeConf);
+    if (customConfig.mergeConf) {
+      mergeConf = LAY_EXCEL.makeMergeConfig(customConfig.mergeConf)
     }
   }
   // 导出

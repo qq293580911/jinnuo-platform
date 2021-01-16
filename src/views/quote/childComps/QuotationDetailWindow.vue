@@ -3,7 +3,6 @@
     <JqxWindow
       ref="myWindow"
       :width="'750px'"
-      :height="'610px'"
       :autoOpen="false"
       :position="{ x: '30%', y: '20%' }"
     >
@@ -645,7 +644,7 @@ export default {
       const data = params[0]
       $projectName.val(data['projectName'])
       $projectAddress.val(data['projectAddress'])
-      $quoter.jqxComboBox('selectItem', data['quotor'])
+      // $quoter.jqxComboBox('selectItem', data['quotor'])
       $salesman.jqxComboBox('selectItem', data['salesman'])
       $customerCompany.val(data['customerCompany'])
       $customer.val(data['customer'])

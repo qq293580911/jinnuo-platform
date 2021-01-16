@@ -284,7 +284,7 @@ export default {
                   digits: 11,
                   spinButtons: true,
                   decimalDigits: 0,
-                  disabled: true,
+                  disabled: false,
                 })
               },
             },
@@ -415,7 +415,7 @@ export default {
       'notConsiderationCommissionOrderAmount'
     )
     const $actualFreight = this.$refs.myForm.getComponentByName(
-      'notConsiderationCommissionOrderAmount'
+      'actualFreight'
     )
     const $remark = this.$refs.myForm.getComponentByName('remark')
 

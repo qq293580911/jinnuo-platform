@@ -5,7 +5,7 @@ module.exports = {
   lintOnSave: true,
   outputDir: 'dist', // build打包输出目录
   assetsDir: 'static', // 静态文件输出目录，基于dist
-  filenameHashing:true,
+  filenameHashing: true,
   indexPath: 'index.html', // 输出html文件名
   productionSourceMap: false, // 取消.map文件的打包，加快打包速度
   devServer: {
@@ -39,7 +39,11 @@ module.exports = {
     }
   },
   chainWebpack: (config) => {
-    config.module.rules.delete('eslint');
+    config.module.rules.delete('eslint')
+    config.plugin('html').tap((args) => {
+      args[0].title = '金诺办公2.0'
+      return args
+    })
   },
   css: {
     requireModuleExtension: true, // 启用 CSS modules

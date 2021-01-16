@@ -3,7 +3,6 @@
     <JqxWindow
       ref="myWindow"
       :width="'400px'"
-      :height="'510px'"
       :autoOpen="false"
       :position="{ x: '30%', y: '20%' }"
     >
@@ -143,15 +142,6 @@ export default {
           },
         },
         {
-          name: 'remark',
-          type: 'text',
-          label: '备注',
-          labelWidth: '100px',
-          width: '250px',
-          required: false,
-          rowHeight: '40px',
-        },
-        {
           name: 'considerationCommissionStatus',
           type: 'custom',
           label: '计提成状态',
@@ -165,6 +155,34 @@ export default {
               height: 30,
             })
           },
+        },
+        {
+          name: 'actualFreight',
+          type: 'custom',
+          label: '实际运费',
+          labelWidth: '100px',
+          required: false,
+          rowHeight: '40px',
+          init: function (component) {
+            jqwidgets.createInstance(component, 'jqxNumberInput', {
+              width: 250,
+              height: 30,
+              inputMode: 'simple',
+              digits: 11,
+              spinButtons: true,
+              decimalDigits: 0,
+              disabled: false,
+            })
+          },
+        },
+        {
+          name: 'remark',
+          type: 'text',
+          label: '备注',
+          labelWidth: '100px',
+          width: '250px',
+          required: false,
+          rowHeight: '40px',
         },
         {
           columns: [
@@ -204,6 +222,7 @@ export default {
     const $orderNumber = this.$refs.myForm.getComponentByName('orderNumber')
     const $orderAmount = this.$refs.myForm.getComponentByName('orderAmount')
     const $orderArea = this.$refs.myForm.getComponentByName('orderArea')
+    const $actualFreight = this.$refs.myForm.getComponentByName('actualFreight')
     const $remark = this.$refs.myForm.getComponentByName('remark')
     const $considerationCommissionStatus = this.$refs.myForm.getComponentByName(
       'considerationCommissionStatus'
@@ -216,6 +235,7 @@ export default {
     this.orderNumberInstance = $orderNumber
     this.orderAmountInstance = $orderAmount
     this.orderAreaInstance = $orderArea
+    this.actualFreightInstance = $actualFreight
     this.remarkInstance = $remark
     this.considerationCommissionStatusInstance = $considerationCommissionStatus
 
@@ -279,6 +299,7 @@ export default {
       formData['orderNumber'] = this.orderNumberInstance.val()
       formData['orderAmount'] = this.orderAmountInstance.val()
       formData['orderArea'] = this.orderAreaInstance.val()
+      formData['actualFreight'] = this.actualFreightInstance.val()
       formData['remark'] = this.remarkInstance.val()
       formData[
         'considerationCommissionStatus'
@@ -312,6 +333,10 @@ export default {
           this.orderAreaInstance.jqxNumberInput(
             'setDecimal',
             rowData['order_area']
+          )
+          this.actualFreightInstance.jqxNumberInput(
+            'setDecimal',
+            rowData['actual_freight']
           )
           this.remarkInstance.val(rowData['remark'])
           this.considerationCommissionStatusInstance.jqxDropDownList(
@@ -353,9 +378,13 @@ export default {
       this.orderNumberInstance.val('')
       this.orderAmountInstance.jqxNumberInput('setDecimal', 0)
       this.orderAreaInstance.jqxNumberInput('setDecimal', 0)
-      this.considerationCommissionStatus.jqxDropDownList('clearSelection')
+      this.considerationCommissionStatusInstance.jqxDropDownList('clearSelection')
+      this.actualFreightInstance.jqxNumberInput('setDecimal', 0)
       this.remarkInstance.val('')
     },
+  },
+  beforeDestroy() {
+    this.$refs.myWindow.close()
   },
 }
 </script>

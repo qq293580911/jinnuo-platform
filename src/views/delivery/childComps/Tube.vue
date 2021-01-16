@@ -292,7 +292,7 @@ export default {
       })
 
       reloadButton.addEventHandler('click', (event) => {
-        this.refresh()
+        this.$refs.myGrid.clearfilters()
       })
     },
     delete(id) {

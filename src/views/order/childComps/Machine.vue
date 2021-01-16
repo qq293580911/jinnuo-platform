@@ -72,6 +72,7 @@ import {
   calc_misc_warranty,
   calc_rsv_p,
   dataExport,
+  toHump,
 } from '@/common/util.js'
 import {
   Message,
@@ -85,6 +86,7 @@ import {
   showMachineOrderList,
   getDeliveryByOrderNumber,
   deleteOrder,
+  updateOrder,
   batahUpdateOrder,
 } from '@/network/order.js'
 import { deleteDelivery } from '@/network/delivery.js'
@@ -157,6 +159,13 @@ export default {
       sortcolumn: 'id',
       sortdirection: 'desc',
       dataType: 'json',
+      updaterow(rowid, newdata, commit) {
+        // const params = {}
+        // for (let key in newdata) {
+        //   params[toHump(key)] = newdata[key]
+        // }
+        // updateOrder({ jsonParams: JSON.stringify(params) })
+      },
     }
   },
   data() {

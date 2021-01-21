@@ -211,6 +211,7 @@ export default {
             selectionType.addEventHandler('select', (event) => {
               const value = event.args.item.value
               that.selectionToolInstance.selectionType = value
+              that.$bus.$emit('changeSelectionType',value)
               this.$parent.selectRibbon(value)
             })
             break

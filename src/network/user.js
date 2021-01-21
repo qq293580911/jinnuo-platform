@@ -34,6 +34,14 @@ export function updateUserInfo(params) {
   })
 }
 
+export function updateUserPassword(params) {  
+  return request({
+    url: '/user/updateUserPassword.do',
+    method: 'Put',
+    data: params,
+  })
+}
+
 // 角色
 export function showRoleList(source, params) {
   return request({

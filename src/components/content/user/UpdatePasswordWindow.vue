@@ -27,6 +27,8 @@ import JqxValidator from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxvalidator.vue'
 import JqxForm from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxform.vue'
 
 import { getCookie, setCookie } from '@/common/util.js'
+import { Base64 } from 'js-base64'
+import { updateUserPassword } from '@/network/user.js'
 export default {
   components: {
     JqxWindow,
@@ -155,6 +157,7 @@ export default {
     }
   },
   mounted() {
+    const that = this
     this.accountInstance = this.$refs.myForm.getComponentByName('account')
     this.oldPasswordInstance = this.$refs.myForm.getComponentByName(
       'oldPassword'
@@ -174,6 +177,43 @@ export default {
         action: 'keyup, blur',
         rule: 'required',
       },
+      {
+        input: this.oldPasswordInstance,
+        message: '不能为空!',
+        action: 'keyup, blur',
+        rule: 'required',
+      },
+      {
+        input: this.oldPasswordInstance,
+        message: '旧密码错误!',
+        action: 'keyup, blur',
+        rule: (input) => {
+          const password = input.val()
+          return Base64.encode(password) == that.password
+        },
+      },
+      {
+        input: this.newPasswordInstance,
+        message: '不能为空!',
+        action: 'keyup, blur',
+        rule: 'required',
+      },
+      {
+        input: this.newPasswordInstance,
+        message: '新密码不能等于旧密码!',
+        action: 'keyup, blur',
+        rule: function (input) {
+          return input.val() != that.oldPasswordInstance.val()
+        },
+      },
+      {
+        input: this.confirmPasswordInstance,
+        message: '两次密码不一致！',
+        action: 'keyup, blur',
+        rule: function (input) {
+          return input.val() == that.newPasswordInstance.val()
+        },
+      },
     ]
 
     // 提交并验证表单
@@ -190,9 +230,13 @@ export default {
   methods: {
     open(title) {
       this.$refs.myWindow.setTitle(title)
+      // ID
+      this.id = JSON.parse(window.sessionStorage.getItem('user')).id
+      // 账号
       const account = JSON.parse(window.sessionStorage.getItem('user')).account
-      console.log(account)
       this.accountInstance.val(account)
+      // 密码
+      this.password = JSON.parse(window.sessionStorage.getItem('user')).password
       this.$refs.myWindow.open()
     },
     onValidationSuccess(event) {
@@ -200,8 +244,11 @@ export default {
       const formData = {}
       formData['userId'] = this.id
       formData['account'] = this.accountInstance.val()
-      formData['password'] = this.passwordInstance.val()
+      formData['password'] = this.newPasswordInstance.val()
       this.update(formData)
+    },
+    update(formData) {
+      updateUserPassword({ JSONParams: JSON.stringify(formData) }).then((res) => {})
     },
   },
   beforeDestroy() {

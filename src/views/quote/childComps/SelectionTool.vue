@@ -2,13 +2,12 @@
   <div class="container">
     <JqxSwitchButton
       ref="mySwitchButton"
-      v-model="state"
       :width="50"
       :height="23"
       :onLabel="'开'"
       :offLabel="'关'"
       :thumbSize="'50%'"
-      :checked="true"
+      :checked="state"
       v-show="showSwitchButton"
       :style="{
         marginRight: '5px',
@@ -271,11 +270,18 @@ export default {
         this.$refs.machineType.clearSelection()
         this.$refs.speedType.clearSelection()
         this.$refs.airVolume.val('')
-        this.$refs.powerSupply.clearSelection()
+        // this.$refs.powerSupply.selectItem('单电源')
         this.$refs.power.val('')
         // 获得梳理的后的选型参数
         const res = filterSelectionParams(rowData)
-        this.certificate = res['certificate']
+        switch (this.selectionType) {
+          case GENERAL_BLOWER:
+            this.certificate = res['certificate']
+            break
+          default:
+            this.certificate = false
+            break
+        }
         this.$refs.machineType.selectItem(res['machineType'])
         this.$refs.speedType.selectItem(res['speedType'])
         this.$refs.airVolume.val(res['airVolume'])
@@ -293,7 +299,7 @@ export default {
         certificate: this.certificate,
       }
       switch (this.selectionType) {
-        case '常规风机':
+        case GENERAL_BLOWER:
           jsonParams['isOutsideBuy'] = false
           jsonParams['isStandard'] = this.$refs.mySwitchButton.val()
           jsonParams['productName'] = rowData['productName']
@@ -304,44 +310,47 @@ export default {
           jsonParams['machinePower'] = this.$refs.power.val()
           getGeneralBlowerList({ jsonParams: JSON.stringify(jsonParams) }).then(
             (res) => {
-              // 防爆风机的价格要在原有的基础上乘以1.5
-              const productName = rowData['productName']
-              if (/防[爆,暴]/.test(productName)) {
-                res.forEach((item) => {
-                  let unitPriceN3C = Math.round(
-                    parseInt(item['price_non_ccc']) * 1.5
-                  )
-                  let _unitPriceN3C = unitPriceN3C % 10
-                  if (_unitPriceN3C > 0 && _unitPriceN3C < 5) {
-                    _unitPriceN3C = 5
-                  }
-                  if (_unitPriceN3C > 5 && _unitPriceN3C < 10) {
-                    _unitPriceN3C = 10
-                  }
-                  unitPriceN3C =
-                    unitPriceN3C - (unitPriceN3C % 10) + _unitPriceN3C
+              if (res.length > 0) {
+                // 防爆风机的价格要在原有的基础上乘以1.5
+                const productName = rowData['productName']
+                if (/防[爆,暴]/.test(productName)) {
+                  res.forEach((item) => {
+                    let unitPriceN3C = Math.round(
+                      parseInt(item['price_non_ccc']) * 1.5
+                    )
+                    let _unitPriceN3C = unitPriceN3C % 10
+                    if (_unitPriceN3C > 0 && _unitPriceN3C < 5) {
+                      _unitPriceN3C = 5
+                    }
+                    if (_unitPriceN3C > 5 && _unitPriceN3C < 10) {
+                      _unitPriceN3C = 10
+                    }
+                    unitPriceN3C =
+                      unitPriceN3C - (unitPriceN3C % 10) + _unitPriceN3C
 
-                  let unitPrice3C = Math.round(
-                    parseInt(item['price_ccc']) * 1.5
-                  )
-                  let _unitPrice3C = unitPriceN3C % 10
-                  if (_unitPrice3C > 0 && _unitPrice3C < 5) {
-                    _unitPrice3C = 5
-                  }
-                  if (_unitPrice3C > 5 && _unitPrice3C < 10) {
-                    _unitPrice3C = 10
-                  }
-                  unitPrice3C = unitPrice3C - (unitPrice3C % 10) + _unitPrice3C
+                    let unitPrice3C = Math.round(
+                      parseInt(item['price_ccc']) * 1.5
+                    )
+                    let _unitPrice3C = unitPriceN3C % 10
+                    if (_unitPrice3C > 0 && _unitPrice3C < 5) {
+                      _unitPrice3C = 5
+                    }
+                    if (_unitPrice3C > 5 && _unitPrice3C < 10) {
+                      _unitPrice3C = 10
+                    }
+                    unitPrice3C =
+                      unitPrice3C - (unitPrice3C % 10) + _unitPrice3C
 
-                  item['price_non_ccc'] = unitPriceN3C
-                  item['price_ccc'] = unitPrice3C
-                })
+                    item['price_non_ccc'] = unitPriceN3C
+                    item['price_ccc'] = unitPrice3C
+                  })
+                }
+                this.$bus.$emit('renderSelectionList', existParams, res)
               }
-              this.$bus.$emit('renderSelectionList', existParams, res)
             }
           )
           break
-        case '外购风机':
+        case OUTSIDE_BUY:
           jsonParams['isOutsideBuy'] = true
           jsonParams['productName'] = rowData['productName']
           jsonParams['machineNumber'] = this.$refs.machineNumber.val()
@@ -351,20 +360,24 @@ export default {
           jsonParams['machinePower'] = this.$refs.power.val()
           getOutsideBuyList({ jsonParams: JSON.stringify(jsonParams) }).then(
             (res) => {
-              this.$bus.$emit('renderSelectionList', existParams, res)
+              if (res.length > 0) {
+                this.$bus.$emit('renderSelectionList', existParams, res)
+              }
             }
           )
           break
-        case '控制箱':
-          jsonParams['machineSupply'] = this.$refs.powerSupply.val()
+        case CONTROL_BOX:
+          jsonParams['powerSupply'] = this.$refs.powerSupply.val()
           jsonParams['machinePower'] = this.$refs.power.val()
           getControlBoxList({ jsonParams: JSON.stringify(jsonParams) }).then(
             (res) => {
-              this.$bus.$emit('renderSelectionList', existParams, res)
+              if (res.length > 0) {
+                this.$bus.$emit('renderSelectionList', existParams, res)
+              }
             }
           )
           break
-        case '换气扇':
+        case VENTILATOR:
           jsonParams['airVolume'] = this.$refs.airVolume.val()
           jsonParams[
             'pricePlan'
@@ -372,21 +385,25 @@ export default {
           getVentilatorList({
             jsonParams: JSON.stringify(jsonParams),
           }).then((res) => {
-            this.$bus.$emit('renderSelectionList', existParams, res)
+            if (res.length > 0) {
+              this.$bus.$emit('renderSelectionList', existParams, res)
+            }
           })
           break
         default:
-          jsonParams['isOutsideBuy'] = false
-          jsonParams['isStandard'] = this.$refs.mySwitchButton.val()
+          // jsonParams['isOutsideBuy'] = false
+          jsonParams['isStandard'] = false
           jsonParams['productName'] = rowData['productName']
-          jsonParams['machineNumber'] = this.$refs.machineNumber.val()
-          jsonParams['machineType'] = this.$refs.machineType.val()
-          jsonParams['speedType'] = this.$refs.speedType.val()
+          // jsonParams['machineNumber'] = this.$refs.machineNumber.val()
+          jsonParams['machineType'] = this.selectionType
+          // jsonParams['speedType'] = this.$refs.speedType.val()
           jsonParams['airVolume'] = this.$refs.airVolume.val()
           jsonParams['machinePower'] = this.$refs.power.val()
           getSmallBlowerList({ jsonParams: JSON.stringify(jsonParams) }).then(
             (res) => {
-              this.$bus.$emit('renderSelectionList', existParams, res)
+              if (res.length > 0) {
+                this.$bus.$emit('renderSelectionList', existParams, res)
+              }
             }
           )
           break

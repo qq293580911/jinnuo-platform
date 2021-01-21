@@ -96,7 +96,7 @@ export default {
               columnWidth: '50%',
               init: (component) => {
                 let salesmans = that.$store.state.salesmans
-                salesmans = salesmans.filter(item=>{
+                salesmans = salesmans.filter((item) => {
                   return item['is_resign'] != '离职'
                 })
                 jqwidgets.createInstance(component, 'jqxComboBox', {
@@ -639,7 +639,13 @@ export default {
       this.$refs.myValidator.validate(document.getElementById('myForm'))
     })
 
+    const cancelButton = this.$refs.myForm.getComponentByName('cancelButton')
+    cancelButton[0].addEventListener('click', () => {
+      this.$refs.myWindow.close()
+    })
+
     this.$bus.$off('openDetailWindow').$on('openDetailWindow', (...params) => {
+      this.clearForm()
       this.$refs.myWindow.setTitle(ADD_QUOTATION)
       const data = params[0]
       $projectName.val(data['projectName'])
@@ -713,7 +719,6 @@ export default {
       addQuotationAndDetail(form).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.render()
-        this.clearForm()
       })
     },
     clearForm() {

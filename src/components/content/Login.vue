@@ -287,14 +287,13 @@ export default {
       })
     },
     saveLoginInfo(formData) {
-      window.sessionStorage.setItem('token', this.token)
-      window.sessionStorage.setItem('user', JSON.stringify(this.user))
       // 判断用户是否勾选记住密码，如果勾选，向cookie中储存登录信息，
       this.remember = this.form.getFieldValue('remember')
       if (this.remember) {
         setCookie('account', formData['userAccount'])
         // base64加密密码
         let password = Base64.encode(formData['userPassword'])
+        this.user.password = password
         setCookie('password', password)
         setCookie('remember', true)
       } else {
@@ -303,7 +302,9 @@ export default {
         setCookie('password', '')
         setCookie('remember', false)
       }
-    }
+      window.sessionStorage.setItem('token', this.token)
+      window.sessionStorage.setItem('user', JSON.stringify(this.user))
+    },
   },
 }
 </script>

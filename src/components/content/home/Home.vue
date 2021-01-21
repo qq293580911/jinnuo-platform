@@ -310,7 +310,7 @@ export default {
 </script>
 
 <style scoped>
-::v-deep .ant-layout-header {
+.ant-layout-header {
   padding-right: 20px;
 }
 .sider-header {

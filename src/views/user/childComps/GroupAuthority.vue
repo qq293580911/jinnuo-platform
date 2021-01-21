@@ -21,6 +21,7 @@
 
 <script>
 import Vue from 'vue'
+import store from "@/store";
 import JqxLayout from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxlayout.vue'
 
 import UserGrid from '../User'
@@ -68,6 +69,7 @@ export default {
                       initContent: function () {
                         const Component = Vue.extend(UserGrid)
                         const instance = new Component({
+                          store,
                           propsData:{
                             height:'100%'
                           }

@@ -9,6 +9,7 @@ import {
   // 报价处理
   SAVE_CURRENT_QUOTE_PRICE_PLAN,
   SAVE_CURRENT_QUOTE_SPLIT_PLAN,
+  SAVE_CURRENT_QUOTE_PRIMARY_GRID_ROW_DATA,
   SAVE_CURRENT_QUOTE_NAME,
   SAVE_CURRENT_QUOTE_CONTENT,
   UPDATE_CURRENT_QUOTE_CONTENT,
@@ -57,6 +58,11 @@ export default {
   saveCurrentQuoteSplitPlan(context, payload) {
     return new Promise((resolve, reject) => {
       context.commit(SAVE_CURRENT_QUOTE_SPLIT_PLAN, payload)
+    })
+  },
+  saveCurrentQuotePrimaryGridRowData(context, payload){
+    return new Promise((resolve, reject) => {
+      context.commit(SAVE_CURRENT_QUOTE_PRIMARY_GRID_ROW_DATA, payload)
     })
   },
   saveCurrentQuoteName(context, payload) {

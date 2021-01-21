@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import UpdatePasswordWindow from '@/views/user/childComps/UpdatePasswordWindow.vue'
+import UpdatePasswordWindow from '@/components/content/user/UpdatePasswordWindow.vue'
 const colorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae']
 export default {
   components: {

@@ -544,7 +544,7 @@ export default {
         ],
         showTotalText: true,
         totalTextCell: 'serialNumber',
-        formulaConfig: { totalPrice: ['E','*','F'] },
+        formulaConfig: { totalPrice: ['E', '*', 'F'] },
       })
       this.$confirm({
         title: `要记录到今日报价吗？`,
@@ -587,6 +587,11 @@ export default {
     this.$bus.$off('refresh').$on('refresh', () => {
       this.refresh()
     })
+
+    // 当选型类型发生改变时，清除主网格的选择
+    // this.$bus.$off('changeSelectionType').$on('changeSelectionType', () => {
+    //   this.$refs.myGrid.clearselection()
+    // })
   },
   methods: {
     rendertoolbar(toolbar) {
@@ -630,8 +635,11 @@ export default {
       const rowData = event.args.row
       const unit = rowData['unit']
       if (unit === '台') {
-        // 初始化选型参数
+        // 初始化并设置选型参数
         this.$bus.$emit('setSelectionParams', rowData)
+        // 暂存主网格数据
+        this.$bus.$emit('savePrimaryGridRowData',rowData)
+        this.$store.dispatch('saveCurrentQuotePrimaryGridRowData',rowData)
       }
     },
     showColumn(field) {

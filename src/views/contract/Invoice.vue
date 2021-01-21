@@ -506,7 +506,7 @@ export default {
               return img
             },
           })
-          if (that.hasAuthority(that, 'contrAnnex:delete')) {
+          if (that.hasAuthority(that, 'contrInvAnnex:delete')) {
             columns.push({
               text: '',
               datafield: 'annexDelete',
@@ -540,7 +540,7 @@ export default {
               },
             })
           }
-          if (that.hasAuthority(that, 'contrAnnex:preview')) {
+          if (that.hasAuthority(that, 'contrInvAnnex:preview')) {
             columns.push({
               text: '',
               datafield: 'annexPreview',
@@ -568,7 +568,7 @@ export default {
               },
             })
           }
-          if (that.hasAuthority(that, 'contrAnnex:download')) {
+          if (that.hasAuthority(that, 'contrInvAnnex:download')) {
             columns.push({
               text: '',
               datafield: 'annexDownload',

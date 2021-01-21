@@ -71,6 +71,12 @@ export default {
     }
   },
   mounted() {
+    // 存放主网格选择的数据
+    // this.$bus
+    //   .$off('savePrimaryGridRowData')
+    //   .$on('savePrimaryGridRowData', (data) => {
+    //     this.primaryGridRowData = data
+    //   })
     const that = this
     switch (that.selectionType) {
       case GENERAL_BLOWER:
@@ -371,10 +377,6 @@ export default {
         break
     }
     that.$refs.myGrid.updatebounddata()
-    // 存放主网格选择的数据
-    this.$bus.$on('setSelectionParams', (data) => {
-      this.primaryGridRowData = data
-    })
   },
   methods: {
     refresh() {
@@ -418,7 +420,7 @@ export default {
           } else {
             remark += '柜机'
           }
-          const productName = this.primaryGridRowData.productName
+          const productName = this.$store.state.currentQuote.primaryGridRowData.productName
           if (/防[爆,暴]/.test(productName)) {
             remark += '防爆'
           }
@@ -432,7 +434,7 @@ export default {
         }
         case OUTSIDE_BUY: {
           remark += '圆机'
-           const productName = this.primaryGridRowData.productName
+          const productName = this.$store.state.currentQuote.primaryGridRowData.productName
           if (/防[爆,暴]/.test(productName)) {
             remark += '防爆'
           }
@@ -460,7 +462,7 @@ export default {
           selection = rowData['specification']
           break
         case WALL_BLOWER: {
-          remark += '圆机'
+          remark += '风机'
           const power = rowData['power']
           selection += `${power}KW`
           spec = rowData['model']
@@ -468,7 +470,7 @@ export default {
           break
         }
         case DUCT_BLOWER: {
-          remark += '圆机'
+          remark += '风机'
           const power = rowData['power']
           selection += `${power}KW`
           spec = rowData['model']
@@ -476,7 +478,7 @@ export default {
           break
         }
         case MUTE_BLOWER: {
-          remark += '圆机'
+          remark += '风机'
           const power = rowData['power']
           selection += `${power}KW`
           spec = rowData['model']
@@ -484,7 +486,7 @@ export default {
           break
         }
         case SIDE_WALL_BLOWER: {
-          remark += '圆机'
+          remark += '风机'
           const power = rowData['power']
           selection += `${power}KW`
           spec = rowData['model']
@@ -492,7 +494,7 @@ export default {
           break
         }
         case SIDE_WALL_BLOWER_EP: {
-          remark += '圆机'
+          remark += '风机防爆'
           const power = rowData['power']
           selection += `${power}KW`
           spec = rowData['model']

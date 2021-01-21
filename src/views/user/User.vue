@@ -240,7 +240,6 @@ export default {
         'float: left; margin-left: 5px;cursor: pointer;'
       reloadButtonContainer.style.cssText =
         'float: right; margin-left: 5px;cursor: pointer;'
-
       // 添加按钮
       if (this.hasAuthority(this, 'user:add')) {
         buttonsContainer.appendChild(addButtonContainer)

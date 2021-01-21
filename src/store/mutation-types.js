@@ -10,6 +10,7 @@ export const SAVE_QUOTERS = 'save_quoters';
 // 报价处理
 export const SAVE_CURRENT_QUOTE_PRICE_PLAN = 'save_current_quote_price_plan'
 export const SAVE_CURRENT_QUOTE_SPLIT_PLAN = 'save_current_quote_split_plan'
+export const SAVE_CURRENT_QUOTE_PRIMARY_GRID_ROW_DATA = 'save_current_quote_primary_grid_row_data'
 export const SAVE_CURRENT_QUOTE_NAME = 'save_current_quote_name'
 export const SAVE_CURRENT_QUOTE_CONTENT = 'save_current_quote_content'
 export const FILTER_CURRENT_QUOTE_CONTENT = 'filter_current_quote_content'

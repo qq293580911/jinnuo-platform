@@ -414,9 +414,7 @@ export default {
     const $notConsiderationCommissionOrderAmount = this.$refs.myForm.getComponentByName(
       'notConsiderationCommissionOrderAmount'
     )
-    const $actualFreight = this.$refs.myForm.getComponentByName(
-      'actualFreight'
-    )
+    const $actualFreight = this.$refs.myForm.getComponentByName('actualFreight')
     const $remark = this.$refs.myForm.getComponentByName('remark')
 
     this.orderDateInstance = $orderDate
@@ -637,6 +635,7 @@ export default {
       this.remarkInstance.val('')
     },
     open(...params) {
+      this.clearForm()
       this.$refs.myWindow.setTitle(params[0])
       if (params[0] == EDIT_ORDER) {
         const rowData = params[1]
@@ -712,7 +711,6 @@ export default {
       addOrder(params).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.refresh()
-        this.clearForm()
       })
     },
     update(formData) {
@@ -722,7 +720,6 @@ export default {
       updateOrder(params).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.refresh()
-        this.clearForm()
       })
     },
   },

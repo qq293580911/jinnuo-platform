@@ -16,7 +16,8 @@
       :filterable="true"
       :altrows="true"
       :enabletooltip="true"
-      :editable="false"
+      :editable="true"
+      :editmode="'dblclick'"
       :selectionmode="'multiplerowsextended'"
       :virtualmode="true"
       :rendergridrows="rendergridrows"
@@ -29,10 +30,10 @@
 import JqxGrid from 'jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue'
 
 import { getLocalization } from '@/common/localization.js'
-import { formatFilter, dataExport } from '@/common/util.js'
+import { formatFilter, dataExport, toHump } from '@/common/util.js'
 import { Message } from '@/common/const.js'
 import { contentHeight } from '@/common/mixin.js'
-import { showDetailList } from '@/network/quote.js'
+import { showDetailList, updateQuoteDetail } from '@/network/quote.js'
 export default {
   name: 'QuoteDetail',
   components: {
@@ -80,6 +81,13 @@ export default {
       sortdirection: 'desc',
       id: 'qtn_dtl_id',
       url: `/qtnDtl/showQuotationDetails.do`,
+      updaterow(rowid, newdata, commit) {
+        const params = {}
+        for (let key in newdata) {
+          params[toHump(key)] = newdata[key]
+        }
+        updateQuoteDetail({ jsonParams: JSON.stringify(params) })
+      },
     }
   },
   data() {
@@ -103,7 +111,7 @@ export default {
         beforeSend: function (xhr) {},
       }),
       pagesizeoptions: (() => {
-        return [20,25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
+        return [20, 25, 30, 50, 100, 500, 1000, 3000, 5000, 7000, 10000]
       })(),
       rendergridrows: function (obj) {
         return obj.data
@@ -116,6 +124,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
+          editable: false,
         },
         {
           text: '报价人',
@@ -123,6 +132,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
+          editable: false,
         },
         {
           text: '大区',
@@ -130,6 +140,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
+          editable: false,
         },
         {
           text: '办事处',
@@ -137,6 +148,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
+          editable: false,
         },
         {
           text: '业务员',
@@ -144,9 +156,11 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
+          editable: false,
         },
         {
           text: '项目名称',
+          columntype: 'text',
           datafield: 'project_name',
           align: 'center',
           cellsalign: 'center',
@@ -158,6 +172,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
+          editable: false,
         },
         {
           text: '市',
@@ -165,6 +180,7 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
+          editable: false,
         },
         {
           text: '县',
@@ -172,9 +188,11 @@ export default {
           align: 'center',
           cellsalign: 'center',
           width: 100,
+          editable: false,
         },
         {
           text: '客户公司',
+          columntype: 'text',
           datafield: 'client_company',
           align: 'center',
           cellsalign: 'center',
@@ -189,6 +207,7 @@ export default {
         },
         {
           text: '客户电话',
+          columntype: 'text',
           datafield: 'client_phone',
           align: 'center',
           cellsalign: 'center',
@@ -196,6 +215,7 @@ export default {
         },
         {
           text: '底价',
+          columntype: 'numberinput',
           datafield: 'reserve_price',
           align: 'center',
           cellsalign: 'center',
@@ -203,6 +223,7 @@ export default {
         },
         {
           text: '报价',
+          columntype: 'numberinput',
           datafield: 'quote_price',
           align: 'center',
           cellsalign: 'center',
@@ -210,6 +231,7 @@ export default {
         },
         {
           text: '控制箱底价',
+          columntype: 'numberinput',
           datafield: 'controlbox_reserve_price',
           align: 'center',
           cellsalign: 'center',
@@ -217,6 +239,7 @@ export default {
         },
         {
           text: '控制箱报价',
+          columntype: 'numberinput',
           datafield: 'controlbox_quote_price',
           align: 'center',
           cellsalign: 'center',
@@ -252,13 +275,15 @@ export default {
         },
         {
           text: '价格方案',
+          columntype: 'dropdownlist',
           datafield: 'formula',
           align: 'center',
           cellsalign: 'center',
-          width: 100,
+          width: 100
         },
         {
           text: '重复',
+          columntype: 'dropdownlist',
           datafield: 'repeat',
           align: 'center',
           cellsalign: 'center',
@@ -358,7 +383,7 @@ export default {
           const columns = this.$refs.myGrid.columns
           const rowsData = this.$refs.myGrid.getrows()
           dataExport('报价数据汇总.xlsx', columns, rowsData, {
-            numberCol: ['底价', '报价','控制箱底价','控制箱报价'],
+            numberCol: ['底价', '报价', '控制箱底价', '控制箱报价'],
           })
         })
       }

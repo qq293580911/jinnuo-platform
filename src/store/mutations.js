@@ -9,6 +9,7 @@ import {
   // 报价处理
   SAVE_CURRENT_QUOTE_PRICE_PLAN,
   SAVE_CURRENT_QUOTE_SPLIT_PLAN,
+  SAVE_CURRENT_QUOTE_PRIMARY_GRID_ROW_DATA,
   SAVE_CURRENT_QUOTE_NAME,
   SAVE_CURRENT_QUOTE_CONTENT,
   UPDATE_CURRENT_QUOTE_CONTENT,
@@ -46,6 +47,9 @@ export default {
   },
   [SAVE_CURRENT_QUOTE_SPLIT_PLAN](state, payload) {
     state.currentQuote.splitPlan = payload
+  },
+  [SAVE_CURRENT_QUOTE_PRIMARY_GRID_ROW_DATA](state, payload){
+    state.currentQuote.primaryGridRowData = payload
   },
   [SAVE_CURRENT_QUOTE_NAME](state, payload) {
     state.currentQuote.name = payload

@@ -16,7 +16,7 @@
             class="logo"
             style="text-align:center;line-height:30px;color:yellow;"
           >
-            <!-- <span>金诺办公2.0</span> -->
+            <img style="width:100%;height:100%;" :src="require('@/assets/jndl_log.png')">
           </div>
           <!--  切换主题 -->
           <a-tooltip

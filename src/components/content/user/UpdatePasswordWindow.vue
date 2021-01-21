@@ -244,11 +244,15 @@ export default {
       const formData = {}
       formData['userId'] = this.id
       formData['account'] = this.accountInstance.val()
-      formData['password'] = this.newPasswordInstance.val()
+      // formData['oldPassword'] = this.oldPasswordInstance.val()
+      formData['newPassword'] = Base64.encode(this.newPasswordInstance.val());//新密码Base64编码
       this.update(formData)
     },
     update(formData) {
-      updateUserPassword({ JSONParams: JSON.stringify(formData) }).then((res) => {})
+      updateUserPassword({ jsonParams: JSON.stringify(formData) }).then((res) => {
+        this.$refs.myWindow.close()
+        this.$router.push('/login')
+      })
     },
   },
   beforeDestroy() {

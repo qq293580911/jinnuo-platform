@@ -20,7 +20,7 @@ const logOutTip = debounce((msg) => {
 export function request(config) {
   const instance = axios.create({
     baseURL: '/api',
-    timeout: 5000,
+    timeout: 1 * 60 * 1000, //1分钟超时
     transformRequest: [
       function (data, headers) {
         // 对请求头设置
@@ -99,16 +99,13 @@ export function request(config) {
         res.data.rows = dataArray
         res.data.records = dataArray
       }
-      if (res.data.message != null) {
-        switch (res.data.code) {
-          case 20606://记录已存在
-            message.warning(res.data.message)
-            break;
-          default:
-            message.success(res.data.message)
-            break;
-        }
+
+      if (res.data.errorCode != null && res.data.errorCode != 0) {
+        message.warning(res.data.message)
+      } else if (res.data.message != null) {
+        message.success(res.data.message)
       }
+      // 登录失效
       if (res.data.state == 403) {
         logOutTip(res.data.msg)
       }
@@ -154,8 +151,6 @@ export function request(config) {
           default:
             error.message = `连接出错(${error.response.status})!`
         }
-      } else {
-        error.message = '连接服务器失败!'
       }
       message.error(error.message)
       return Promise.resolve(error)

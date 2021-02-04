@@ -44,7 +44,7 @@ import {
   calc_misc_warranty,
   calc_rsv_p,
 } from '@/common/util'
-import { importOrder, batchUpdateOrderByOrderNumber } from '@/network/order'
+import { importOrder, batchUpdateOrderDetailByField } from '@/network/order'
 export default {
   components: {
     JqxWindow,
@@ -598,13 +598,34 @@ export default {
       })
     },
     batchUpdateOrder() {
-      const rowsData = this.$refs.myGrid.getrows()
+      let rowsData = this.$refs.myGrid.getrows()
+      let field = this.fieldSelectionInstance.val()
+      rowsData = rowsData.map((item) => {
+        const map = {}
+        map['order_number'] = item['order_number']
+        switch (field) {
+          case '实际运费':
+            {
+              map['actual_freight'] = item['actual_freight']
+            }
+            break
+          case '计提成状态':
+            {
+              map['consideration_commission_status'] =
+                item['consideration_commission_status']
+            }
+            break
+          default:
+            break
+        }
+        return map
+      })
       const params = {
         jsonParams: JSON.stringify({
           items: rowsData,
         }),
       }
-      batchUpdateOrderByOrderNumber(params).then((res) => {
+      batchUpdateOrderDetailByField(params).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.refresh()
       })

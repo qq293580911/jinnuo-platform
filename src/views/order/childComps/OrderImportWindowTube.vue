@@ -38,7 +38,7 @@ import CustomUploader from '@/components/common/CustomUploader'
 
 import { getLocalization } from '@/common/localization.js'
 import { Message, IMPORT_ORDER } from '@/common/const'
-import { importOrder } from '@/network/order'
+import { importOrder,batchUpdateOrderDetailByField } from '@/network/order'
 export default {
   components: {
     JqxWindow,
@@ -453,6 +453,39 @@ export default {
         }),
       }
       importOrder(params).then((res) => {
+        this.$refs.myWindow.close()
+        this.$parent.refresh()
+      })
+    },
+    batchUpdateOrder() {
+      let rowsData = this.$refs.myGrid.getrows()
+      let field = this.fieldSelectionInstance.val()
+      rowsData = rowsData.map((item) => {
+        const map = {}
+        map['order_number'] = item['order_number']
+        switch (field) {
+          case '实际运费':
+            {
+              map['actual_freight'] = item['actual_freight']
+            }
+            break
+          case '计提成状态':
+            {
+              map['consideration_commission_status'] =
+                item['consideration_commission_status']
+            }
+            break
+          default:
+            break
+        }
+        return map
+      })
+      const params = {
+        jsonParams: JSON.stringify({
+          items: rowsData,
+        }),
+      }
+      batchUpdateOrderDetailByField(params).then((res) => {
         this.$refs.myWindow.close()
         this.$parent.refresh()
       })

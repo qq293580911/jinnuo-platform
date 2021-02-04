@@ -270,9 +270,10 @@ export default {
               this.$router.push({
                 path: `/home`,
               })
-            } else {
-              this.$message.warning(res.msg)
-            }
+            } 
+            // else {
+            //   this.$message.warning(res.msg)
+            // }
           })
         }
       })

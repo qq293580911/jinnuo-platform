@@ -207,12 +207,11 @@ export default {
       this.$refs.myWindow.setTitle(params[0]);
       if (params[0] == EDIT_PRODUCT_PRICE) {
         const data = params[1]
-        console.log(data)
         this.productInstance.jqxComboBox('selectItem', data['pnm_id'])
         this.pricePlanInstance.jqxComboBox('selectItem', data['ps_id'])
         this.panelPriceInstance.jqxNumberInput('setDecimal', data['panel_price'])
         this.valvePriceInstance.jqxNumberInput('setDecimal', data['valve_price'])
-        this.id = this['price_id']
+        this.id = data['price_id']
       }
       this.$refs.myWindow.open();
     },

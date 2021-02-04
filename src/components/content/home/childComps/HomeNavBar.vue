@@ -8,9 +8,26 @@
       <a-menu-item key="mail">
         <a-icon type="mail" />Navigation One
       </a-menu-item>
-      <a-menu-item key="app">
-        <a-icon type="appstore" />Navigation Two
-      </a-menu-item>
+      <a-sub-menu key="app">
+        <span
+          class="submenu-title-wrapper"
+          slot="title"
+        >
+          <a-icon type="appstore" />产品中心
+        </span>
+        <a-menu-item key="appstore:1">
+          抗震支架
+        </a-menu-item>
+        <a-menu-item key="appstore:2">
+          3C产品
+        </a-menu-item>
+        <a-menu-item key="appstore:3">
+          其他产品
+        </a-menu-item>
+        <a-menu-item key="appstore:4">
+          在线客服
+        </a-menu-item>
+      </a-sub-menu>
       <a-sub-menu>
         <span
           class="submenu-title-wrapper"
@@ -19,11 +36,11 @@
           <a-icon type="setting" />系统设置
         </span>
       </a-sub-menu>
-      <a-menu-item key="alipay">
+      <a-menu-item key="more">
         <a
           target="_blank"
-          @click="contactUs"
-        >联系我们</a>
+          @click="aboutUs"
+        >关于金诺</a>
       </a-menu-item>
       <a-dropdown :placement="'bottomRight'">
         <a-avatar
@@ -86,7 +103,7 @@ export default {
     }
   },
   methods: {
-    contactUs() {
+    aboutUs() {
       window.open('http://www.kingnuo.net/AboutSt_jndljj.html')
     },
     getRamdom(min, max) {

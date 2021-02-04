@@ -67,8 +67,8 @@ export default {
                 width: 250,
                 height: 30,
                 source: res,
-                displayMember: 'pnm_name',
-                valueMember: 'pnm_id',
+                displayMember: 'pm_name',
+                valueMember: 'pm_id',
                 animationType: 'none',
               })
             })
@@ -198,8 +198,8 @@ export default {
   methods: {
     open(...params) {
       this.$refs.myWindow.setTitle(params[0])
-      this.clearForm()
       if (params[0] == EDIT_PRODUCT_PRICE) {
+        this.clearForm()
         const data = params[1]
         this.machineInstance.jqxComboBox('selectItem', data['pm_id'])
         this.pricePlanInstance.jqxComboBox('selectItem', data['ps_id'])

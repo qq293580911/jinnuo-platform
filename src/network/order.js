@@ -77,3 +77,11 @@ export function batchUpdateOrderByOrderNumber(params) {
   })
 }
 
+export function batchUpdateOrderDetailByField(params) {  
+  return request({
+    url: '/ordDtl/batchUpdateOrderDetailByField.do',
+    method: 'Put',
+    data: params
+  })
+}
+

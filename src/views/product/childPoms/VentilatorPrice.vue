@@ -63,7 +63,7 @@ export default {
         { name: 'panel_material', type: 'string' },
         { name: 'price', type: 'number' },
         { name: 'vent_id', type: 'number' },
-        { name: 'vent_name', type: 'number' },
+        { name: 'vent_name', type: 'string' },
       ],
       type: 'get',
       datatype: 'json',

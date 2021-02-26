@@ -2,6 +2,7 @@ import {
   SAVE_PERMISSIONS,
   SAVE_SALESMANS,
   SAVE_QUOTERS,
+  SAVE_PURCHASERS,
   // 产品
   SAVE_FORMULA,
   SAVE_PRICE_PLAN,
@@ -32,6 +33,11 @@ export default {
   saveQuoters(context, payload) {
     return new Promise((resolve, reject) => {
       context.commit(SAVE_QUOTERS, payload)
+    })
+  },
+  savePurchasers(context, payload){
+    return new Promise((resolve, reject) => {
+      context.commit(SAVE_PURCHASERS, payload)
     })
   },
   saveFormula(context, payload) {

@@ -16,7 +16,10 @@
             class="logo"
             style="text-align:center;line-height:30px;color:yellow;"
           >
-            <img style="width:100%;height:100%;" :src="require('@/assets/jndl_log.png')">
+            <img
+              style="width:100%;height:100%;"
+              :src="require('@/assets/jndl_log.png')"
+            >
           </div>
           <!--  切换主题 -->
           <a-tooltip
@@ -68,7 +71,7 @@ import HomeAside from './childComps/HomeAside'
 import HomeMain from './childComps/HomeMain'
 import { getPermissions } from '@/network/home.js'
 import { updateUserInfo } from '@/network/user.js'
-import { getSalesman, getQuoter } from '@/network/employee.js'
+import { getSalesman, getQuoter,getPurchaser } from '@/network/employee.js'
 import {
   getPricePlan,
   getCategory,
@@ -170,6 +173,7 @@ export default {
     this.getPermissions()
     this.getSalasmans()
     this.getQuoters()
+    this.getPurchasers()
     this.getProductTypes()
     this.getAssignTypes()
     this.getPricePlans()
@@ -214,6 +218,14 @@ export default {
       if (Array.isArray(salesmans) == false) {
         getSalesman().then((responese) => {
           this.$store.dispatch('saveSalesmans', responese)
+        })
+      }
+    },
+    getPurchasers() {
+      const purchases = this.$store.state.purchases
+      if (Array.isArray(purchases) == false) {
+        getPurchaser().then((responese) => {
+          this.$store.dispatch('savePurchasers', responese)
         })
       }
     },

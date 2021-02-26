@@ -78,6 +78,13 @@ export function updateSupplies(params) {
   })
 }
 
+export function getAllSupplies() {  
+  return request({
+    url:`/supplies/getAllSupplies.do`,
+    method: `Get`
+  })
+}
+
 // 采购
 export function showPurchaseList(source, params) {
   return request({
@@ -85,6 +92,30 @@ export function showPurchaseList(source, params) {
     method: source.type,
     source,
     params
+  })
+}
+
+export function addPurchase(params) {  
+  return request({
+    url: `/supplies/addOfficeSuppliesPurchaseInfo.do`,
+    method: `Post`,
+    data:params
+  })
+}
+
+export function deletePurchase(params) {  
+  return request({
+    url: `/supplies/deleteOfficeSuppliesPurchaseInfo.do`,
+    method: `Delete`,
+    data:params
+  })
+}
+
+export function updatePurchase(params) {  
+  return request({
+    url: `/supplies/updateOfficeSuppliesPurchaseInfo.do`,
+    method: `Put`,
+    data:params
   })
 }
 

@@ -32,7 +32,7 @@ export default {
   components: {
     JqxGrid,
   },
-  mixins:[contentHeight],
+  mixins: [contentHeight],
   beforeCreate() {
     this.params = {
       startDate: (function () {
@@ -45,7 +45,7 @@ export default {
         return startDate
       })(),
       endDate: (function () {
-         const date = new Date()
+        const date = new Date()
         const endDate = new Date(
           date.getFullYear(),
           date.getMonth() + 1,
@@ -300,7 +300,18 @@ export default {
       exportButton.addEventHandler('click', (event) => {
         const rowsData = this.$refs.myGrid.getrows()
         const columns = this.$refs.myGrid.columns
-        dataExport('销售统计-设备.xlsx', columns, rowsData)
+        dataExport('销售统计-设备.xlsx', columns, rowsData, {
+          numberCol: [
+            `报价份数`,
+            '报价金额',
+            `合同份数`,
+            `合同金额`,
+            `下单金额`,
+            `下单底价`,
+            `送货金额`,
+            `送货底价`,
+          ],
+        })
       })
 
       const reloadButton = jqwidgets.createInstance(

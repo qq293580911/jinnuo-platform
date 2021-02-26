@@ -71,3 +71,9 @@ export function getSalesman() {
     url: '/emp/getAllSalesman.do'
   })
 }
+
+export function getPurchaser() {  
+  return request({
+    url: '/emp/getAllInServicePurchaser.do'
+  })
+}

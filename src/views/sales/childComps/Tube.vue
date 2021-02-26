@@ -32,7 +32,7 @@ export default {
   components: {
     JqxGrid,
   },
-  mixins:[contentHeight],
+  mixins: [contentHeight],
   beforeCreate() {
     this.params = {
       startDate: (function () {
@@ -277,7 +277,9 @@ export default {
       exportButton.addEventHandler('click', (event) => {
         const rowsData = this.$refs.myGrid.getrows()
         const columns = this.$refs.myGrid.columns
-        dataExport('销售统计-风管.xlsx', columns, rowsData)
+        dataExport('销售统计-风管.xlsx', columns, rowsData, {
+          numberCol: [`合同份数`, '合同金额', `下单面积`, `送货面积`],
+        })
       })
 
       reloadButton.addEventHandler('click', (event) => {

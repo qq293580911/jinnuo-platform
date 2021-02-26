@@ -119,3 +119,5 @@ export const EDIT_GROUP = '修改组名'
 // 用品
 export const ADD_SUPPLIES = '添加用品'
 export const EDIT_SUPPLIES = '修改用品'
+export const ADD_SUPPLIES_PURCHASE = '添加用品采购信息'
+export const EDIT_SUPPLIES_PURCHASE = '修改用品采购信息'

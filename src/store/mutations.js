@@ -2,6 +2,7 @@ import {
   SAVE_PERMISSIONS,
   SAVE_SALESMANS,
   SAVE_QUOTERS,
+  SAVE_PURCHASERS,
   // 产品
   SAVE_FORMULA,
   SAVE_PRICE_PLAN,
@@ -31,6 +32,9 @@ export default {
   },
   [SAVE_QUOTERS](state, payload) {
     state.quoters = payload
+  },
+  [SAVE_PURCHASERS](state, payload){
+    state.purchasers = payload
   },
   [SAVE_FORMULA](state, payload) {
     state.formula = payload

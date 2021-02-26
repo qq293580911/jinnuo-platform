@@ -35,6 +35,14 @@ export function updateEmployee(params) {
   })
 }
 
+export function getEmployeeByDeptId(params) {  
+  return request({
+    url: '/emp/getAllEmployeeByDeptId.do',
+    method: 'Get',
+    params
+  })
+}
+
 export function showEmployeePosition(url, source, params) {
   return request({
     url,

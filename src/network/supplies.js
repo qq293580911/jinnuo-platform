@@ -128,6 +128,39 @@ export function showReceiveList(source, params) {
     params
   })
 }
+
+export function getStockQuantity(params) {  
+  return request({
+    url: `/supplies/getStockQuantity.do`,
+    method: `Get`,
+    params
+  })
+}
+
+export function addReceive(params) {  
+  return request({
+    url: `/supplies/addOfficeSuppliesReceiveInfo.do`,
+    method: `Post`,
+    data:params
+  })
+}
+
+export function deleteReceive(params) {  
+  return request({
+    url: `/supplies/deleteOfficeSuppliesReceiveInfo.do`,
+    method: `Delete`,
+    data:params
+  })
+}
+
+export function updateReceive(params) {  
+  return request({
+    url: `/supplies/updateOfficeSuppliesReceiveInfo.do`,
+    method: `Put`,
+    data:params
+  })
+}
+
 // 统计
 export function showStatisticsList(source, params) {
   return request({

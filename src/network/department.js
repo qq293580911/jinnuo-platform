@@ -33,3 +33,10 @@ export function updateDepartment(param) {
     data: param
   })
 }
+
+export function getAllDepartment() {  
+  return request({
+    url: '/dept/getDepartmentSource.do',
+    method: 'Get'
+  })
+}

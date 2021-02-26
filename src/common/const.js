@@ -116,3 +116,6 @@ export const EDIT_CUSTOMER = '修改客户信息'
 // 组
 export const ADD_GROUP = '添加新组'
 export const EDIT_GROUP = '修改组名'
+// 用品
+export const ADD_SUPPLIES = '添加用品'
+export const EDIT_SUPPLIES = '修改用品'

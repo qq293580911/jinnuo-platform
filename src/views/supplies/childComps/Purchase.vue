@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -27,16 +27,18 @@
 
 <script>
 import JqxGrid from "jqwidgets-scripts/jqwidgets-vue/vue_jqxgrid.vue";
-// import MachineWindow from "./MachineWindow";
 
 import { formatFilter } from "@/common/util.js";
 import { Message } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import { showPurchaseList } from "@/network/supplies.js";
+
+import { contentHeight } from '@/common/mixin.js'
 export default {
   components: {
     JqxGrid
   },
+  mixins: [contentHeight],
   beforeCreate() {
     this.source = {
       filter: () => {

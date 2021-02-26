@@ -1,5 +1,5 @@
 <template>
-  <div class="base-tab-content-element">
+  <div :style="contentStyle">
     <JqxGrid
       ref="myGrid"
       :width="'100%'"
@@ -32,10 +32,13 @@ import { formatFilter } from "@/common/util.js";
 import { Message } from "@/common/const.js";
 import { getLocalization } from "@/common/localization.js";
 import { showStatisticsList } from "@/network/supplies.js";
+
+import { contentHeight } from '@/common/mixin.js'
 export default {
   components: {
     JqxGrid
   },
+  mixins: [contentHeight],
   beforeCreate() {
     this.source = {
       filter: () => {

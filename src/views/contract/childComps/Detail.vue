@@ -139,6 +139,7 @@ export default {
         { name: 'formula_model', type: 'string' },
         { name: 'order_amount', type: 'number' },
         { name: 'delivery_amount', type: 'number' },
+        { name: 'invoice_amount', type: 'number' },
         { name: 'execute_status', type: 'string' },
         { name: 'rise_drop_point', type: 'string' },
         { name: 'deduction_bonus_amount', type: 'string' },
@@ -561,6 +562,15 @@ export default {
             aggregatesrenderer: that.aggregatesRenderer,
           })
         }
+        columns.push({
+          text: '开票金额',
+          datafield: 'invoice_amount',
+          align: 'center',
+          cellsalign: 'center',
+          width: 100,
+          aggregates: ['sum'],
+          aggregatesrenderer: that.aggregatesRenderer,
+        })
         columns.push({
           text: '执行状态',
           datafield: 'execution_state',
